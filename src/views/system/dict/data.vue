@@ -250,8 +250,8 @@ function getTypeList() {
 function getList() {
   loading.value = true;
   listData(queryParams.value).then(response => {
-    dataList.value = response.rows;
-    total.value = response.total;
+    dataList.value = response.data.list;
+    total.value = Number(response.data.total);
     loading.value = false;
   });
 }

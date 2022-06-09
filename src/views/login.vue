@@ -107,7 +107,7 @@ function handleLogin() {
       // 调用action的登录方法
       userStore
         .login(loginForm.value).then(() => {
-          router.push({ path: redirect.value || "/system/role" });
+          router.push({ path: redirect.value || "home" });
         }).catch(() => {
           loading.value = false;
         });

@@ -3,7 +3,7 @@
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
          <el-form-item label="字典名称" prop="name">
             <el-input
-               v-model="queryParams.name"
+               v-model="queryParams.dictName"
                placeholder="请输入字典名称"
                clearable
                style="width: 240px"
@@ -60,7 +60,7 @@
                v-hasPermi="['system:dict:add']"
             >新增</el-button>
          </el-col>
-         <!-- <el-col :span="1.5">
+         <el-col :span="1.5">
             <el-button
                type="success"
                plain
@@ -88,8 +88,8 @@
                @click="handleExport"
                v-hasPermi="['system:dict:export']"
             >导出</el-button>
-         </el-col> -->
-         <!-- <el-col :span="1.5">
+         </el-col>
+         <el-col :span="1.5">
             <el-button
                type="danger"
                plain
@@ -97,18 +97,17 @@
                @click="handleRefreshCache"
                v-hasPermi="['system:dict:remove']"
             >刷新缓存</el-button>
-         </el-col> -->
+         </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
       <el-table v-loading="loading" :data="typeList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
-         <el-table-column label="排序" prop="sort" width="60" />
-         <el-table-column label="字典名称" prop="name" :show-overflow-tooltip="true" />
-         <el-table-column label="字典编码" :show-overflow-tooltip="true">
+         <el-table-column label="字典名称" prop="dictName" :show-overflow-tooltip="true" />
+         <el-table-column label="字典类型" :show-overflow-tooltip="true">
             <template #default="scope">
-               <router-link :to="'/system/dict-data/index/' + scope.row.id" class="link-type">
-                  <span>{{ scope.row.code }}</span>
+               <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+                  <span>{{ scope.row.dictType }}</span>
                </router-link>
             </template>
          </el-table-column>
@@ -120,7 +119,7 @@
          <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" />
          <el-table-column label="创建时间" prop="createTime" width="180">
             <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime,'{y}-{m}-{d}')}}</span>
+               <span>{{ parseTime(scope.row.createTime)}}</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" class-name="small-padding fixed-width" width="100">
@@ -152,8 +151,8 @@
       <!-- 添加或修改参数配置对话框 -->
       <el-dialog :title="title" v-model="open" width="500px" append-to-body>
          <el-form ref="dictRef" :model="form" :rules="rules" label-width="80px">
-            <el-form-item label="字典名称" prop="name">
-               <el-input v-model="form.name" placeholder="请输入字典名称" />
+            <el-form-item label="字典名称" prop="dictName">
+               <el-input v-model="form.dictName" placeholder="请输入字典名称" />
             </el-form-item>
             <el-form-item label="字典类型" prop="dictType">
                <el-input v-model="form.dictType" placeholder="请输入字典类型" />
@@ -192,8 +191,8 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
-// const single = ref(true);
-// const multiple = ref(true);
+const single = ref(true);
+const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
@@ -203,12 +202,12 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    name: undefined,
+    dictName: undefined,
     dictType: undefined,
     status: undefined
   },
   rules: {
-    name: [{ required: true, message: "字典名称不能为空", trigger: "blur" }],
+    dictName: [{ required: true, message: "字典名称不能为空", trigger: "blur" }],
     dictType: [{ required: true, message: "字典类型不能为空", trigger: "blur" }]
   },
 });
@@ -233,7 +232,7 @@ function cancel() {
 function reset() {
   form.value = {
     id: undefined,
-    name: undefined,
+    dictName: undefined,
     dictType: undefined,
     status: "0",
     remark: undefined
@@ -259,15 +258,15 @@ function handleAdd() {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-//   ids.value = selection.map(item => item.dictId);
-//   single.value = selection.length != 1;
-//   multiple.value = !selection.length;
+  ids.value = selection.map(item => item.dictId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-//   const dictId = row.id || ids.value;
-  getType(row.id).then(response => {
+  const dictId = row.dictId || ids.value;
+  getType(dictId).then(response => {
     form.value = response.data;
     open.value = true;
     title.value = "修改字典类型";
@@ -295,9 +294,9 @@ function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-//   const dictIds = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除字典编号为"' + row.id + '"的数据项？').then(function() {
-    return delType(row.id);
+  const dictIds = row.dictId || ids.value;
+  proxy.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(function() {
+    return delType(dictIds);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
@@ -310,11 +309,11 @@ function handleExport() {
   }, `dict_${new Date().getTime()}.xlsx`);
 }
 /** 刷新缓存按钮操作 */
-// function handleRefreshCache() {
-//   refreshCache().then(() => {
-//     proxy.$modal.msgSuccess("刷新成功");
-//   });
-// }
+function handleRefreshCache() {
+  refreshCache().then(() => {
+    proxy.$modal.msgSuccess("刷新成功");
+  });
+}
 
 getList();
 </script>

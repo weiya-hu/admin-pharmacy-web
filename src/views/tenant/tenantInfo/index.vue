@@ -1,17 +1,14 @@
 <template>
   <div class="app-container" id="bodyDiv">
-    <el-button
-        @click="btnclick"
-    >
-      hahah
-    </el-button>
+    <el-button @click="openClick">调起智绘iframe</el-button>
+    <el-button @click="closeClick">关闭智绘iframe</el-button>
+
   </div>
 </template>
 
-<script setup name="Config">
-import ZhihuiEditor from 'zhihui-editor-sdk'
-import {onMounted, ref} from "vue";
-const option = {
+<script setup name="Tenant">
+import ZhihuiEditor from 'zhihui-editor-sdk';
+let option = {
   appid: 'commonIframe',
   channel: 'commonIframe',
   stamp: 'testUserId',
@@ -20,23 +17,52 @@ const option = {
   templateId: '6254db7bccc34b01db8666ec',
   from: 'material',
   token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjczODAzZTE1ZGNhOTAzNjY1ZDU2ZGIiLCJuYW1lIjoiY29tbW9uSWZyYW1ldGVzdFVzZXJJZCIsImF2YXRhciI6IiIsInBpZCI6IjYyNzM3N2QyYmU4MDI4MGFmZTVlOGQzZiIsImNvbnRhY3QiOlt7Il9pZCI6IjYyNzM4MDNlMTVkY2E5MDM2NjVkNTZkZSIsImNoYW5uZWwiOiJjb21tb25JZnJhbWUiLCJzdGFtcCI6InRlc3RVc2VySWQiLCJwcm9qZWN0IjoiNjI3Mzc3ZDJiZTgwMjgwYWZlNWU4ZDNmIn1dLCJjcmVhdGVkQXQiOiIyMDIyLTA1LTA1VDA3OjQzOjU4LjU2NFoiLCJ1cGRhdGVkQXQiOiIyMDIyLTA2LTA5VDAyOjQ0OjAwLjA2MVoiLCJpYXQiOjE2NTQ3NDMzMDYsImV4cCI6MTY1NzMzNTMwNn0.JhcfkEHhm0WTpxkp-qLTOEU2hCmo6pSs8Cfiy2mdtqo",
+  leftConfig:{
+    system:{
+      hasSystemCommonMaterial:true,
+      hasTeamPeopleMaterial:true,
+      hasSystemText:true
+    }
+  },
   styleConfig:{
     hasBackground: false,
     hasQuitButton: false,
     parentDomId: 'bodyDiv',
     iframeStyle: {
       position: 'absolute',
-      top: 0,
+      top: 10,
       left: 0,
       zIndex: 10000,
       display: 'block',
       width: '100%',
       height: '100%',
-  }
-}}
+    }
+  },
+  vipConfig:{
+    template:{
+      type:'',
+      level:1,
+    },
+    material:{
+      type:'',
+      level:1,
+    },
+  },
+  headConfig: {
+    logoUrl: 'xxx',
+    downloadName: '保存',
+    onClickDownload: (res) => {
+      console.log(res)
+    },
+    isDownloadImg: true,
+  },
+}
 const zhihuiEditor = new ZhihuiEditor(option)
-const btnclick = ()=>{
+const openClick = ()=>{
   console.log(123)
   zhihuiEditor.openIframe()
+}
+const closeClick = ()=>{
+  zhihuiEditor.closeIframe()
 }
 </script>

@@ -98,10 +98,10 @@
       <el-table v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
          <el-table-column label="角色ID" prop="roleId" width="70" />
-         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
-         <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
-         <el-table-column label="排序" prop="roleSort" width="90" />
-         <el-table-column label="状态" width="100">
+         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" />
+         <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" />
+         <el-table-column label="排序" prop="roleSort" />
+         <el-table-column label="状态">
             <template #default="scope">
                <el-switch
                   v-model="scope.row.status"
@@ -116,7 +116,7 @@
                <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" class-name="small-padding fixed-width">
+         <el-table-column label="操作" class-name="small-padding fixed-width" width="150">
             <template #default="scope">
               <el-tooltip content="修改" placement="top" v-if="scope.row.roleId !== '1'">
                 <el-button
@@ -348,7 +348,7 @@ function handleSearch(){
 /** 删除按钮操作 */
 function handleDelete(row) {
   const roleIds = row.roleId || ids.value;
-  proxy.$modal.confirm('是否确认删除角色编号为"' + roleNames + '"的数据项?').then(function () {
+  proxy.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?').then(function () {
     return delRole(roleIds);
   }).then(() => {
     getList();

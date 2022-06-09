@@ -795,7 +795,7 @@
   </div>
 </template>
 
-<script setup name="Index">
+<script setup name="Home">
 const version = ref('3.8.2')
 
 function goTarget(url) {
