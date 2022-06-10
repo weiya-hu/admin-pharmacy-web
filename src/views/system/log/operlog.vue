@@ -97,36 +97,38 @@
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
-      <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-         <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="日志编号" align="center" prop="operId" />
-         <el-table-column label="系统模块" align="center" prop="title" />
-         <el-table-column label="操作类型" align="center" prop="businessType">
+      <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" height="75vh">
+         <el-table-column type="selection" width="55" />
+         <el-table-column label="ID" prop="operId" :show-overflow-tooltip="true" />
+         <el-table-column label="系统模块" prop="title" width="150" :show-overflow-tooltip="true" />
+         <el-table-column label="操作类型" prop="businessType">
             <template #default="scope">
                <dict-tag :options="sys_oper_type" :value="scope.row.businessType" />
             </template>
          </el-table-column>
-         <el-table-column label="请求方式" align="center" prop="requestMethod" />
-         <el-table-column label="操作人员" align="center" prop="operName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" width="100" />
-         <el-table-column label="主机" align="center" prop="operIp" width="130" :show-overflow-tooltip="true" />
-         <el-table-column label="操作状态" align="center" prop="status">
+         <el-table-column label="请求方式" prop="requestMethod" />
+         <el-table-column label="操作人员" prop="operName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" width="100" />
+         <el-table-column label="主机" prop="operIp" width="130" :show-overflow-tooltip="true" />
+         <el-table-column label="操作状态" prop="status">
             <template #default="scope">
                <dict-tag :options="sys_common_status" :value="scope.row.status" />
             </template>
          </el-table-column>
-         <el-table-column label="操作日期" align="center" prop="operTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+         <el-table-column label="操作日期" prop="operTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.operTime) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+         <el-table-column label="操作" class-name="small-padding fixed-width" width="85">
             <template #default="scope">
+              <el-tooltip content="查看" placement="right">
                <el-button
                   type="text"
                   icon="View"
                   @click="handleView(scope.row, scope.index)"
                   v-hasPermi="['system:operlog:query']"
-               >详细</el-button>
+               ></el-button>
+              </el-tooltip>
             </template>
          </el-table-column>
       </el-table>
@@ -221,8 +223,8 @@ const { queryParams, form } = toRefs(data);
 function getList() {
   loading.value = true;
   list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    operlogList.value = response.rows;
-    total.value = response.total;
+    operlogList.value = response.data.list;
+    total.value = Number(response.data.total);
     loading.value = false;
   });
 }

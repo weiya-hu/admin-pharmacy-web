@@ -82,21 +82,21 @@
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
-      <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
-         <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="访问编号" align="center" prop="infoId" />
-         <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
-         <el-table-column label="地址" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
-         <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true" />
-         <el-table-column label="操作系统" align="center" prop="os" :show-overflow-tooltip="true" />
-         <el-table-column label="浏览器" align="center" prop="browser" :show-overflow-tooltip="true" />
-         <el-table-column label="登录状态" align="center" prop="status">
+      <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" height="75vh">
+         <el-table-column type="selection" width="55" />
+         <el-table-column label="ID" prop="infoId" />
+         <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
+         <el-table-column label="IP地址" prop="ipaddr" :show-overflow-tooltip="true"/>
+         <el-table-column label="登录地点" prop="loginLocation" :show-overflow-tooltip="true" />
+         <el-table-column label="操作系统" prop="os" :show-overflow-tooltip="true" />
+         <el-table-column label="浏览器" prop="browser" :show-overflow-tooltip="true" />
+         <el-table-column label="登录状态" prop="status">
             <template #default="scope">
                <dict-tag :options="sys_common_status" :value="scope.row.status" />
             </template>
          </el-table-column>
-         <el-table-column label="描述" align="center" prop="msg" />
-         <el-table-column label="访问时间" align="center" prop="loginTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+         <el-table-column label="操作信息" prop="msg" :show-overflow-tooltip="true" />
+         <el-table-column label="访问时间" prop="loginTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.loginTime) }}</span>
             </template>
@@ -143,8 +143,8 @@ const queryParams = ref({
 function getList() {
   loading.value = true;
   list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    logininforList.value = response.rows;
-    total.value = response.total;
+    logininforList.value = response.data.list;
+    total.value = Number(response.data.total);
     loading.value = false;
   });
 }
@@ -192,9 +192,9 @@ function handleClean() {
 }
 /** 导出按钮操作 */
 function handleExport() {
-//   proxy.download("monitor/logininfor/export", {
-//     ...queryParams.value,
-//   }, `config_${new Date().getTime()}.xlsx`);
+  proxy.download("/system/logininfor/export", {
+    ...queryParams.value,
+  }, `config_${new Date().getTime()}.xlsx`);
 }
 
 getList();

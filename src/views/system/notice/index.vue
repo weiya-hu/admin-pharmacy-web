@@ -82,6 +82,7 @@
             </template>
          </el-table-column>
          <el-table-column label="关键词" prop="keywords" />
+         <el-table-column label="创建者" prop="createBy" />
          <el-table-column label="创建时间" prop="createTime">
             <template #default="scope">
                <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -146,12 +147,14 @@
               </el-col>
                <el-col :span="24">
                   <el-form-item label="内容">
-                     <el-input
-                        :rows="6"
-                        type="textarea"
-                        placeholder="请输入内容"
-                        v-model="form.content"
-                     />
+<!--                     <el-input-->
+<!--                        :rows="6"-->
+<!--                        type="textarea"-->
+<!--                        placeholder="请输入内容"-->
+<!--                        v-model="form.content"-->
+<!--                     />-->
+<!--                    <WangEditor v-model="form.content" />-->
+                    <wang-editor v-model="form.content" />
                   </el-form-item>
                </el-col>
             </el-row>
@@ -168,6 +171,7 @@
 
 <script setup name="Notice">
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import wangEditor from '@/components/WangEditor/index.vue' ;
 
 const { proxy } = getCurrentInstance();
 
@@ -181,8 +185,8 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const btnNames = [
-  { value: 0, label: '查看详情' },
-  { value: 1, label: '显示领取' },
+  { value: '查看详情', label: '查看详情' },
+  { value: '显示领取', label: '显示领取' },
 ]
 const data = reactive({
   form: {},
@@ -191,7 +195,7 @@ const data = reactive({
     pageSize: 10,
     title: undefined,
     createBy: undefined,
-    status: undefined
+    btnName: undefined
   },
   rules: {
     title: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
@@ -222,7 +226,6 @@ function reset() {
     title: undefined,
     btnName: undefined,
     noticeContent: undefined,
-    status: "0"
   };
   proxy.resetForm("noticeRef");
 }

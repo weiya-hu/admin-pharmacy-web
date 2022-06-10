@@ -8,44 +8,58 @@
 
 <script setup name="Tenant">
 import ZhihuiEditor from 'zhihui-editor-sdk';
+let header = {
+  wmx:'www'
+}
 let option = {
-  appid: 'commonIframe',
+  system: 'test',
+  appid: 'apollo',
   channel: 'commonIframe',
   stamp: 'testUserId',
-  timestamp: 1654743233248,
-  scope: 'all', // 注意此处的scope是按照字符串传入
-  templateId: '6254db7bccc34b01db8666ec',
-  from: 'material',
-  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjczODAzZTE1ZGNhOTAzNjY1ZDU2ZGIiLCJuYW1lIjoiY29tbW9uSWZyYW1ldGVzdFVzZXJJZCIsImF2YXRhciI6IiIsInBpZCI6IjYyNzM3N2QyYmU4MDI4MGFmZTVlOGQzZiIsImNvbnRhY3QiOlt7Il9pZCI6IjYyNzM4MDNlMTVkY2E5MDM2NjVkNTZkZSIsImNoYW5uZWwiOiJjb21tb25JZnJhbWUiLCJzdGFtcCI6InRlc3RVc2VySWQiLCJwcm9qZWN0IjoiNjI3Mzc3ZDJiZTgwMjgwYWZlNWU4ZDNmIn1dLCJjcmVhdGVkQXQiOiIyMDIyLTA1LTA1VDA3OjQzOjU4LjU2NFoiLCJ1cGRhdGVkQXQiOiIyMDIyLTA2LTA5VDAyOjQ0OjAwLjA2MVoiLCJpYXQiOjE2NTQ3NDMzMDYsImV4cCI6MTY1NzMzNTMwNn0.JhcfkEHhm0WTpxkp-qLTOEU2hCmo6pSs8Cfiy2mdtqo",
-  leftConfig:{
-    system:{
-      hasSystemCommonMaterial:true,
-      hasTeamPeopleMaterial:true,
-      hasSystemText:true
-    }
+  timestamp: 1629711353224,
+  sig: '525168cbc665e0443225725ea5aa8a5d751346a400dcfc184ff98d42df5e37ac',
+  templateId: '60f0e9e54a44ad541160ba1b',
+  from: 'template',
+  leftConfig: {
+    system: {
+      hasSystemTemplate: true,
+      hasTeamTemplate: false,
+      hasSystemImg: true,
+      hasSystemCommonMaterial: true,
+      hasTeamCommonMaterial: true,
+      hasSystemPeopleMaterial: true,
+      hasTeamPeopleMaterial: true,
+      hasSystemBgMaterial: true,
+      hasTeamBgMaterial: true,
+      hasSystemText: true,
+      hasSystemUpload: true,
+      hasSystemCache: true,
+    },
+    user: [
+      {
+        menuName: '二维码',
+        menuIcon: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fku.90sjimg.com%2Felement_pic%2F01%2F40%2F63%2F34573d0a8594022.jpg&refer=http%3A%2F%2Fku.90sjimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1657441993&t=2bb0acfcf7ae6dbb65b469cf3cb61f91',
+        menuIconActive: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fku.90sjimg.com%2Felement_origin_min_pic%2F01%2F37%2F17%2F33573c3f244e076.jpg&refer=http%3A%2F%2Fku.90sjimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1657442028&t=4be97ae97fc9063bf2abc37d4cbf74cb',
+        type: 'showAll',
+        dataConfig: {
+          url: 'https://taishan.qq.com/api/ape/search',
+          // url: 'http://192.168.123.96:8080/wecom/poster/queryQrCodeList',
+          headers: header,
+        }
+      },
+    ]
   },
-  styleConfig:{
+  styleConfig: {
     hasBackground: false,
     hasQuitButton: false,
     parentDomId: 'bodyDiv',
     iframeStyle: {
       position: 'absolute',
-      top: 10,
       left: 0,
       zIndex: 10000,
       display: 'block',
       width: '100%',
       height: '100%',
-    }
-  },
-  vipConfig:{
-    template:{
-      type:'',
-      level:1,
-    },
-    material:{
-      type:'',
-      level:1,
     },
   },
   headConfig: {
@@ -56,7 +70,25 @@ let option = {
     },
     isDownloadImg: true,
   },
-}
+  loadingConfig: {
+    logoUrl: 'http://localhost/src/assets/logo/logo.png'
+  },
+  rightConfig:{
+    canvas:{
+      canvasSize: true,
+      canvasBg: true,
+      canvasFontAdd:true,
+      canvasImgAdd: true
+    },
+    text:{},
+    img:{},
+    group:{},
+    common:{},
+  },
+  templateDataConfig:[
+
+  ]
+};
 const zhihuiEditor = new ZhihuiEditor(option)
 const openClick = ()=>{
   console.log(123)
