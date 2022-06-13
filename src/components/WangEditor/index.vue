@@ -12,13 +12,13 @@
         :mode="mode"
         class="editor_custom"
         style="height: 455px; overflow-y: hidden;"
-        @on-created="handleCreated"
-        @on-change="handleChange"
-        @on-destroyed="handleDestroyed"
-        @on-focus="handleFocus"
-        @on-blur="handleBlur"
-        @custom-alert="customAlert"
-        @custom-paste="customPaste"
+        @onCreated="handleCreated"
+        @onChange="handleChange"
+        @onDestroyed="handleDestroyed"
+        @onFocus="handleFocus"
+        @onBlur="handleBlur"
+        @customAlert="customAlert"
+        @customPaste="customPaste"
     />
   </div>
 </template>
@@ -27,7 +27,8 @@
 import '@wangeditor/editor/dist/css/style.css'
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
 import { Editor, Toolbar  } from '@wangeditor/editor-for-vue'
-const { proxy } = getCurrentInstance()
+
+const { proxy } = getCurrentInstance();
 const props = defineProps({
   modelValue: {
     type: String,
@@ -57,9 +58,6 @@ watch(() => props.modelValue, newValue => {
 // 模拟 ajax 异步获取内容
 onMounted(() => {
   AuthorizationHeader()
-  // setTimeout(() => {
-  //     valueHtml.value = '<p>模拟 Ajax 异步设置内容</p>'
-  // }, 1500)
 })
 const headerObj = ref({})
 const AuthorizationHeader = () => {
@@ -72,7 +70,21 @@ const AuthorizationHeader = () => {
   // }
 }
 const toolbarConfig = {
-  excludeKeys: ['fullScreen', 'code', 'group-video', 'codeBlock', 'bulletedList', 'numberedList', 'blockquote', 'bold', 'italic', 'todo',  'insertImage', 'insertLink', 'emotion'] // 此处不需要的工具栏选项
+  excludeKeys: [
+    'fullScreen',
+    'code',
+    'group-video',
+    'codeBlock',
+    'bulletedList',
+    'numberedList',
+    'blockquote',
+    'bold',
+    'italic',
+    'todo',
+    'insertImage',
+    'insertLink',
+    'emotion'
+  ]
 }
 
 const editorConfig = {
@@ -135,8 +147,8 @@ editorConfig.MENU_CONF['uploadImage'] = {
     if (!isLt) {
       proxy.$message.warning('图片大小不能超过5M! 请重新上传')
     }
-    console.log(file, 'before')
-    console.log('isJPG, isSize, sisLt', isJPG, isLt)
+    // console.log(file, 'before')
+    // console.log('isJPG, isSize, sisLt', isJPG, isLt)
     if (!isJPG) {
       return false
     } else if (!isLt) {
@@ -241,7 +253,7 @@ editorConfig.MENU_CONF['uploadVideo'] = {
     console.log(`${file.name} 上传出错`, err, res)
   }
 }
-// 组件销毁时，也及时销毁编辑器，重要！
+// 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
   const editor = editorRef.value
   if (editor == null) return
@@ -250,8 +262,7 @@ onBeforeUnmount(() => {
 
 // 编辑器回调函数
 const handleCreated = editor => {
-  console.log('created',  editor)
-  editorRef.value = editor // 记录 editor 实例，重要！
+  editorRef.value = editor // 记录 editor 实例
   if (props.disabled) {
     editor.disable()
   } else {

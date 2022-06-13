@@ -78,26 +78,26 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="danger"
+               type="warning"
                plain
-               icon="Delete"
+               icon="Brush"
                @click="handleClean"
                v-hasPermi="['system:operlog:remove']"
             >清空</el-button>
          </el-col>
-         <el-col :span="1.5">
-            <el-button
-               type="warning"
-               plain
-               icon="Download"
-               @click="handleExport"
-               v-hasPermi="['system:operlog:export']"
-            >导出</el-button>
-         </el-col>
+<!--         <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--               type="success"-->
+<!--               plain-->
+<!--               icon="Download"-->
+<!--               @click="handleExport"-->
+<!--               v-hasPermi="['system:operlog:export']"-->
+<!--            >导出</el-button>-->
+<!--         </el-col>-->
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
-      <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" height="75vh">
+      <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" />
          <el-table-column label="ID" prop="operId" :show-overflow-tooltip="true" />
          <el-table-column label="系统模块" prop="title" width="150" :show-overflow-tooltip="true" />
@@ -142,7 +142,7 @@
       />
 
       <!-- 操作日志详细 -->
-      <el-dialog title="操作日志详细" v-model="open" width="700px" append-to-body>
+      <el-dialog title="操作日志详细" v-model="open" width="825px" append-to-body draggable>
          <el-form :model="form" label-width="100px">
             <el-row>
                <el-col :span="12">
@@ -280,11 +280,11 @@ function handleClean() {
   }).catch(() => {});
 }
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/operlog/export",{
-    ...queryParams.value,
-  }, `config_${new Date().getTime()}.xlsx`);
-}
+// function handleExport() {
+//   proxy.download("system/operlog/export",{
+//     ...queryParams.value,
+//   }, `config_${new Date().getTime()}.xlsx`);
+// }
 
 getList();
 </script>

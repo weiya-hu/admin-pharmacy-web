@@ -154,7 +154,7 @@
 <!--                        v-model="form.content"-->
 <!--                     />-->
 <!--                    <WangEditor v-model="form.content" />-->
-                    <wang-editor v-model="form.content" />
+                    <wang-editor ref="editor" v-model="form.content" />
                   </el-form-item>
                </el-col>
             </el-row>
@@ -189,7 +189,9 @@ const btnNames = [
   { value: '显示领取', label: '显示领取' },
 ]
 const data = reactive({
-  form: {},
+  form: {
+    content: undefined,
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,

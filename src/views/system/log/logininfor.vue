@@ -63,16 +63,16 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="danger"
+               type="warning"
                plain
-               icon="Delete"
+               icon="Brush"
                @click="handleClean"
                v-hasPermi="['system:logininfor:remove']"
             >清空</el-button>
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="warning"
+               type="success"
                plain
                icon="Download"
                @click="handleExport"
@@ -82,9 +82,9 @@
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
-      <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange" height="75vh">
+      <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" />
-         <el-table-column label="ID" prop="infoId" />
+         <el-table-column label="ID" prop="infoId" width="80" />
          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
          <el-table-column label="IP地址" prop="ipaddr" :show-overflow-tooltip="true"/>
          <el-table-column label="登录地点" prop="loginLocation" :show-overflow-tooltip="true" />
