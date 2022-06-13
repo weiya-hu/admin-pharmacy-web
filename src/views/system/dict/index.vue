@@ -7,6 +7,7 @@
                placeholder="请输入字典名称"
                clearable
                style="width: 240px"
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -16,6 +17,7 @@
                placeholder="请输入字典类型"
                clearable
                style="width: 240px"
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -24,6 +26,7 @@
                v-model="queryParams.status"
                placeholder="字典状态"
                clearable
+               @clear="handleSearch"
                style="width: 240px"
             >
                <el-option
@@ -62,7 +65,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="success"
+               type="warning"
                plain
                icon="Edit"
                :disabled="single"
@@ -82,7 +85,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="warning"
+               type="success"
                plain
                icon="Download"
                @click="handleExport"
@@ -249,6 +252,10 @@ function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 /** 新增按钮操作 */
 function handleAdd() {

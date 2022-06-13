@@ -64,7 +64,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="success"
+               type="warning"
                plain
                icon="Edit"
                :disabled="single"
@@ -82,23 +82,23 @@
                v-hasPermi="['system:role:remove']"
             >删除</el-button>
          </el-col>
-         <el-col :span="1.5">
-            <el-button
-               type="warning"
-               plain
-               icon="Download"
-               @click="handleExport"
-               v-hasPermi="['system:role:export']"
-            >导出</el-button>
-         </el-col>
+<!--         <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--               type="success"-->
+<!--               plain-->
+<!--               icon="Download"-->
+<!--               @click="handleExport"-->
+<!--               v-hasPermi="['system:role:export']"-->
+<!--            >导出</el-button>-->
+<!--         </el-col>-->
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
 
       <!-- 表格数据 -->
       <el-table v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
-         <el-table-column label="角色ID" prop="roleId" width="70" />
-         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" />
+         <el-table-column label="角色ID" prop="roleId" fixed />
+         <el-table-column label="角色名称" prop="roleName" fixed :show-overflow-tooltip="true" />
          <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" />
          <el-table-column label="排序" prop="roleSort" />
          <el-table-column label="状态">
@@ -111,12 +111,12 @@
                ></el-switch>
             </template>
          </el-table-column>
-         <el-table-column label="创建时间" prop="createTime">
+         <el-table-column label="创建时间" prop="createTime" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" class-name="small-padding fixed-width" width="150">
+         <el-table-column label="操作" class-name="small-padding fixed-width" fixed="right" width="150">
             <template #default="scope">
               <el-tooltip content="修改" placement="top" v-if="scope.row.roleId !== '1'">
                 <el-button
@@ -163,34 +163,44 @@
       />
 
       <!-- 添加或修改角色配置对话框 -->
-      <el-dialog :title="title" v-model="open" width="500px" append-to-body draggable>
+      <el-dialog :title="title" v-model="open" width="800px" append-to-body draggable>
          <el-form ref="roleRef" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="角色名称" prop="roleName">
-               <el-input v-model="form.roleName" placeholder="请输入角色名称" />
-            </el-form-item>
-            <el-form-item prop="roleKey">
-               <template #label>
+           <el-row>
+             <el-col :span="15">
+               <el-form-item label="角色名称" prop="roleName">
+                 <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+               </el-form-item>
+             </el-col>
+             <el-col :span="9">
+               <el-form-item label="角色顺序" prop="roleSort">
+                 <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
+               </el-form-item>
+             </el-col>
+             <el-col :span="15">
+               <el-form-item prop="roleKey">
+                 <template #label>
                   <span>
                      <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)" placement="top">
                         <el-icon><question-filled /></el-icon>
                      </el-tooltip>
                      权限字符
                   </span>
-               </template>
-               <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
-            </el-form-item>
-            <el-form-item label="角色顺序" prop="roleSort">
-               <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
-            </el-form-item>
-            <el-form-item label="状态">
-               <el-radio-group v-model="form.status">
-                  <el-radio
-                     v-for="dict in sys_normal_disable"
-                     :key="dict.value"
-                     :label="dict.value"
-                  >{{ dict.label }}</el-radio>
-               </el-radio-group>
-            </el-form-item>
+                 </template>
+                 <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
+               </el-form-item>
+             </el-col>
+             <el-col :span="9">
+               <el-form-item label="状态">
+                 <el-radio-group v-model="form.status">
+                   <el-radio
+                       v-for="dict in sys_normal_disable"
+                       :key="dict.value"
+                       :label="dict.value"
+                   >{{ dict.label }}</el-radio>
+                 </el-radio-group>
+               </el-form-item>
+             </el-col>
+           </el-row>
             <el-form-item label="菜单权限">
                <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')">展开/折叠</el-checkbox>
                <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')">全选/反选</el-checkbox>
@@ -356,11 +366,11 @@ function handleDelete(row) {
   }).catch(() => {});
 }
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("system/role/export", {
-    ...queryParams.value,
-  }, `role_${new Date().getTime()}.xlsx`);
-}
+// function handleExport() {
+//   proxy.download("system/role/export", {
+//     ...queryParams.value,
+//   }, `role_${new Date().getTime()}.xlsx`);
+// }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.roleId);
@@ -451,7 +461,7 @@ function handleUpdate(row) {
     open.value = true;
     nextTick(() => {
       roleMenu.then((res) => {
-        let checkedKeys = res.checkedKeys;
+        let checkedKeys = res.data.checkedKeys;
         checkedKeys.forEach((v) => {
           nextTick(() => {
             menuRef.value.setChecked(v, true, false);
@@ -465,14 +475,14 @@ function handleUpdate(row) {
 /** 根据角色ID查询菜单树结构 */
 function getRoleMenuTreeselect(roleId) {
   return roleMenuTreeselect(roleId).then(response => {
-    menuOptions.value = response.menus;
+    menuOptions.value = response.data.menus;
     return response;
   });
 }
 /** 根据角色ID查询部门树结构 */
 function getRoleDeptTreeselect(roleId) {
   return roleDeptTreeselect(roleId).then(response => {
-    deptOptions.value = response.depts;
+    deptOptions.value = response.data.depts;
     return response;
   });
 }
@@ -482,12 +492,11 @@ function handleCheckedTreeExpand(value, type) {
     let treeList = menuOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       menuRef.value.store.nodesMap[treeList[i].menuId].expanded = value;
-
     }
   } else if (type == "dept") {
     let treeList = deptOptions.value;
     for (let i = 0; i < treeList.length; i++) {
-      deptRef.value.store.nodesMap[treeList[i].menuId].expanded = value;
+      deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
     }
   }
 }
@@ -560,7 +569,7 @@ function handleDataScope(row) {
       roleDeptTreeselect.then(res => {
         nextTick(() => {
           if (deptRef.value) {
-            deptRef.value.setCheckedKeys(res.checkedKeys);
+            deptRef.value.setCheckedKeys(res.data.checkedKeys);
           }
         });
       });

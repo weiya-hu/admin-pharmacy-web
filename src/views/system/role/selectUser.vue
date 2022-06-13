@@ -1,12 +1,13 @@
 <template>
    <!-- 授权用户 -->
-   <el-dialog title="选择用户" v-model="visible" width="800px" top="5vh" append-to-body>
+   <el-dialog title="选择用户" v-model="visible" width="800px" top="5vh" append-to-body draggable>
       <el-form :model="queryParams" ref="queryRef" :inline="true">
          <el-form-item label="用户名称" prop="userName">
             <el-input
                v-model="queryParams.userName"
                placeholder="请输入用户名称"
                clearable
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -15,6 +16,7 @@
                v-model="queryParams.phonenumber"
                placeholder="请输入手机号码"
                clearable
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -24,7 +26,7 @@
          </el-form-item>
       </el-form>
       <el-row>
-         <el-table @row-click="clickRow" ref="refTable" :data="userList" @selection-change="handleSelectionChange" height="260px">
+         <el-table @row-click="clickRow" ref="refTable" :data="userList" @selection-change="handleSelectionChange" height="270px">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
             <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />
@@ -113,6 +115,10 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 const emit = defineEmits(["ok"]);
 /** 选择授权用户操作 */

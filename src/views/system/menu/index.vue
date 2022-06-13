@@ -7,11 +7,11 @@
                placeholder="请输入菜单名称"
                clearable
                @keyup.enter="handleQuery"
-               @clear="resetQuery"
+               @clear="handleSearch"
             />
          </el-form-item>
          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable @clear="resetQuery">
+            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable @clear="handleSearch">
                <el-option
                   v-for="dict in sys_normal_disable"
                   :key="dict.value"
@@ -377,6 +377,10 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/**  清空时间 */
+function  handleSearch(){
+  handleQuery()
 }
 /** 新增按钮操作 */
 function handleAdd(row) {

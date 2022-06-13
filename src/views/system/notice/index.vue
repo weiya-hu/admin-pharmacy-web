@@ -6,6 +6,7 @@
                v-model="queryParams.title"
                placeholder="请输入公告标题"
                clearable
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -14,16 +15,17 @@
                v-model="queryParams.createBy"
                placeholder="请输入操作人员"
                clearable
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
          <el-form-item label="名称" prop="btnName">
-            <el-select v-model="queryParams.btnName" placeholder="按钮名称" clearable>
+            <el-select v-model="queryParams.btnName" placeholder="按钮名称" clearable @clear="handleSearch">
                <el-option
-                  v-for="item in btnNames"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  v-for="dict in sys_notice_type"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
                />
             </el-select>
          </el-form-item>
@@ -45,7 +47,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="success"
+               type="warning"
                plain
                icon="Edit"
                :disabled="single"
@@ -69,16 +71,11 @@
       <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
          <el-table-column label="ID" prop="id" width="90" />
-         <el-table-column
-            label="公告标题"
-            prop="title"
-            :show-overflow-tooltip="true"
-         />
+         <el-table-column label="公告标题" prop="title" :show-overflow-tooltip="true"/>
          <el-table-column label="模板名称" prop="name" :show-overflow-tooltip="true" />
          <el-table-column label="按钮名称" prop="btnName">
             <template #default="scope">
-<!--               <dict-tag :options="sys_notice_type" :value="scope.row.btnName" />-->
-                    <el-tag>{{ scope.row.btnName }}</el-tag>
+               <dict-tag :options="sys_notice_type" :value="scope.row.btnName" />
             </template>
          </el-table-column>
          <el-table-column label="关键词" prop="keywords" />
@@ -126,12 +123,12 @@
                <el-col :span="12">
                   <el-form-item label="按钮名称" prop="btnName">
                      <el-select v-model="form.btnName" placeholder="请选择" style="width: 100%;">
-                        <el-option
-                           v-for="item in btnNames"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value"
-                        ></el-option>
+                       <el-option
+                           v-for="dict in sys_notice_type"
+                           :key="dict.value"
+                           :label="dict.label"
+                           :value="dict.value"
+                       />
                      </el-select>
                   </el-form-item>
                </el-col>
@@ -174,6 +171,7 @@ import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api
 import wangEditor from '@/components/WangEditor/index.vue' ;
 
 const { proxy } = getCurrentInstance();
+const { sys_notice_type } = proxy.useDict("sys_notice_type");
 
 const noticeList = ref([]);
 const open = ref(false);
@@ -184,10 +182,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
-const btnNames = [
-  { value: '查看详情', label: '查看详情' },
-  { value: '显示领取', label: '显示领取' },
-]
+
 const data = reactive({
   form: {
     content: undefined,
@@ -240,6 +235,10 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {

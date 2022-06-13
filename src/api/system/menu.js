@@ -28,7 +28,7 @@ export function treeselect() {
 // 根据角色ID查询菜单下拉树结构
 export function roleMenuTreeselect(roleId) {
     return request({
-        url: '/system/system/menu/getTreeById/' + roleId,
+        url: '/system/system/menu/roleMenuTreeselect/' + roleId,
         method: 'get'
     })
 }

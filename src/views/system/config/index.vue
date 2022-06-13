@@ -60,7 +60,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="success"
+               type="warning"
                plain
                icon="Edit"
                :disabled="single"
@@ -78,18 +78,18 @@
                v-hasPermi="['system:config:remove']"
             >删除</el-button>
          </el-col>
+<!--         <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--               type="success"-->
+<!--               plain-->
+<!--               icon="Download"-->
+<!--               @click="handleExport"-->
+<!--               v-hasPermi="['system:config:export']"-->
+<!--            >导出</el-button>-->
+<!--         </el-col>-->
          <el-col :span="1.5">
             <el-button
-               type="warning"
-               plain
-               icon="Download"
-               @click="handleExport"
-               v-hasPermi="['system:config:export']"
-            >导出</el-button>
-         </el-col>
-         <el-col :span="1.5">
-            <el-button
-               type="danger"
+               type="info"
                plain
                icon="Refresh"
                @click="handleRefreshCache"
@@ -306,11 +306,11 @@ function handleDelete(row) {
   }).catch(() => {});
 }
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("system/config/export", {
-    ...queryParams.value
-  }, `config_${new Date().getTime()}.xlsx`);
-}
+// function handleExport() {
+//   proxy.download("system/config/export", {
+//     ...queryParams.value
+//   }, `config_${new Date().getTime()}.xlsx`);
+// }
 /** 刷新缓存按钮操作 */
 function handleRefreshCache() {
   refreshCache().then(() => {

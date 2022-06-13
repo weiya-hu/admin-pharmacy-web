@@ -16,11 +16,12 @@
                v-model="queryParams.dictLabel"
                placeholder="请输入字典标签"
                clearable
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="数据状态" clearable>
+            <el-select v-model="queryParams.status" placeholder="数据状态" clearable @clear="handleSearch">
                <el-option
                   v-for="dict in sys_normal_disable"
                   :key="dict.value"
@@ -55,7 +56,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="success"
+               type="warning"
                plain
                icon="Edit"
                :disabled="single"
@@ -75,7 +76,7 @@
          </el-col>
          <el-col :span="1.5">
             <el-button
-               type="warning"
+               type="success"
                plain
                icon="Download"
                @click="handleExport"
@@ -86,41 +87,41 @@
       </el-row>
 
       <el-table v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
-         <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="字典编码" align="center" prop="dictCode" />
-         <el-table-column label="字典标签" align="center" prop="dictLabel">
+         <el-table-column type="selection" width="55" />
+         <el-table-column label="字典编码" prop="dictCode" />
+         <el-table-column label="字典标签" prop="dictLabel">
             <template #default="scope">
                <span v-if="scope.row.listClass == '' || scope.row.listClass == 'default'">{{ scope.row.dictLabel }}</span>
                <el-tag v-else :type="scope.row.listClass == 'primary' ? '' : scope.row.listClass">{{ scope.row.dictLabel }}</el-tag>
             </template>
          </el-table-column>
-         <el-table-column label="字典键值" align="center" prop="dictValue" />
-         <el-table-column label="字典排序" align="center" prop="dictSort" />
-         <el-table-column label="状态" align="center" prop="status">
+         <el-table-column label="字典键值" prop="dictValue" />
+         <el-table-column label="字典排序" prop="dictSort" />
+         <el-table-column label="状态" prop="status">
             <template #default="scope">
                <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
             </template>
          </el-table-column>
-         <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-         <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+         <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" />
+         <el-table-column label="创建时间" prop="createTime" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+         <el-table-column label="操作" width="150" class-name="small-padding fixed-width">
             <template #default="scope">
                <el-button
                   type="text"
                   icon="Edit"
                   @click="handleUpdate(scope.row)"
                   v-hasPermi="['system:dict:edit']"
-               >修改</el-button>
+               ></el-button>
                <el-button
                   type="text"
                   icon="Delete"
                   @click="handleDelete(scope.row)"
                   v-hasPermi="['system:dict:remove']"
-               >删除</el-button>
+               ></el-button>
             </template>
          </el-table-column>
       </el-table>
@@ -203,7 +204,7 @@ const title = ref("");
 const defaultDictType = ref("");
 const typeOptions = ref([]);
 const route = useRoute();
-// 数据标签回显样式
+/** 数据标签回显样式 */
 const listClassOptions = ref([
   { value: "default", label: "默认" }, 
   { value: "primary", label: "主要" }, 
@@ -289,6 +290,10 @@ function resetQuery() {
   proxy.resetForm("queryRef");
   queryParams.value.dictType = defaultDictType;
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 /** 新增按钮操作 */
 function handleAdd() {

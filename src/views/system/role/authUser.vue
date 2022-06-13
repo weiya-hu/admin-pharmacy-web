@@ -8,6 +8,7 @@
                placeholder="请输入用户名称"
                clearable
                style="width: 240px"
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -17,6 +18,7 @@
                placeholder="请输入手机号码"
                clearable
                style="width: 240px"
+               @clear="handleSearch"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
@@ -145,7 +147,11 @@ function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
 }
-// 多选框选中数据
+/** 清空事件 */
+function handleSearch(){
+  handleQuery();
+}
+/** 多选框选中数据 */
 function handleSelectionChange(selection) {
   userIds.value = selection.map(item => item.userId);
   multiple.value = !selection.length;
