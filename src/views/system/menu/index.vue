@@ -401,7 +401,7 @@ function handleAdd(row) {
   if (row != null && row.menuId) {
     form.value.parentId = row.menuId;
   } else {
-    form.value.parentId = 0;
+    form.value.parentId = '0';
   }
   open.value = true;
   title.value = "添加菜单";

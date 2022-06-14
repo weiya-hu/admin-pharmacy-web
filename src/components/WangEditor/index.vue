@@ -83,7 +83,7 @@ const toolbarConfig = {
     'todo',
     'insertImage',
     'insertLink',
-    'emotion'
+    'emotion',
   ]
 }
 
