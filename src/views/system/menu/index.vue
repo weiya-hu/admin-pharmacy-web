@@ -45,7 +45,7 @@
          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
          <el-table-column prop="menuName" label="菜单名称" fixed :show-overflow-tooltip="true" width="180"></el-table-column>
-         <el-table-column prop="orderNum" label="排序" width="70"></el-table-column>       
+         <el-table-column prop="orderNum" label="排序" width="70"></el-table-column>
          <el-table-column prop="icon" label="图标" width="60px">
             <template #default="scope">
                <svg-icon :icon-class="scope.row.icon ? scope.row.icon : ''" />
@@ -75,7 +75,7 @@
             <template #default="scope">
                <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
             </template>
-         </el-table-column> 
+         </el-table-column>
          <el-table-column label="创建时间" prop="createTime" width="200">
             <template #default="scope">
                <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -152,6 +152,18 @@
                      </el-popover>
                   </el-form-item>
                </el-col>
+              <el-col :span="12">
+                <el-form-item>
+                  <template #label>
+                        <span>
+                           <el-tooltip content="选择是否为租户菜单" placement="top">
+                              <el-icon><question-filled /></el-icon>
+                           </el-tooltip>租户菜单
+                        </span>
+                  </template>
+                  <el-switch v-model="form.isTenantMenu" active-text="是" inactive-text="否" active-value='1' inactive-value="0" />
+                </el-form-item>
+              </el-col>
                <el-col :span="12" v-if="form.menuType != 'F'">
                   <el-form-item>
                      <template #label>
