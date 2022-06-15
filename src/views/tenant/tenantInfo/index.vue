@@ -303,8 +303,10 @@ function cancel() {
 /** 分配权限 */
 function handleUpdate(row){
   if(row.id){
+    reset()
     open.value = true;
     getTenantTreeselect({tenantId:row.id})
+
   }
 }
 /** 查询菜单树结构 */
