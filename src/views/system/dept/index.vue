@@ -68,71 +68,72 @@
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
+                <el-button
+                    type="text"
+                    icon="Plus"
+                    @click="handleAdd(scope.row)"
+                    v-hasPermi="['system:dept:add']"
+                ></el-button>
                <el-button
                   type="text"
                   icon="Edit"
                   @click="handleUpdate(scope.row)"
                   v-hasPermi="['system:dept:edit']"
-               >修改</el-button>
-               <el-button
-                  type="text"
-                  icon="Plus"
-                  @click="handleAdd(scope.row)"
-                  v-hasPermi="['system:dept:add']"
-               >新增</el-button>
+               ></el-button>
                <el-button
                   v-if="scope.row.parentId != 0"
                   type="text"
                   icon="Delete"
                   @click="handleDelete(scope.row)"
                   v-hasPermi="['system:dept:remove']"
-               >删除</el-button>
+               ></el-button>
             </template>
          </el-table-column>
       </el-table>
 
       <!-- 添加或修改部门对话框 -->
-      <el-dialog :title="title" v-model="open" width="600px" append-to-body>
-         <el-form ref="deptRef" :model="form" :rules="rules" label-width="80px">
+      <el-dialog :title="title" v-model="open" width="650px" append-to-body>
+         <el-form ref="deptRef" :model="form" :rules="rules" label-width="85px">
             <el-row>
-               <el-col :span="24" v-if="form.parentId !== 0">
-                  <el-form-item label="上级部门" prop="parentId">
-                     <el-tree-select
-                        v-model="form.parentId"
-                        :data="deptOptions"
-                        :props="{ value: 'deptId', label: 'deptName', children: 'children' }"
-                        value-key="deptId"
-                        placeholder="选择上级部门"
-                        check-strictly
-                     />
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
+               <el-col :span="14">
                   <el-form-item label="部门名称" prop="deptName">
                      <el-input v-model="form.deptName" placeholder="请输入部门名称" />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
-                  <el-form-item label="显示排序" prop="orderNum">
-                     <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
-                  </el-form-item>
-               </el-col>
-               <el-col :span="12">
+              <el-col :span="10">
+                <el-form-item label="显示排序" prop="orderNum">
+                  <el-input-number v-model="form.orderNum" controls-position="right" :min="0" style="width: 100%" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24" v-if="form.parentId !== 0">
+                <el-form-item label="上级部门" prop="parentId">
+                  <el-tree-select
+                      v-model="form.parentId"
+                      :data="deptOptions"
+                      :props="{ value: 'deptId', label: 'deptName', children: 'children' }"
+                      value-key="deptId"
+                      placeholder="选择上级部门"
+                      check-strictly
+                      style="width: 100%"
+                  />
+                </el-form-item>
+              </el-col>
+               <el-col :span="14">
                   <el-form-item label="负责人" prop="leader">
                      <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
+               <el-col :span="10">
                   <el-form-item label="联系电话" prop="phone">
                      <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
+               <el-col :span="14">
                   <el-form-item label="邮箱" prop="email">
                      <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
+               <el-col :span="10">
                   <el-form-item label="部门状态">
                      <el-radio-group v-model="form.status">
                         <el-radio

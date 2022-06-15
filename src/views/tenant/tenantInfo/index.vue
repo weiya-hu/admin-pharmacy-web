@@ -56,12 +56,12 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right">
+      <el-table-column label="操作" fixed="right" width="100">
         <template #default="scope">
-          <el-tooltip content="分配权限" placement="top">
+          <el-tooltip content="分配权限" placement="right">
             <el-button
                 type="text"
-                icon="Edit"
+                icon="User"
                 @click="handleUpdate(scope.row)"
             ></el-button>
           </el-tooltip>
@@ -77,35 +77,51 @@
         @pagination="getList"
     />
     <!-- 新增 -->
-    <el-dialog title="新增租户" v-model="openData" width="550px" append-to-body draggable>
+    <el-dialog title="新增租户" v-model="openData" width="750px" append-to-body draggable>
       <el-form :model="form" label-width="80px" ref="tenantData" :rules="rules">
-        <el-form-item label="租户名称" prop="name">
-          <el-input v-model="form.name" />
-        </el-form-item>
-        <el-form-item label="企业ID" prop="plainCorpId">
-          <el-input v-model="form.plainCorpId" />
-        </el-form-item>
-        <el-form-item label="主页" prop="url">
-          <el-input v-model="form.url" />
-        </el-form-item>
-        <el-form-item label="登录背景" prop="loginBackground">
-          <el-input v-model="form.loginBackground" />
-        </el-form-item>
-        <el-form-item label="IP" prop="serverIps">
-          <el-input v-model="form.serverIps" />
-        </el-form-item>
-        <el-form-item label="logo地址" prop="logo">
-          <el-input v-model="form.logo" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
-            <el-radio
-                v-for="dict in wecom_tenant_staus"
-                :key="dict.value"
-                :label="dict.value"
-            >{{ dict.label }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="租户名称" prop="name">
+              <el-input v-model="form.name" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="企业ID" prop="plainCorpId">
+              <el-input v-model="form.plainCorpId" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="主页" prop="url">
+              <el-input v-model="form.url" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="登录背景" prop="loginBackground">
+              <el-input v-model="form.loginBackground" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="IP" prop="serverIps">
+              <el-input v-model="form.serverIps" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="logo地址" prop="logo">
+              <el-input v-model="form.logo" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态">
+              <el-radio-group v-model="form.status">
+                <el-radio
+                    v-for="dict in wecom_tenant_staus"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -116,23 +132,42 @@
     </el-dialog>
 
     <!-- 分配 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="roleRef" :model="form" label-width="80px">
+    <el-dialog title="配置权限" v-model="open" width="50%"  append-to-body draggable>
+      <el-form :model="form" label-width="80px">
         <el-form-item label="菜单权限">
-<!--          <el-checkbox v-model="tenantExpand" @change="handleCheckedTreeExpand">展开/折叠</el-checkbox>-->
-<!--          <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/反选</el-checkbox>-->
-<!--          <el-checkbox v-model="form.tenantCheckStrictly" @change="handleCheckedTreeConnect">父子联动</el-checkbox>-->
+          <el-checkbox v-model="tenantExpand" @change="handleCheckedTreeExpand">展开/折叠</el-checkbox>
+          <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/反选</el-checkbox>
+          <el-checkbox v-model="form.tenantCheckStrictly" @change="handleCheckedTreeConnect">父子联动</el-checkbox>
           <el-tree
+              style='height:400px;overflow: auto'
               class="tree-border"
               :data="tenantOptions"
               show-checkbox
-              default-expand-all
               ref="tenantRef"
-              node-key="menuId"
+              node-key="id"
+              :default-checked-keys="checkedKeys"
               :check-strictly="!form.tenantCheckStrictly"
               empty-text="加载中，请稍候"
-              :props="{ label: 'menuName', children: 'children' }"
-          ></el-tree>
+              @check-change="changeTree"
+              :props="{ label: 'name', children: 'children'}"
+          >
+            <template #default="{ node, data }">
+              <span class="custom-tree-node">
+                <span>{{ data.name }}</span>
+                <span>
+                  <el-date-picker
+                      v-model="data.expirationTime"
+                      type="datetime"
+                      format="YYYY-MM-DD hh:mm:ss"
+                      value-format="YYYY-MM-DD hh:mm:ss"
+                      placeholder="请选择时间"
+                      size="small"
+                      :editable="false"
+                  />
+            </span>
+              </span>
+            </template>
+          </el-tree>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -142,6 +177,7 @@
         </div>
       </template>
     </el-dialog>
+
   </div>
 </template>
 
@@ -155,6 +191,7 @@ const loading = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const dateRange = ref([]);
+const checkedKeys = reactive([])
 const data = reactive({
   form:{},
   queryParams: {
@@ -170,7 +207,6 @@ const data = reactive({
 });
 const openData = ref(false)
 const open = ref(false);
-const title = ref("");
 
 const tenantOptions = ref([]);
 const tenantExpand = ref(false);
@@ -231,14 +267,9 @@ function handleStatusChange(row) {
 // 弹窗
 /** 重置新增的表单以及其他数据  */
 function reset() {
-  if (menuRef.value != undefined) {
-    menuRef.value.setCheckedKeys([]);
-  }
   tenantExpand.value = false;
   tenantNodeAll.value = false;
   form.value = {
-    tenantCheckStrictly: true,
-
     name: undefined,
     plainCorpId: undefined,
     url: undefined,
@@ -246,14 +277,15 @@ function reset() {
     serverIps: undefined,
     logo: undefined,
     status: '0',
+    tenantCheckStrictly: true,
   };
   proxy.resetForm("tenantData");
 }
+
 /** 确定按钮 */
 function submitForm(){
   proxy.$refs["tenantData"].validate(valid => {
     if (valid) {
-      // form.value.menuIds = getMenuAllCheckedKeys();
       saveTenant(form.value).then(response => {
         proxy.$modal.msgSuccess("新增成功");
         openData.value = false;
@@ -268,27 +300,109 @@ function cancel() {
   reset();
 }
 
-
 /** 分配权限 */
 function handleUpdate(row){
-  open.value = true;
-  title.value = "配置权限";
-  getTenantTreeselect()
+  if(row.id){
+    open.value = true;
+    getTenantTreeselect({tenantId:row.id})
+  }
 }
 /** 查询菜单树结构 */
-function getTenantTreeselect() {
-  treeselectTenant().then(response => {
-    tenantOptions.value = response.data;
+function getTenantTreeselect(obj) {
+  treeselectTenant(obj).then(response => {
+    if(response.code === 200){
+      tenantOptions.value = response.data;
+      if(response.data){
+        obj.status = 0
+        treeselectTenant(obj).then(res=>{
+          if(res.code === 200){
+            getCheckNodes(checkedKeys,res.data)
+            tenantRef.value.setCheckedKeys(checkedKeys,true)
+          }
+        })
+      }
+    }
   });
+}
+function getCheckNodes(nodeIds,tree){
+  tree.forEach(item=>{
+    nodeIds.push(item.id)
+    if(item.children){
+      getCheckNodes(nodeIds,item.children)
+    }
+  })
+}
+function changeTree(node,checked,childChecked){
+  // console.log(node,checked)
+}
+/** 树权限（展开/折叠）*/
+function handleCheckedTreeExpand(value) {
+  let treeList = tenantOptions.value;
+  for (let i = 0; i < treeList.length; i++) {
+    tenantRef.value.store.nodesMap[treeList[i].id].expanded = value;
+  }
+}
+/** 树权限（全选/反选） */
+function handleCheckedTreeNodeAll(value) {
+  tenantRef.value.setCheckedNodes(value ? tenantOptions.value : []);
+}
+/** 树权限（父子联动） */
+function handleCheckedTreeConnect(value) {
+  form.value.tenantCheckStrictly = value ? true : false;
+}
+
+function handleEditDate(){
+  updateTenant(form.value).then(res =>{
+    if (code === 200){
+      proxy.$modal.msgSuccess( res.data.msg + "成功");
+      // open.value = false;
+      // reset()
+      // getList()
+    }
+  })
 }
 /** 确定 */
 function submitDataScope(){
-
+  // updateTenant(form.value).then(res =>{
+  //   if (code === 200){
+  //     proxy.$modal.msgSuccess( res.data.msg + "成功");
+  //     open.value = false;
+  //     reset()
+  //     getList()
+  //   }
+  // })
+  open.value = false;
+  reset()
+  getList()
+  handleEditDate()
 }
 /** 取消 */
 function cancelDataScope(){
   open.value = false;
   reset()
 }
+
 getList();
 </script>
+
+<style lang='scss' scoped>
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+.custom-tree-node ::v-deep .el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 140px;
+}
+.custom-tree-node ::v-deep .el-input__inner{
+  box-shadow:0 0 0 0;
+  background: 0;
+  padding: 0;
+}
+.custom-tree-node ::v-deep .el-input__prefix{
+  display: none;
+}
+</style>

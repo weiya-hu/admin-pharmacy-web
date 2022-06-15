@@ -30,11 +30,20 @@ export function saveTenant(data) {
         data
     })
 }
+// 查看租户企业代开发应用授权信息
+export function getTenantInfo(data){
+    return request({
+        url: '/system/system/tenant/getTenantAgentInfo',
+        method: 'get',
+        params:data
+    })
+}
 // 查询租户菜单下拉树结构
-export function treeselectTenant() {
+export function treeselectTenant(data) {
     return request({
         url: '/wecom/corpMenu/treeselect',
         method: 'get',
+        params:data
     })
 }
 // 根据租户菜单编号获取详情信息
@@ -45,7 +54,7 @@ export function getTenant(menuId){
     })
 }
 // 修改租户菜单
-export function updateTenant(){
+export function updateTenant(data){
     return request({
         url: '/wecom/corpMenu/edit',
         method: 'put',

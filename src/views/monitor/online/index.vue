@@ -43,15 +43,16 @@
                <span>{{ parseTime(scope.row.loginTime) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" class-name="small-padding fixed-width">
+         <el-table-column label="操作" class-name="small-padding fixed-width" width="90">
             <template #default="scope">
-              <el-tooltip content="强退" placement="top">
-                 <el-button
-                    type="text"
+              <el-tooltip content="强退" placement="right">
+                 <el-link
+                    type="danger"
+                    :underline="false"
                     icon="CloseBold"
                     @click="handleForceLogout(scope.row)"
                     v-hasPermi="['monitor:online:forceLogout']"
-                 ></el-button>
+                 ></el-link>
               </el-tooltip>
             </template>
          </el-table-column>
