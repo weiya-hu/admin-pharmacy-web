@@ -306,7 +306,6 @@ function handleUpdate(row){
     reset()
     open.value = true;
     getTenantTreeselect({tenantId:row.id})
-
   }
 }
 /** 查询菜单树结构 */
@@ -374,9 +373,9 @@ function submitDataScope(){
   //   }
   // })
   open.value = false;
-  reset()
   getList()
   handleEditDate()
+  reset()
 }
 /** 取消 */
 function cancelDataScope(){

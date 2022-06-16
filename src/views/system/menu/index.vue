@@ -58,6 +58,11 @@
                <span v-if="scope.row.menuType == 'F'">按钮</span>
             </template>
          </el-table-column>
+        <el-table-column prop="visible" label="菜单可见">
+          <template #default="scope">
+            <dict-tag :options="sys_show_hide" :value="scope.row.visible" />
+          </template>
+        </el-table-column>
          <el-table-column prop="isFrame" label="外链" width="70">
             <template #default="scope">
                <span v-if="scope.row.isFrame == 0">是</span>
@@ -66,11 +71,6 @@
          </el-table-column>
          <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column>
          <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column>
-         <el-table-column prop="visible" label="菜单可见">
-            <template #default="scope">
-               <dict-tag :options="sys_show_hide" :value="scope.row.visible" />
-            </template>
-         </el-table-column>
          <el-table-column prop="status" label="状态" width="80">
             <template #default="scope">
                <dict-tag :options="sys_normal_disable" :value="scope.row.status" />

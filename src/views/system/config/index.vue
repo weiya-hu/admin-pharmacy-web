@@ -101,7 +101,7 @@
 
       <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
-         <!-- <el-table-column label="参数主键" prop="configId" /> -->
+          <el-table-column label="参数主键" prop="configId" width="80" />
          <el-table-column label="参数名称" prop="configName" :show-overflow-tooltip="true" />
          <el-table-column label="参数键名" prop="configKey" :show-overflow-tooltip="true" />
          <el-table-column label="参数键值" prop="configValue" />

@@ -7,6 +7,7 @@
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
           clearable
+          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -15,6 +16,7 @@
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
           clearable
+          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -82,8 +84,8 @@ function handleSelectionChange(selection) {
 /** 查询表数据 */
 function getList() {
   listDbTable(queryParams).then(res => {
-    dbTableList.value = res.rows;
-    total.value = res.total;
+    dbTableList.value = res.data.list;
+    total.value = Number(res.data.total);
   });
 }
 /** 搜索按钮操作 */
@@ -95,6 +97,10 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 /** 导入按钮操作 */
 function handleImportTable() {

@@ -6,6 +6,7 @@
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
           clearable
+          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -14,6 +15,7 @@
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
           clearable
+          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -245,7 +247,8 @@ function handleGenTable(row) {
       proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "ruoyi");
+    // proxy.$download.zip("/code/tool/gen/download/?tables=" + tableName , "ZhiHui");
+    proxy.$download.zip("/code/tool/gen/download/{tableName}");
   }
 }
 /** 同步数据库操作 */
@@ -266,6 +269,10 @@ function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
   handleQuery();
+}
+/** 清空事件 */
+function handleSearch(){
+  handleQuery()
 }
 /** 预览按钮 */
 function handlePreview(row) {

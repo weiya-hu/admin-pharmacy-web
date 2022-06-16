@@ -26,13 +26,12 @@
          v-loading="loading"
          :data="onlineList.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
          style="width: 100%;"
-         height="75vh"
       >
-         <el-table-column label="序号" width="50" type="index">
-            <template #default="scope">
-               <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
-            </template>
-         </el-table-column>
+<!--         <el-table-column label="序号" width="50" type="index">-->
+<!--            <template #default="scope">-->
+<!--               <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>-->
+<!--            </template>-->
+<!--         </el-table-column>-->
          <el-table-column label="登录名称" prop="userName" :show-overflow-tooltip="true" />
          <el-table-column label="IP地址" prop="ipaddr" :show-overflow-tooltip="true" />
          <el-table-column label="登录地点" prop="loginLocation" :show-overflow-tooltip="true" />
