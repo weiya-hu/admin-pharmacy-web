@@ -58,16 +58,23 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="140">
         <template #default="scope">
-          <el-tooltip placement="left" v-model:visible="visible">
-            <template #content>
-              <span>查看</span>
-            </template>
+<!--          <el-tooltip placement="left" v-model:visible="visible">-->
+<!--            <template #content>-->
+<!--              <span>查看</span>-->
+<!--            </template>-->
+<!--            <el-button-->
+<!--                type="text"-->
+<!--                icon="View"-->
+<!--                @click="handleView(scope.row)"-->
+<!--                @mouseenter="visible = true"-->
+<!--                @mouseleave="visible = false"-->
+<!--            ></el-button>-->
+<!--          </el-tooltip>-->
+          <el-tooltip placement="left" content="查看">
             <el-button
-                type="text"
-                icon="View"
-                @click="handleView(scope.row)"
-                @mouseenter="visible = true"
-                @mouseleave="visible = false"
+              type="text"
+              icon="View"
+              @click="handleView(scope.row)"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="分配权限" placement="right">
@@ -192,7 +199,12 @@
 
     <!-- 查看 -->
     <el-dialog title="查看参数" v-model="openInfo" width="650px" append-to-body draggable>
-
+      <el-table v-loading="loadingConfig" :data="tenantInfoList">
+        <el-table-column label="企业ID" prop="corpId" />
+        <el-table-column label="应用名" prop="agentName" />
+        <el-table-column label="应用密钥" prop="agentSecret" />
+        <el-table-column label="回调url" prop="backOffUrl" />
+      </el-table>
     </el-dialog>
   </div>
 </template>
@@ -203,7 +215,9 @@ const { proxy } = getCurrentInstance();
 const { wecom_tenant_staus } = proxy.useDict("wecom_tenant_staus");
 
 const tenantList = ref([]);
+const tenantInfoList = ref([])
 const loading = ref(true);
+const loadingConfig = ref(true);
 const showSearch = ref(true);
 const total = ref(0);
 const dateRange = ref([]);
@@ -328,9 +342,12 @@ function handleUpdate(row){
 }
 /** 展示参数 */
 function handleView(row){
+  loadingConfig.value = true;
   getTenantInfo({tenantId:row.id}).then(res =>{
     if (res.code === 200){
       openInfo.value = true
+      tenantInfoList.value = res.data
+      loadingConfig.value = false
     }
   })
 }

@@ -78,33 +78,30 @@
     </el-row>
 
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" align="center" width="55"></el-table-column>
-      <el-table-column label="序号" type="index" width="50" align="center">
+      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column label="序号" type="index" width="50">
         <template #default="scope">
           <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="表名称"
-        align="center"
         prop="tableName"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="表描述"
-        align="center"
         prop="tableComment"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="实体"
-        align="center"
         prop="className"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" />
-      <el-table-column label="操作" align="center" width="330" class-name="small-padding fixed-width">
+      <el-table-column label="创建时间" prop="createTime" width="160" />
+      <el-table-column label="更新时间" prop="updateTime" width="160" />
+      <el-table-column label="操作" width="180" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-tooltip content="预览" placement="top">
             <el-button
@@ -175,7 +172,7 @@
 </template>
 
 <script setup name="Gen">
-import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
+import { listTable, previewTable, delTable, genCode, synchDb, genCodes } from "@/api/tool/gen";
 import router from "@/router";
 import importTable from "./importTable";
 
@@ -238,16 +235,22 @@ function handleQuery() {
 /** 生成代码操作 */
 function handleGenTable(row) {
   const tbNames = row.tableName || tableNames.value;
+  const tbTables = row.tableId || ids.value
   if (tbNames == "") {
     proxy.$modal.msgError("请选择要生成的数据");
     return;
+  }
+  else if (tableNames !== "") {
+    genCodes(tbNames).then(res =>{
+      proxy.$modal.msgSuccess("批量生成成功")
+    })
   }
   if (row.genType === "1") {
     genCode(row.tableName).then(response => {
       proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    proxy.$download.zip("/code/tool/gen/download/" + row.tableName, "ZhiHui");
+    proxy.$download.zip("/code/tool/gen/download/" + tbNames, "ZhiHui");
   }
 }
 /** 同步数据库操作 */
@@ -300,7 +303,8 @@ function handleEditTable(row) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const tableIds = row.tableId || ids.value;
-  proxy.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
+  const Names = row.tableName || tableNames.value;
+  proxy.$modal.confirm('是否确认删除表编号为"' + Names + '"的数据项？').then(function () {
     return delTable(tableIds);
   }).then(() => {
     getList();

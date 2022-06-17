@@ -24,7 +24,7 @@ export function getGenTable(tableId) {
         method: 'get'
     })
 }
-
+//
 // 修改代码生成信息
 export function updateGenTable(data) {
     return request({
@@ -66,11 +66,19 @@ export function genCode(tableName) {
         method: 'get'
     })
 }
+// 批量生成代码
+export function genCodes(data){
+    return request({
+        url: '/code/tool/gen/batchGenCode',
+        method: 'get',
+        params:data
+    })
+}
 
 // 同步数据库
 export function synchDb(tableName) {
     return request({
-        url: '/code/tool/gen/column/' + tableName,
+        url: '/code/tool/gen/synchDb/' + tableName,
         method: 'get'
     })
 }
