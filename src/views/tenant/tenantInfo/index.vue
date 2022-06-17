@@ -46,7 +46,7 @@
       <el-table-column label="登录背景" prop="loginBackground" :show-overflow-tooltip="true" />
       <el-table-column label="IP" prop="serverIps" :show-overflow-tooltip="true" />
       <el-table-column label="logo地址" prop="logo" :show-overflow-tooltip="true" />
-      <el-table-column label="状态" width="120" class-name="small-padding fixed-width">
+      <el-table-column label="状态" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-switch
               v-model="scope.row.status"
@@ -56,8 +56,20 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="100">
+      <el-table-column label="操作" fixed="right" width="140">
         <template #default="scope">
+          <el-tooltip placement="left" v-model:visible="visible">
+            <template #content>
+              <span>查看</span>
+            </template>
+            <el-button
+                type="text"
+                icon="View"
+                @click="handleView(scope.row)"
+                @mouseenter="visible = true"
+                @mouseleave="visible = false"
+            ></el-button>
+          </el-tooltip>
           <el-tooltip content="分配权限" placement="right">
             <el-button
                 type="text"
@@ -178,11 +190,15 @@
       </template>
     </el-dialog>
 
+    <!-- 查看 -->
+    <el-dialog title="查看参数" v-model="openInfo" width="650px" append-to-body draggable>
+
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Tenant">
-import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant } from "@/api/tenant/tenant";
+import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant,getTenantInfo } from "@/api/tenant/tenant";
 const { proxy } = getCurrentInstance();
 const { wecom_tenant_staus } = proxy.useDict("wecom_tenant_staus");
 
@@ -205,13 +221,15 @@ const data = reactive({
     plainCorpId: [{ required: true, message: "企业信息ID不能为空", trigger: "blur" }],
   },
 });
-const openData = ref(false)
+const openData = ref(false);
 const open = ref(false);
+const openInfo = ref(false);
 
 const tenantOptions = ref([]);
 const tenantExpand = ref(false);
 const tenantNodeAll = ref(false);
 const tenantRef = ref(null);
+const visible = ref(false)
 
 const { queryParams, form, rules } = toRefs(data);
 
@@ -307,6 +325,14 @@ function handleUpdate(row){
     open.value = true;
     getTenantTreeselect({tenantId:row.id})
   }
+}
+/** 展示参数 */
+function handleView(row){
+  getTenantInfo({tenantId:row.id}).then(res =>{
+    if (res.code === 200){
+      openInfo.value = true
+    }
+  })
 }
 /** 查询菜单树结构 */
 function getTenantTreeselect(obj) {

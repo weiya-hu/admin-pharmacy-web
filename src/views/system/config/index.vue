@@ -101,7 +101,7 @@
 
       <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" />
-          <el-table-column label="参数主键" prop="configId" width="80" />
+<!--          <el-table-column label="参数主键" prop="configId" width="80" />-->
          <el-table-column label="参数名称" prop="configName" :show-overflow-tooltip="true" />
          <el-table-column label="参数键名" prop="configKey" :show-overflow-tooltip="true" />
          <el-table-column label="参数键值" prop="configValue" />
@@ -188,6 +188,7 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
+const names = ref([])
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
@@ -255,7 +256,8 @@ function handleSearch(){
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.configId);
+  names.value = selection.map(item => item.configName);
+  ids.value = selection.map(item => item.configId)
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -298,7 +300,8 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const configIds = row.configId || ids.value;
-  proxy.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function () {
+  const configNames = row.configName || names.value
+  proxy.$modal.confirm('是否确认删除参数名称为"' + configNames + '"的数据项？').then(function () {
     return delConfig(configIds);
   }).then(() => {
     getList();

@@ -99,16 +99,15 @@
 
       <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" />
-         <el-table-column label="ID" prop="operId" :show-overflow-tooltip="true" />
-         <el-table-column label="系统模块" prop="title" width="150" :show-overflow-tooltip="true" />
-         <el-table-column label="操作类型" prop="businessType">
-            <template #default="scope">
-               <dict-tag :options="sys_oper_type" :value="scope.row.businessType" />
-            </template>
-         </el-table-column>
-         <el-table-column label="请求方式" prop="requestMethod" />
-         <el-table-column label="操作人员" prop="operName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" width="100" />
-         <el-table-column label="主机" prop="operIp" width="130" :show-overflow-tooltip="true" />
+         <el-table-column label="系统模块" prop="title" :show-overflow-tooltip="true" />
+        <el-table-column label="操作人员" prop="operName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" width="100" />
+        <el-table-column label="请求方式" prop="requestMethod" />
+        <el-table-column label="操作类型" prop="businessType">
+          <template #default="scope">
+            <dict-tag :options="sys_oper_type" :value="scope.row.businessType" />
+          </template>
+        </el-table-column>
+        <el-table-column label="主机" prop="operIp" width="130" :show-overflow-tooltip="true" />
          <el-table-column label="操作状态" prop="status">
             <template #default="scope">
                <dict-tag :options="sys_common_status" :value="scope.row.status" />
@@ -198,6 +197,7 @@ const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
+const names = ref([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
@@ -247,6 +247,7 @@ function resetQuery() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.operId);
+  names.value = selection.map(item => item.title);
   multiple.value = !selection.length;
 }
 /** 排序触发事件 */
@@ -263,7 +264,8 @@ function handleView(row) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const operIds = row.operId || ids.value;
-  proxy.$modal.confirm('是否确认删除日志编号为"' + operIds + '"的数据项?').then(function () {
+  const operNames = row.title || names.value;
+  proxy.$modal.confirm('是否确认删除系统模块为"' + operNames + '"的数据项?').then(function () {
     return delOperlog(operIds);
   }).then(() => {
     getList();

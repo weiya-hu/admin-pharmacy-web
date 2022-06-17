@@ -247,8 +247,7 @@ function handleGenTable(row) {
       proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    // proxy.$download.zip("/code/tool/gen/download/?tables=" + tableName , "ZhiHui");
-    proxy.$download.zip("/code/tool/gen/download/{tableName}");
+    proxy.$download.zip("/code/tool/gen/download/" + row.tableName, "ZhiHui");
   }
 }
 /** 同步数据库操作 */

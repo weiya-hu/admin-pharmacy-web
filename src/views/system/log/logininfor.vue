@@ -84,7 +84,6 @@
 
       <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" />
-         <el-table-column label="ID" prop="infoId" width="80" />
          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
          <el-table-column label="IP地址" prop="ipaddr" :show-overflow-tooltip="true"/>
          <el-table-column label="登录地点" prop="loginLocation" :show-overflow-tooltip="true" />
@@ -123,6 +122,7 @@ const logininforList = ref([]);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
+const names = ref([]);
 const multiple = ref(true);
 const total = ref(0);
 const dateRange = ref([]);
@@ -163,6 +163,7 @@ function resetQuery() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.infoId);
+  names.value = selection.map(item => item.userName);
   multiple.value = !selection.length;
 }
 /** 排序触发事件 */
@@ -174,7 +175,8 @@ function handleSortChange(column, prop, order) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const infoIds = row.infoId || ids.value;
-  proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
+  const infoNmaes = row.userName || names.value
+  proxy.$modal.confirm('是否确认删除访问名称为"' + infoNmaes + '"的数据项?').then(function () {
     return delLogininfor(infoIds);
   }).then(() => {
     getList();
