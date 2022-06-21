@@ -2,7 +2,7 @@
   <div>
     <el-dropdown trigger="click" @command="handleSetSize">
       <div class="size-icon--style">
-        <svg-icon class-name="size-icon" icon-class="size" />
+        <svg-icon class-name="size-icon" icon-class="language" />
       </div>
       <template #dropdown>
         <el-dropdown-menu>
@@ -14,7 +14,6 @@
     </el-dropdown>
   </div>
 </template>
-
 <script setup>
 import useAppStore from "@/store/modules/app";
 
@@ -24,13 +23,12 @@ const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const sizeOptions = ref([
-  { label: "较大", value: "large" },
-  { label: "默认", value: "default" },
-  { label: "稍小", value: "small" },
+  { label: "简体中文", value: "chinese" },
+  { label: "English", value: "english" },
 ]);
 
 function handleSetSize(size) {
-  proxy.$modal.loading("正在设置布局大小，请稍候...");
+  proxy.$modal.loading("正在切换语言，请稍候...");
   appStore.setSize(size);
   setTimeout("window.location.reload()", 1000);
 }
@@ -38,7 +36,7 @@ function handleSetSize(size) {
 
 <style lang='scss' scoped>
 .size-icon--style {
-  font-size: 18px;
+  font-size: 21px;
   line-height: 50px;
 }
 </style>

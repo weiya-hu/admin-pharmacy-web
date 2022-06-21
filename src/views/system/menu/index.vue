@@ -69,6 +69,12 @@
                <span v-if="scope.row.isFrame == 1">否</span>
             </template>
          </el-table-column>
+         <el-table-column prop="isTenantMenu" label="租户菜单">
+            <template #default="scope">
+               <span v-if="scope.row.isTenantMenu == '0'">否</span>
+               <span v-if="scope.row.isTenantMenu == '1'">是</span>
+            </template>
+         </el-table-column>
          <el-table-column prop="component" label="组件路径" :show-overflow-tooltip="true"></el-table-column>
          <el-table-column prop="perms" label="权限标识" :show-overflow-tooltip="true"></el-table-column>
          <el-table-column prop="status" label="状态" width="80">
@@ -117,15 +123,6 @@
                      />
                   </el-form-item>
                </el-col>
-               <el-col :span="24">
-                  <el-form-item label="菜单类型" prop="menuType">
-                     <el-radio-group v-model="form.menuType">
-                        <el-radio label="M" border>目录</el-radio>
-                        <el-radio label="C" border>菜单</el-radio>
-                        <el-radio label="F" border>按钮</el-radio>
-                     </el-radio-group>
-                  </el-form-item>
-               </el-col>
                <el-col :span="24" v-if="form.menuType != 'F'">
                   <el-form-item label="菜单图标" prop="icon">
                      <el-popover
@@ -150,6 +147,15 @@
                         </template>
                         <icon-select ref="iconSelectRef" @selected="selected" />
                      </el-popover>
+                  </el-form-item>
+               </el-col>
+               <el-col :span="24">
+                  <el-form-item label="菜单类型" prop="menuType">
+                     <el-radio-group v-model="form.menuType">
+                        <el-radio label="M" border>目录</el-radio>
+                        <el-radio label="C" border>菜单</el-radio>
+                        <el-radio label="F" border>按钮</el-radio>
+                     </el-radio-group>
                   </el-form-item>
                </el-col>
               <el-col :span="12">
@@ -282,6 +288,29 @@
                      </el-radio-group>
                   </el-form-item>
                </el-col>
+               <el-col :span="12" v-if="form.isTenantMenu == '1'">
+                  <el-form-item>
+                     <template #label>
+                        <span>
+                           <el-tooltip placement="top">
+                              <template #content>
+                                 基本菜单（租户拥有的最基础的菜单，租户永久拥有）<br />付费菜单（租户购买之后，有效期之内可以任意使用）
+                              </template>
+                              <el-icon><question-filled /></el-icon>
+                           </el-tooltip>
+                           菜单类型
+                        </span>
+                     </template>
+                     <el-select v-model="form.menuCType" placeholder="请选择租户菜单类型" clearable>
+                        <el-option
+                           v-for="item in menuCTypeList"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value"
+                        />
+                     </el-select>
+                  </el-form-item>
+               </el-col>
             </el-row>
          </el-form>
          <template #footer>
@@ -329,6 +358,11 @@ const data = reactive({
 
 const { queryParams, form, rules } = toRefs(data);
 
+const menuCTypeList = [
+   { value: '00', label: '基本菜单' },
+   { value: '01', label: '付费菜单' }
+]
+
 /** 查询菜单列表 */
 function getList() {
    loading.value = true;
@@ -363,7 +397,8 @@ function reset() {
       isFrame: "1",
       isCache: "0",
       visible: "0",
-      status: "0"
+      status: "0",
+      menuCType: undefined
    };
    proxy.resetForm("menuRef");
 }
