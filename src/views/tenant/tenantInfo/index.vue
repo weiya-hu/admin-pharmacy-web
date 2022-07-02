@@ -58,23 +58,11 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="140">
         <template #default="scope">
-<!--          <el-tooltip placement="left" v-model:visible="visible">-->
-<!--            <template #content>-->
-<!--              <span>查看</span>-->
-<!--            </template>-->
-<!--            <el-button-->
-<!--                type="text"-->
-<!--                icon="View"-->
-<!--                @click="handleView(scope.row)"-->
-<!--                @mouseenter="visible = true"-->
-<!--                @mouseleave="visible = false"-->
-<!--            ></el-button>-->
-<!--          </el-tooltip>-->
           <el-tooltip placement="left" content="查看">
             <el-button
-              type="text"
-              icon="View"
-              @click="handleView(scope.row)"
+                type="text"
+                icon="View"
+                @click="handleView(scope.row)"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="分配权限" placement="right">
@@ -283,14 +271,18 @@ function handleStatusChange(row) {
   let text = row.status === 0 ? "启用" : "禁用";
   proxy.$modal.confirm('确认要"' + text + '""' + row.name + '"角色吗?').then(function () {
     if (row.status === 0){
-      return disableTenant(row.id).then(res =>{
+      disableTenant(row.id).then(res =>{
         proxy.$modal.msgSuccess(text + "成功");
         getList()
+      }).catch(err =>{
+
       })
     } else if(row.status = 1) {
-      return enableTenant(row.id).then(res =>{
+      enableTenant(row.id).then(res =>{
         proxy.$modal.msgSuccess(text + "成功");
         getList()
+      }).catch(err =>{
+
       })
     }
   })
@@ -311,6 +303,7 @@ function reset() {
     status: '0',
     tenantCheckStrictly: true,
   };
+  // 新增
   proxy.resetForm("tenantData");
 }
 
