@@ -139,11 +139,20 @@
     </el-dialog>
 
     <!-- 分配 -->
-    <el-dialog title="配置权限" v-model="open" width="50%"  append-to-body draggable>
+    <el-dialog title="配置权限" v-model="open" width="750px"  append-to-body draggable>
       <el-form :model="form" label-width="80px">
+        <el-form-item label="菜单状态">
+          <el-radio-group v-model="form.status">
+            <el-radio
+                v-for="dict in wecom_tenant_staus"
+                :key="dict.value"
+                :label="dict.value"
+            >{{ dict.label }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="菜单权限">
           <el-checkbox v-model="tenantExpand" @change="handleCheckedTreeExpand">展开/折叠</el-checkbox>
-          <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/反选</el-checkbox>
+          <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/全不选</el-checkbox>
           <el-checkbox v-model="form.tenantCheckStrictly" @change="handleCheckedTreeConnect">父子联动</el-checkbox>
           <el-tree
               style='height:400px;overflow: auto'
@@ -198,7 +207,7 @@
 </template>
 
 <script setup name="Tenant">
-import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant,getTenantInfo } from "@/api/tenant/tenant";
+import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant, getTenantInfo, getTenant } from "@/api/tenant/tenant";
 const { proxy } = getCurrentInstance();
 const { wecom_tenant_staus } = proxy.useDict("wecom_tenant_staus");
 
@@ -222,6 +231,7 @@ const data = reactive({
     name: [{ required: true, message: "租户名称不能为空", trigger: "blur" }],
     plainCorpId: [{ required: true, message: "企业信息ID不能为空", trigger: "blur" }],
   },
+  menuForm:{}
 });
 const openData = ref(false);
 const open = ref(false);
@@ -233,7 +243,7 @@ const tenantNodeAll = ref(false);
 const tenantRef = ref(null);
 const visible = ref(false)
 
-const { queryParams, form, rules } = toRefs(data);
+const { queryParams, form, rules, menuForm } = toRefs(data);
 
 /** 查询参数列表 */
 function getList() {
@@ -300,9 +310,12 @@ function reset() {
     loginBackground: undefined,
     serverIps: undefined,
     logo: undefined,
-    status: '0',
-    tenantCheckStrictly: true,
+    status: 0,
   };
+  menuForm.value = {
+    status: '',
+    tenantCheckStrictly: true,
+  }
   // 新增
   proxy.resetForm("tenantData");
 }
@@ -327,11 +340,17 @@ function cancel() {
 
 /** 分配权限 */
 function handleUpdate(row){
-  if(row.id){
-    reset()
-    open.value = true;
-    getTenantTreeselect({tenantId:row.id})
-  }
+  // if(row.id){
+  //
+  // }
+
+  getTenant(row.id).then(res=>{
+    if(res.code === 200){
+      reset()
+      open.value = true;
+      getTenantTreeselect({tenantId:row.id})
+    }
+  })
 }
 /** 展示参数 */
 function handleView(row){
@@ -350,7 +369,7 @@ function getTenantTreeselect(obj) {
     if(response.code === 200){
       tenantOptions.value = response.data;
       if(response.data){
-        obj.status = 0
+        obj.status = '0'
         treeselectTenant(obj).then(res=>{
           if(res.code === 200){
             getCheckNodes(checkedKeys,res.data)
@@ -379,18 +398,19 @@ function handleCheckedTreeExpand(value) {
     tenantRef.value.store.nodesMap[treeList[i].id].expanded = value;
   }
 }
-/** 树权限（全选/反选） */
+/** 树权限（全选/全不选） */
 function handleCheckedTreeNodeAll(value) {
   tenantRef.value.setCheckedNodes(value ? tenantOptions.value : []);
 }
 /** 树权限（父子联动） */
 function handleCheckedTreeConnect(value) {
-  form.value.tenantCheckStrictly = value ? true : false;
+  menuForm.value.tenantCheckStrictly = value ? true : false;
 }
 
+/** 修改租户菜单 */
 function handleEditDate(){
-  updateTenant(form.value).then(res =>{
-    if (code === 200){
+  updateTenant(menuForm.value).then(res =>{
+    if (res.code === 200){
       proxy.$modal.msgSuccess( res.data.msg + "成功");
       // open.value = false;
       // reset()

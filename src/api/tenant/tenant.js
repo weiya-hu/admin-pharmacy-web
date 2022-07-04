@@ -56,7 +56,7 @@ export function getTenant(menuId){
 // 修改租户菜单
 export function updateTenant(data){
     return request({
-        url: '/wecom/corpMenu/edit',
+        url: '/wecom/corpMenu/update',
         method: 'put',
         data
     })
