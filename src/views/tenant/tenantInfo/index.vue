@@ -139,10 +139,10 @@
     </el-dialog>
 
     <!-- 分配 -->
-    <el-dialog title="配置权限" v-model="open" width="750px"  append-to-body draggable>
-      <el-form :model="form" label-width="80px">
+    <el-dialog title="配置权限" v-model="open" width="750px" append-to-body draggable>
+      <el-form :model="menuForm" label-width="80px">
         <el-form-item label="菜单状态">
-          <el-radio-group v-model="form.status">
+          <el-radio-group v-model="menuForm.status">
             <el-radio
                 v-for="dict in wecom_tenant_staus"
                 :key="dict.value"
@@ -153,7 +153,7 @@
         <el-form-item label="菜单权限">
           <el-checkbox v-model="tenantExpand" @change="handleCheckedTreeExpand">展开/折叠</el-checkbox>
           <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/全不选</el-checkbox>
-          <el-checkbox v-model="form.tenantCheckStrictly" @change="handleCheckedTreeConnect">父子联动</el-checkbox>
+          <el-checkbox v-model="menuForm.tenantCheckStrictly" @change="handleCheckedTreeConnect">父子联动</el-checkbox>
           <el-tree
               style='height:400px;overflow: auto'
               class="tree-border"
@@ -162,7 +162,7 @@
               ref="tenantRef"
               node-key="id"
               :default-checked-keys="checkedKeys"
-              :check-strictly="!form.tenantCheckStrictly"
+              :check-strictly="!menuForm.tenantCheckStrictly"
               empty-text="加载中，请稍候"
               @check-change="changeTree"
               :props="{ label: 'name', children: 'children'}"
@@ -195,19 +195,19 @@
     </el-dialog>
 
     <!-- 查看 -->
-    <el-dialog title="查看参数" v-model="openInfo" width="650px" append-to-body draggable>
-      <el-table v-loading="loadingConfig" :data="tenantInfoList">
-        <el-table-column label="企业ID" prop="corpId" />
-        <el-table-column label="应用名" prop="agentName" />
-        <el-table-column label="应用密钥" prop="agentSecret" />
-        <el-table-column label="回调url" prop="backOffUrl" />
+    <el-dialog title="查看参数" v-model="openInfo" width="680px" append-to-body draggable>
+      <el-table :data="tenantInfoList" v-loading="loadingConfig" style="width: 100%">
+        <el-table-column prop="corpId" label="企业ID" />
+        <el-table-column prop="agentName" label="应用名" />
+        <el-table-column prop="agentSecret" label="应用密钥" />
+        <el-table-column prop="backOffUrl" label="回调URL" />
       </el-table>
     </el-dialog>
   </div>
 </template>
 
 <script setup name="Tenant">
-import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant, getTenantInfo, getTenant } from "@/api/tenant/tenant";
+import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant, getTenantInfo } from "@/api/tenant/tenant";
 const { proxy } = getCurrentInstance();
 const { wecom_tenant_staus } = proxy.useDict("wecom_tenant_staus");
 
@@ -313,7 +313,8 @@ function reset() {
     status: 0,
   };
   menuForm.value = {
-    status: '',
+    menuId: undefined,
+    status: '0',
     tenantCheckStrictly: true,
   }
   // 新增
@@ -340,26 +341,20 @@ function cancel() {
 
 /** 分配权限 */
 function handleUpdate(row){
-  // if(row.id){
-  //
-  // }
-
-  getTenant(row.id).then(res=>{
-    if(res.code === 200){
-      reset()
-      open.value = true;
-      getTenantTreeselect({tenantId:row.id})
-    }
-  })
+  if(row.id){
+    reset()
+    open.value = true;
+    getTenantTreeselect({tenantId:row.id})
+  }
 }
 /** 展示参数 */
 function handleView(row){
   loadingConfig.value = true;
-  getTenantInfo({tenantId:row.id}).then(res =>{
+  getTenantInfo({tenantId: row.id}).then(res =>{
     if (res.code === 200){
       openInfo.value = true
-      tenantInfoList.value = res.data
       loadingConfig.value = false
+      tenantInfoList.value = [res.data]
     }
   })
 }
@@ -367,6 +362,9 @@ function handleView(row){
 function getTenantTreeselect(obj) {
   treeselectTenant(obj).then(response => {
     if(response.code === 200){
+      tenantOptions.value.forEach(item =>{
+        item.menuId = menuForm.value.menuId
+      })
       tenantOptions.value = response.data;
       if(response.data){
         obj.status = '0'
@@ -389,7 +387,7 @@ function getCheckNodes(nodeIds,tree){
   })
 }
 function changeTree(node,checked,childChecked){
-  // console.log(node,checked)
+
 }
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
@@ -412,22 +410,11 @@ function handleEditDate(){
   updateTenant(menuForm.value).then(res =>{
     if (res.code === 200){
       proxy.$modal.msgSuccess( res.data.msg + "成功");
-      // open.value = false;
-      // reset()
-      // getList()
     }
   })
 }
 /** 确定 */
 function submitDataScope(){
-  // updateTenant(form.value).then(res =>{
-  //   if (code === 200){
-  //     proxy.$modal.msgSuccess( res.data.msg + "成功");
-  //     open.value = false;
-  //     reset()
-  //     getList()
-  //   }
-  // })
   open.value = false;
   getList()
   handleEditDate()
