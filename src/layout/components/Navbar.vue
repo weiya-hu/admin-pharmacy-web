@@ -12,7 +12,7 @@
 
         <size-select id="size-select" class="right-menu-item hover-effect" />
 
-        <LocaleDropdown id="locales" class="right-menu-item hover-effect" />
+<!--        <LocaleDropdown id="locales" class="right-menu-item hover-effect" />-->
       </template>
 
       <div class="avatar-container">
@@ -48,7 +48,7 @@ import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import HeaderSearch from '@/components/HeaderSearch'
-import LocaleDropdown from '@/components/LocaleDropdown'
+// import LocaleDropdown from '@/components/LocaleDropdown'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'

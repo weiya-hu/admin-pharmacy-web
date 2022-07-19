@@ -141,15 +141,15 @@
     <!-- 分配 -->
     <el-dialog title="配置权限" v-model="open" width="750px" append-to-body draggable>
       <el-form :model="menuForm" label-width="80px">
-        <el-form-item label="菜单状态">
-          <el-radio-group v-model="menuForm.status">
-            <el-radio
-                v-for="dict in wecom_tenant_staus"
-                :key="dict.value"
-                :label="dict.value"
-            >{{ dict.label }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
+<!--        <el-form-item label="菜单状态">-->
+<!--          <el-radio-group v-model="menuForm.status">-->
+<!--            <el-radio-->
+<!--                v-for="dict in wecom_tenant_staus"-->
+<!--                :key="dict.value"-->
+<!--                :label="dict.value"-->
+<!--            >{{ dict.label }}</el-radio>-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
         <el-form-item label="菜单权限">
           <el-checkbox v-model="tenantExpand" @change="handleCheckedTreeExpand">展开/折叠</el-checkbox>
           <el-checkbox v-model="tenantNodeAll" @change="handleCheckedTreeNodeAll">全选/全不选</el-checkbox>
@@ -170,17 +170,23 @@
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <span>{{ data.name }}</span>
-                <span>
-                  <el-date-picker
-                      v-model="data.expirationTime"
-                      type="datetime"
-                      format="YYYY-MM-DD hh:mm:ss"
-                      value-format="YYYY-MM-DD hh:mm:ss"
-                      placeholder="请选择时间"
-                      size="small"
-                      :editable="false"
-                  />
-            </span>
+                <div @click.stop>
+                  <span style="margin-right: 20px">
+                    <span style="margin-right: 10px;color: #666">状态</span>
+                    <el-switch v-model="data.status" :active-value="0" :inactive-value="1"></el-switch>
+                  </span>
+                  <span>
+                    <el-date-picker
+                        v-model="data.expirationTime"
+                        type="datetime"
+                        format="YYYY-MM-DD hh:mm:ss"
+                        value-format="YYYY-MM-DD hh:mm:ss"
+                        placeholder="请选择时间"
+                        size="small"
+                        :editable="false"
+                    />
+                  </span>
+                </div>
               </span>
             </template>
           </el-tree>
@@ -195,11 +201,13 @@
     </el-dialog>
 
     <!-- 查看 -->
-    <el-dialog title="查看参数" v-model="openInfo" width="680px" append-to-body draggable>
+    <el-dialog title="查看参数" v-model="openInfo" width="68%" append-to-body draggable>
       <el-table :data="tenantInfoList" v-loading="loadingConfig" style="width: 100%">
         <el-table-column prop="corpId" label="企业ID" />
         <el-table-column prop="agentName" label="应用名" />
         <el-table-column prop="agentSecret" label="应用密钥" />
+        <el-table-column prop="token" label="回调token" />
+        <el-table-column prop="aesKey" label="回调aesKey" />
         <el-table-column prop="backOffUrl" label="回调URL" />
       </el-table>
     </el-dialog>
@@ -315,6 +323,8 @@ function reset() {
   menuForm.value = {
     menuId: undefined,
     status: '0',
+    tenantIds: [],
+    expirationTime: '',
     tenantCheckStrictly: true,
   }
   // 新增
@@ -362,9 +372,6 @@ function handleView(row){
 function getTenantTreeselect(obj) {
   treeselectTenant(obj).then(response => {
     if(response.code === 200){
-      tenantOptions.value.forEach(item =>{
-        item.menuId = menuForm.value.menuId
-      })
       tenantOptions.value = response.data;
       if(response.data){
         obj.status = '0'
@@ -405,13 +412,24 @@ function handleCheckedTreeConnect(value) {
   menuForm.value.tenantCheckStrictly = value ? true : false;
 }
 
+/** 所有菜单节点数据 */
+function getMenuAllCheckedKeys() {
+  // 目前被选中的菜单节点
+  let checkedKeys = tenantRef.value.getCheckedKeys();
+  // 半选中的菜单节点
+  let halfCheckedKeys = tenantRef.value.getHalfCheckedKeys();
+  checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+  return checkedKeys;
+}
 /** 修改租户菜单 */
 function handleEditDate(){
-  updateTenant(menuForm.value).then(res =>{
-    if (res.code === 200){
-      proxy.$modal.msgSuccess( res.data.msg + "成功");
-    }
-  })
+  menuForm.value.tenantIds = getMenuAllCheckedKeys();
+  // updateTenant(menuForm.value).then(res =>{
+  //   if (res.code === 200){
+  //     proxy.$modal.msgSuccess( res.data.msg + "成功");
+  //   }
+  // })
+  console.log('menuForm',menuForm.value)
 }
 /** 确定 */
 function submitDataScope(){
