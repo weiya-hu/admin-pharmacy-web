@@ -170,23 +170,17 @@
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <span>{{ data.name }}</span>
-                <div @click.stop>
-                  <span style="margin-right: 20px">
-                    <span style="margin-right: 10px;color: #666">状态</span>
-                    <el-switch v-model="data.status" :active-value="0" :inactive-value="1"></el-switch>
-                  </span>
-                  <span>
-                    <el-date-picker
-                        v-model="data.expirationTime"
-                        type="datetime"
-                        format="YYYY-MM-DD hh:mm:ss"
-                        value-format="YYYY-MM-DD hh:mm:ss"
-                        placeholder="请选择时间"
-                        size="small"
-                        :editable="false"
-                    />
-                  </span>
-                </div>
+                <span>
+                  <el-date-picker
+                      v-model="data.expirationTime"
+                      type="datetime"
+                      format="YYYY-MM-DD hh:mm:ss"
+                      value-format="YYYY-MM-DD hh:mm:ss"
+                      placeholder="请选择时间"
+                      size="small"
+                      :editable="false"
+                  />
+                </span>
               </span>
             </template>
           </el-tree>
@@ -257,10 +251,14 @@ const { queryParams, form, rules, menuForm } = toRefs(data);
 function getList() {
   loading.value = true;
   listTenant(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    tenantList.value = response.data.list;
-    total.value = Number(response.data.total);
+    if (response.code === 200){
+      tenantList.value = response.data.list;
+      total.value = Number(response.data.total);
+      loading.value = false;
+    }
+  }).catch(err =>{
     loading.value = false;
-  });
+  })
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -323,7 +321,6 @@ function reset() {
   menuForm.value = {
     menuId: undefined,
     status: '0',
-    tenantIds: [],
     expirationTime: '',
     tenantCheckStrictly: true,
   }
@@ -394,7 +391,12 @@ function getCheckNodes(nodeIds,tree){
   })
 }
 function changeTree(node,checked,childChecked){
-
+  menuForm.value.status = checked
+  if (checked == false){
+    menuForm.value.status = '1'
+  } else {
+    menuForm.value.status = '0'
+  }
 }
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
@@ -423,13 +425,15 @@ function getMenuAllCheckedKeys() {
 }
 /** 修改租户菜单 */
 function handleEditDate(){
-  menuForm.value.tenantIds = getMenuAllCheckedKeys();
-  // updateTenant(menuForm.value).then(res =>{
-  //   if (res.code === 200){
-  //     proxy.$modal.msgSuccess( res.data.msg + "成功");
-  //   }
-  // })
-  console.log('menuForm',menuForm.value)
+  tenantOptions.value.forEach(items => {
+    menuForm.value.menuId = items.id
+    menuForm.value.expirationTime = items.expirationTime
+  })
+  updateTenant([menuForm.value]).then(res =>{
+    if (res.code === 200){
+      proxy.$modal.msgSuccess( res.msg );
+    }
+  })
 }
 /** 确定 */
 function submitDataScope(){
