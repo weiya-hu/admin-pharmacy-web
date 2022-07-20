@@ -392,6 +392,13 @@ function getCheckNodes(nodeIds,tree){
 }
 function changeTree(node,checked,childChecked){
   menuForm.value.status = checked
+  tenantOptions.value.forEach(item =>{
+    if(checked == false){
+      item.status = '1'
+    } else {
+      item.status = '0'
+    }
+  })
 }
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
@@ -425,8 +432,8 @@ function handleEditDate(){
   //   menuForm.value.expirationTime = items.expirationTime
   // })
   let tenantOptionData = tenantOptions.value.map(items =>{
-    let {id: menuId, children,expirationTime,flag,hasChildren,hasParent,label,name,parentId} = items
-    return {menuId,children,expirationTime,flag,hasChildren,hasParent,label,name,parentId}
+    let {id: menuId, children,expirationTime,flag,hasChildren,hasParent,label,name,parentId,status} = items
+    return {menuId,children,expirationTime,flag,hasChildren,hasParent,label,name,parentId,status}
   })
 
   updateTenant(tenantOptionData).then(res =>{
