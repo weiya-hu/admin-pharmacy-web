@@ -391,14 +391,7 @@ function getCheckNodes(nodeIds,tree){
   })
 }
 function changeTree(node,checked,childChecked){
-  menuForm.value.status = checked
-  tenantOptions.value.forEach(item =>{
-    if(checked == false){
-      item.status = '1'
-    } else {
-      item.status = '0'
-    }
-  })
+
 }
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
@@ -426,17 +419,44 @@ function getMenuAllCheckedKeys() {
   return checkedKeys;
 }
 /** 修改租户菜单 */
+// function handleRecursion(arr){
+//   let temp = []
+//   temp = arr.map(items =>{
+//     let current
+//     let {id: menuId, children, expirationTime, status} = items
+//     if(children !== null){
+//       current = handleRecursion(children)
+//     }
+//     return {menuId, children: children === null? children : current , expirationTime, status}
+//   })
+//   return temp
+// }
 function handleEditDate(){
-  // tenantOptions.value.forEach(items => {
-  //   menuForm.value.menuId = items.id
-  //   menuForm.value.expirationTime = items.expirationTime
-  // })
-  let tenantOptionData = tenantOptions.value.map(items =>{
-    let {id: menuId, children,expirationTime,flag,hasChildren,hasParent,label,name,parentId,status} = items
-    return {menuId,children,expirationTime,flag,hasChildren,hasParent,label,name,parentId,status}
-  })
 
-  updateTenant(tenantOptionData).then(res =>{
+  //只是获取选中状态
+  let param = tenantRef.value.getCheckedNodes().map(node=>{
+    return {...node, status: '0', menuId: node.id}
+  })
+  // console.log('param',param)
+
+  //获取全部
+  // let nodes = tenantOptions.value.map(node=>{
+  //   if(node.children){
+  //   node.children =  node.children.map(nodeChild=>{
+  //     if(nodeChild.children){
+  //       nodeChild.children =  nodeChild.children.map(nodeChild1=>{
+  //         console.log('node',tenantRef.value.getNode(nodeChild1.id))
+  //         return {...nodeChild1,status:tenantRef.value.getNode(nodeChild1.id).checked?0:1}
+  //       })
+  //     }
+  //     return {...nodeChild,status:tenantRef.value.getNode(nodeChild.id).checked?0:1}
+  //     })
+  //   }
+  //   return {...node,status:tenantRef.value.getNode(node.id).checked?0:1}
+  // })
+  // console.log('nodes',nodes)
+
+  updateTenant(param).then(res =>{
     if (res.code === 200){
       proxy.$modal.msgSuccess( res.msg );
     }
@@ -444,10 +464,10 @@ function handleEditDate(){
 }
 /** 确定 */
 function submitDataScope(){
-  open.value = false;
-  getList()
+  // open.value = false;
+  // getList()
   handleEditDate()
-  reset()
+  // reset()
 }
 /** 取消 */
 function cancelDataScope(){
