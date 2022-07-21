@@ -370,26 +370,22 @@ function getTenantTreeselect(obj) {
   treeselectTenant(obj).then(response => {
     if(response.code === 200){
       tenantOptions.value = response.data;
-      if(response.data){
-        obj.status = '0'
-        treeselectTenant(obj).then(res=>{
-          if(res.code === 200){
-            getCheckNodes(checkedKeys,res.data)
-            tenantRef.value.setCheckedKeys(checkedKeys,true)
-          }
-        })
-      }
+      recursionTree(response.data)
     }
   });
 }
-function getCheckNodes(nodeIds,tree){
-  tree.forEach(item=>{
-    nodeIds.push(item.id)
-    if(item.children){
-      getCheckNodes(nodeIds,item.children)
+const recursionTree = (childnodes) => {
+  childnodes.forEach(node=>{
+    if(node.children){
+      recursionTree(node.children)
+    }else{
+      if(node.status === '0'){
+        checkedKeys.push(node.id)
+      }
     }
   })
 }
+
 function changeTree(node,checked,childChecked){
 
 }
@@ -408,54 +404,12 @@ function handleCheckedTreeNodeAll(value) {
 function handleCheckedTreeConnect(value) {
   menuForm.value.tenantCheckStrictly = value ? true : false;
 }
-
-/** 所有菜单节点数据 */
-function getMenuAllCheckedKeys() {
-  // 目前被选中的菜单节点
-  let checkedKeys = tenantRef.value.getCheckedKeys();
-  // 半选中的菜单节点
-  let halfCheckedKeys = tenantRef.value.getHalfCheckedKeys();
-  checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
-  return checkedKeys;
-}
 /** 修改租户菜单 */
-// function handleRecursion(arr){
-//   let temp = []
-//   temp = arr.map(items =>{
-//     let current
-//     let {id: menuId, children, expirationTime, status} = items
-//     if(children !== null){
-//       current = handleRecursion(children)
-//     }
-//     return {menuId, children: children === null? children : current , expirationTime, status}
-//   })
-//   return temp
-// }
 function handleEditDate(){
-
   //只是获取选中状态
   let param = tenantRef.value.getCheckedNodes().map(node=>{
-    return {...node, status: '0', menuId: node.id}
+    return {...node, status: '0', menuId: node.id,children: []}
   })
-  // console.log('param',param)
-
-  //获取全部
-  // let nodes = tenantOptions.value.map(node=>{
-  //   if(node.children){
-  //   node.children =  node.children.map(nodeChild=>{
-  //     if(nodeChild.children){
-  //       nodeChild.children =  nodeChild.children.map(nodeChild1=>{
-  //         console.log('node',tenantRef.value.getNode(nodeChild1.id))
-  //         return {...nodeChild1,status:tenantRef.value.getNode(nodeChild1.id).checked?0:1}
-  //       })
-  //     }
-  //     return {...nodeChild,status:tenantRef.value.getNode(nodeChild.id).checked?0:1}
-  //     })
-  //   }
-  //   return {...node,status:tenantRef.value.getNode(node.id).checked?0:1}
-  // })
-  // console.log('nodes',nodes)
-
   updateTenant(param).then(res =>{
     if (res.code === 200){
       proxy.$modal.msgSuccess( res.msg );
@@ -464,10 +418,10 @@ function handleEditDate(){
 }
 /** 确定 */
 function submitDataScope(){
-  // open.value = false;
-  // getList()
+  open.value = false;
+  getList()
   handleEditDate()
-  // reset()
+  reset()
 }
 /** 取消 */
 function cancelDataScope(){
