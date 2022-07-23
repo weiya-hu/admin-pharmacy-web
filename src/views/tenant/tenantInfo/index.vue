@@ -164,7 +164,7 @@
               :default-checked-keys="checkedKeys"
               :check-strictly="!menuForm.tenantCheckStrictly"
               empty-text="加载中，请稍候"
-              @check-change="changeTree"
+              @check="changeTree"
               :props="{ label: 'name', children: 'children'}"
           >
             <template #default="{ node, data }">
@@ -386,7 +386,7 @@ const recursionTree = (childnodes) => {
   })
 }
 
-function changeTree(node,checked,childChecked){
+function changeTree(node){
   handleEditDate(node)
 }
 /** 树权限（展开/折叠）*/
@@ -410,7 +410,8 @@ function handleEditDate(node){
   // let param = tenantRef.value.getCheckedNodes().map(node=>{
   //   return {...node, status: '0', menuId: node.id,children: []}
   // })
-  let param = {...node, status: '0', menuId: node.id,children: []}
+  let status = tenantRef.value.getNode(node.id).checked?'0':'1'
+  let param = [{...node, status: status, menuId: node.id,children: []}]
   updateTenant(param).then(res =>{
     if (res.code === 200){
       proxy.$modal.msgSuccess( res.msg );
