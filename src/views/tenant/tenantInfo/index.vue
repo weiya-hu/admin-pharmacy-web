@@ -188,7 +188,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitDataScope">确 定</el-button>
+<!--          <el-button type="primary" @click="submitDataScope">确 定</el-button>-->
           <el-button @click="cancelDataScope">取 消</el-button>
         </div>
       </template>
@@ -387,7 +387,7 @@ const recursionTree = (childnodes) => {
 }
 
 function changeTree(node,checked,childChecked){
-
+  handleEditDate(node)
 }
 /** 树权限（展开/折叠）*/
 function handleCheckedTreeExpand(value) {
@@ -405,11 +405,12 @@ function handleCheckedTreeConnect(value) {
   menuForm.value.tenantCheckStrictly = value ? true : false;
 }
 /** 修改租户菜单 */
-function handleEditDate(){
+function handleEditDate(node){
   //只是获取选中状态
-  let param = tenantRef.value.getCheckedNodes().map(node=>{
-    return {...node, status: '0', menuId: node.id,children: []}
-  })
+  // let param = tenantRef.value.getCheckedNodes().map(node=>{
+  //   return {...node, status: '0', menuId: node.id,children: []}
+  // })
+  let param = {...node, status: '0', menuId: node.id,children: []}
   updateTenant(param).then(res =>{
     if (res.code === 200){
       proxy.$modal.msgSuccess( res.msg );
