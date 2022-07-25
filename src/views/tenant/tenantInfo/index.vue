@@ -56,15 +56,18 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="140">
+      <el-table-column label="操作" fixed="right" width="165">
         <template #default="scope">
-          <el-tooltip placement="left" content="查看">
-            <el-button
-                type="text"
-                icon="View"
-                @click="handleView(scope.row)"
-            ></el-button>
-          </el-tooltip>
+          <el-button
+              type="text"
+              icon="View"
+              @click="handleView(scope.row)"
+          ></el-button>
+          <el-button
+              type="text"
+              icon="Edit"
+              @click="handleEdit(scope.row)"
+          ></el-button>
           <el-tooltip content="分配权限" placement="right">
             <el-button
                 type="text"
@@ -118,13 +121,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="状态">
+            <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
-                <el-radio
-                    v-for="dict in wecom_tenant_staus"
-                    :key="dict.value"
-                    :label="dict.value"
-                >{{ dict.label }}</el-radio>
+                <el-radio :label="0">启用</el-radio>
+                <el-radio :label="1">禁用</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -209,7 +209,7 @@
 </template>
 
 <script setup name="Tenant">
-import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant, getTenantInfo } from "@/api/tenant/tenant";
+import { listTenant, disableTenant, enableTenant, saveTenant, treeselectTenant, updateTenant, getTenantInfo, infoTenant } from "@/api/tenant/tenant";
 const { proxy } = getCurrentInstance();
 const { wecom_tenant_staus } = proxy.useDict("wecom_tenant_staus");
 
@@ -246,7 +246,6 @@ const tenantRef = ref(null);
 const visible = ref(false)
 
 const { queryParams, form, rules, menuForm } = toRefs(data);
-
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
@@ -346,6 +345,15 @@ function cancel() {
   reset();
 }
 
+/** 编辑 */
+function handleEdit(row){
+  infoTenant({tenantId:row.id}).then(res =>{
+    if (res.code === 200){
+      openData.value = true
+      form.value = res.data
+    }
+  })
+}
 /** 分配权限 */
 function handleUpdate(row){
   if(row.id){

@@ -35,7 +35,7 @@ export function getTenantInfo(data){
     return request({
         url: '/system/system/tenant/getTenantAgentInfo',
         method: 'get',
-        params:data
+        params: data
     })
 }
 // 查询租户菜单下拉树结构
@@ -43,7 +43,7 @@ export function treeselectTenant(data) {
     return request({
         url: '/wecom/corpMenu/treeselect',
         method: 'get',
-        params:data
+        params: data
     })
 }
 // 根据租户菜单编号获取详情信息
@@ -59,5 +59,13 @@ export function updateTenant(data){
         url: '/wecom/corpMenu/update',
         method: 'put',
         data
+    })
+}
+// 查看租户详情
+export function infoTenant(data){
+    return request({
+        url: '/system/system/tenant/detail',
+        method: 'get',
+        params: data
     })
 }
