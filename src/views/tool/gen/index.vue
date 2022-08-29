@@ -6,7 +6,6 @@
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
           clearable
-          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -15,7 +14,6 @@
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
           clearable
-          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -42,7 +40,6 @@
           plain
           icon="Download"
           @click="handleGenTable"
-          v-hasPermi="['tool:gen:code']"
         >生成</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -51,7 +48,6 @@
           plain
           icon="Upload"
           @click="openImportTable"
-          v-hasPermi="['tool:gen:import']"
         >导入</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -61,7 +57,6 @@
           icon="Edit"
           :disabled="single"
           @click="handleEditTable"
-          v-hasPermi="['tool:gen:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -71,44 +66,45 @@
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['tool:gen:remove']"
         >删除</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column label="序号" type="index" width="50">
+      <el-table-column type="selection" align="center" width="55"></el-table-column>
+      <el-table-column label="序号" type="index" width="50" align="center">
         <template #default="scope">
           <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="表名称"
+        align="center"
         prop="tableName"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="表描述"
+        align="center"
         prop="tableComment"
         :show-overflow-tooltip="true"
       />
       <el-table-column
         label="实体"
+        align="center"
         prop="className"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="创建时间" prop="createTime" width="160" />
-      <el-table-column label="更新时间" prop="updateTime" width="160" />
-      <el-table-column label="操作" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="160" />
+      <el-table-column label="更新时间" align="center" prop="updateTime" width="160" />
+      <el-table-column label="操作" align="center" width="330" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-tooltip content="预览" placement="top">
             <el-button
               type="text"
               icon="View"
               @click="handlePreview(scope.row)"
-              v-hasPermi="['tool:gen:preview']"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="编辑" placement="top">
@@ -116,7 +112,6 @@
               type="text"
               icon="Edit"
               @click="handleEditTable(scope.row)"
-              v-hasPermi="['tool:gen:edit']"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="删除" placement="top">
@@ -124,7 +119,6 @@
               type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
-              v-hasPermi="['tool:gen:remove']"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="同步" placement="top">
@@ -132,7 +126,6 @@
               type="text"
               icon="Refresh"
               @click="handleSynchDb(scope.row)"
-              v-hasPermi="['tool:gen:edit']"
             ></el-button>
           </el-tooltip>
           <el-tooltip content="生成代码" placement="top">
@@ -140,7 +133,6 @@
               type="text"
               icon="Download"
               @click="handleGenTable(scope.row)"
-              v-hasPermi="['tool:gen:code']"
             ></el-button>
           </el-tooltip>
         </template>
@@ -160,7 +152,7 @@
           v-for="(value, key) in preview.data"
           :label="key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))"
           :name="key.substring(key.lastIndexOf('/')+1,key.indexOf('.vm'))"
-          :key="key"
+          :key="value"
         >
           <el-link :underline="false" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess" style="float:right">&nbsp;复制</el-link>
           <pre>{{ value }}</pre>
@@ -172,7 +164,7 @@
 </template>
 
 <script setup name="Gen">
-import { listTable, previewTable, delTable, genCode, synchDb, genCodes } from "@/api/tool/gen";
+import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
 import router from "@/router";
 import importTable from "./importTable";
 
@@ -222,6 +214,7 @@ onActivated(() => {
 function getList() {
   loading.value = true;
   listTable(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+
     tableList.value = response.data.list;
     total.value = Number(response.data.total);
     loading.value = false;
@@ -235,22 +228,16 @@ function handleQuery() {
 /** 生成代码操作 */
 function handleGenTable(row) {
   const tbNames = row.tableName || tableNames.value;
-  const tbTables = row.tableId || ids.value
   if (tbNames == "") {
     proxy.$modal.msgError("请选择要生成的数据");
     return;
-  }
-  else if (tableNames !== "") {
-    genCodes(tbNames).then(res =>{
-      proxy.$modal.msgSuccess("批量生成成功")
-    })
   }
   if (row.genType === "1") {
     genCode(row.tableName).then(response => {
       proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    proxy.$download.zip("/code/tool/gen/download/" + tbNames, "ZhiHui");
+    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "ruoyi");
   }
 }
 /** 同步数据库操作 */
@@ -271,10 +258,6 @@ function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
   handleQuery();
-}
-/** 清空事件 */
-function handleSearch(){
-  handleQuery()
 }
 /** 预览按钮 */
 function handlePreview(row) {
@@ -303,8 +286,7 @@ function handleEditTable(row) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const tableIds = row.tableId || ids.value;
-  const Names = row.tableName || tableNames.value;
-  proxy.$modal.confirm('是否确认删除表编号为"' + Names + '"的数据项？').then(function () {
+  proxy.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
     return delTable(tableIds);
   }).then(() => {
     getList();

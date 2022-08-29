@@ -39,6 +39,7 @@ const useUserStore = defineStore(
                             this.roles = res.data.roles
                             this.permissions = res.data.permissions
                         } else {
+                            this.roles = ['admin']
                             this.setRoutes = ['ROLE_DEFAULT']
                         }
                         this.name = user.userName
