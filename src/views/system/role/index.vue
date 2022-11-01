@@ -105,8 +105,8 @@
             <template #default="scope">
                <el-switch
                   v-model="scope.row.status"
-                  active-value="0"
-                  inactive-value="1"
+                  :active-value="1"
+                  :inactive-value="0"
                   @change="handleStatusChange(scope.row)"
                ></el-switch>
             </template>
@@ -385,7 +385,7 @@ function handleStatusChange(row) {
   }).then(() => {
     proxy.$modal.msgSuccess(text + "成功");
   }).catch(function () {
-    row.status = row.status === "0" ? "1" : "0";
+    row.status = row.status === 0 ? 1 : 0;
   });
 }
 /** 更多操作 */
