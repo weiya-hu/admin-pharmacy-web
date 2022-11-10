@@ -7,6 +7,10 @@ import locale from 'element-plus/lib/locale/lang/zh-cn' // 中文语言
 
 import '@/assets/styles/index.scss' // global css
 
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+
+
 import App from './App'
 import store from './store'
 import router from './router'
@@ -43,6 +47,10 @@ import TreeSelect from '@/components/TreeSelect'
 import DictTag from '@/components/DictTag'
 
 const app = createApp(App)
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
 // 全局方法挂载
 app.config.globalProperties.useDict = useDict

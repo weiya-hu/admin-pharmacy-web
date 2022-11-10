@@ -55,6 +55,7 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
+
   {
     path: '',
     component: Layout,
@@ -65,6 +66,18 @@ export const constantRoutes = [
         component: () => import('@/views/index'),
         name: 'Home',
         meta: { title: '首页', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/insurance',
+    component: Layout,
+    children: [
+      {
+        path: 'customer',
+        component: () => import('@/views/insurance/customer'),
+        name:"insurance",
+        meta: { title: '我的客户', icon: 'dashboard', affix: true }
       }
     ]
   },
