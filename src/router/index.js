@@ -70,18 +70,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/insurance',
-    component: Layout,
-    children: [
-      {
-        path: 'customer',
-        component: () => import('@/views/insurance/customer'),
-        name:"insurance",
-        meta: { title: '我的客户', icon: 'dashboard', affix: true }
-      }
-    ]
-  },
-  {
     path: '/user',
     component: Layout,
     hidden: true,
