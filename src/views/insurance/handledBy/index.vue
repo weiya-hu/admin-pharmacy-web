@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
       <el-form-item>
         <el-select v-model="queryParams.region" placeholder="所属区域">
-          <el-option v-for="item in regionList" :value="item.value" :label="item.name" :key="item.value" />
+          <el-option v-for="item in regionList" :value="item.value" :label="item.name" :key="item.value"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -19,7 +19,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryParams.name" placeholder="搜企业名称/联系人/联系电话" style="width: 250px" />
+        <el-input v-model="queryParams.name" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -32,14 +32,14 @@
     </el-row>
 
     <el-table :data="deptList">
-      <el-table-column prop="name" label="企业名称" show-overflow-tooltip />
-      <el-table-column prop="user" label="联系人" />
-      <el-table-column prop="phone" label="联系电话" show-overflow-tooltip />
-      <el-table-column prop="region" label="所属区域" />
-      <el-table-column prop="address" label="详细地址" show-overflow-tooltip />
-      <el-table-column prop="source" label="客户来源" />
-      <el-table-column prop="date" label="加入日期" show-overflow-tooltip />
-      <el-table-column prop="salesman" label="销售人员" />
+      <el-table-column prop="name" label="企业名称" show-overflow-tooltip/>
+      <el-table-column prop="user" label="联系人"/>
+      <el-table-column prop="phone" label="联系电话" show-overflow-tooltip/>
+      <el-table-column prop="region" label="所属区域"/>
+      <el-table-column prop="address" label="详细地址" show-overflow-tooltip/>
+      <el-table-column prop="source" label="客户来源"/>
+      <el-table-column prop="date" label="加入日期" show-overflow-tooltip/>
+      <el-table-column prop="salesman" label="销售人员"/>
       <el-table-column label="申请记录">
         <template #default="scope">
           <el-button text type="primary" @click="handleSee(scope.row)">查看</el-button>
@@ -51,7 +51,9 @@
 
 <script setup>
 import {ref} from "vue";
+import {useRouter} from "vue-router";
 
+const router = useRouter();
 const queryParams = ref({
   region: '',
   source: '',
@@ -97,7 +99,10 @@ const getList = () => {
 }
 // 查看申请记录
 const handleSee = (row) => {
-
+  router.push({
+    path: '/customer/Details',
+    query: {name: row.name, salesman: row.salesman}
+  })
 }
 </script>
 
