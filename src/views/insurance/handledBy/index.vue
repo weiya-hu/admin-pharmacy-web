@@ -42,23 +42,35 @@
       <el-table-column prop="salesman" label="销售人员"/>
       <el-table-column label="申请记录">
         <template #default="scope">
-          <el-button text type="primary" @click="handleSee(scope.row)">查看</el-button>
+          <el-button text type="primary" :icon="View" @click="handleSee(scope.row)"></el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
+    />
   </div>
 </template>
 
 <script setup>
 import {ref} from "vue";
 import {useRouter} from "vue-router";
+import {View} from '@element-plus/icons-vue';
 
 const router = useRouter();
+const total = ref(0)
 const queryParams = ref({
   region: '',
   source: '',
   date: '',
-  name: ''
+  name: '',
+  pageNum: 1,
+  pageSize: 10
 })
 const showSearch = ref(true)
 
