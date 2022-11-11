@@ -147,7 +147,22 @@ export const constantRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
-  }
+  },
+  // {
+  //   path:"/customer/insurance/signRecord",
+  //   component:()=>import('@/views/insurance/customer/signRecord'),
+  //   name:'signRecord',
+  //   // children: [
+  //   //   {
+  //   //     path:"/",
+  //   //     component:()=>import('@/views/insurance/customer/signRecord'),
+  //   //     meta: {
+  //   //       title: '签约记录'
+  //   //     }
+  //   //   }
+  //   //
+  //   // ]
+  // }
 ];
 
 const router = createRouter({

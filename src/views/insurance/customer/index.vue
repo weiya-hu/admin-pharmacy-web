@@ -32,7 +32,7 @@
       v-model="date"
       type="daterange"
       :shortcuts="shortcuts"
-      range-separator="至"
+      range-separator='—'
       start-placeholder="开始日期"
       end-placeholder="结束日期"
       size='large'
@@ -65,17 +65,19 @@
       <el-table-column prop="from" label="客户来源"  align="center"/>
       <el-table-column prop="date" label="加入日期" sortable  align="center"/>
       <el-table-column prop="pay" label="签约付款" align="center">
-        <el-button size="small" color="#008c8c">
+        <template #default="scope">
+        <el-button size="small" color="#008c8c" @click="goSignRecord(scope.row)">
           查看
         </el-button>
+        </template>
       </el-table-column>
-      <el-table-column prop="operation" label="操作" fixed="right" align="center">
-        <el-button
-            size="small"
-            color="#008c8c"
-        >编辑</el-button
-        >
-      </el-table-column>
+<!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
+<!--        <el-button-->
+<!--            size="small"-->
+<!--            color="#008c8c"-->
+<!--        >编辑</el-button-->
+<!--        >-->
+<!--      </el-table-column>-->
     </el-table>
   </div>
 </template>
@@ -83,6 +85,9 @@
 <script lang="ts" setup>
 import {ref,onMounted}  from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import {useRouter} from 'vue-router'
+
+const router=useRouter()
 let area=ref(["重庆",'北京','成都','陕西']),
     region=['店绩','线下'],
     chooseArea=ref(''),
@@ -164,6 +169,13 @@ function AreaChange(){
 
 }
 
+function goSignRecord(row){
+
+  router.push({
+    path: '/customer/signRecord',
+  })
+}
+
 
 </script>
 
@@ -185,6 +197,7 @@ function AreaChange(){
 .el-input{
   width: 400px !important;
 }
+
 
 
 
