@@ -187,7 +187,7 @@ function close() {
     getGenTable(tableId).then(res => {
       columns.value = res.data.rows;
       info.value = res.data.info;
-      // tables.value = res.data.tables;
+      tables.value = res.data.tables;
     });
     /** 查询字典下拉列表 */
     getDictOptionselect().then(response => {

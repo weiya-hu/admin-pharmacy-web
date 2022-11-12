@@ -1,13 +1,20 @@
 <template>
   <!-- 导入表 -->
-  <el-dialog title="导入表" v-model="visible" width="800px" top="5vh" append-to-body>
+  <el-dialog title="导入表" v-model="visible" width="70%" top="5vh" append-to-body>
     <el-form :model="queryParams" ref="queryRef" :inline="true">
+      <el-form-item label="数据库" prop="database">
+        <el-input
+            v-model="queryParams.database"
+            placeholder="请输入数据库"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="表名称" prop="tableName">
         <el-input
           v-model="queryParams.tableName"
           placeholder="请输入表名称"
           clearable
-          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -16,7 +23,6 @@
           v-model="queryParams.tableComment"
           placeholder="请输入表描述"
           clearable
-          @clear="handleSearch"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
@@ -63,7 +69,8 @@ const queryParams = reactive({
   pageNum: 1,
   pageSize: 10,
   tableName: undefined,
-  tableComment: undefined
+  tableComment: undefined,
+  database:undefined
 });
 
 const emit = defineEmits(["ok"]);
@@ -84,6 +91,7 @@ function handleSelectionChange(selection) {
 /** 查询表数据 */
 function getList() {
   listDbTable(queryParams).then(res => {
+
     dbTableList.value = res.data.list;
     total.value = Number(res.data.total);
   });
@@ -97,10 +105,6 @@ function handleQuery() {
 function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
-}
-/** 清空事件 */
-function handleSearch(){
-  handleQuery()
 }
 /** 导入按钮操作 */
 function handleImportTable() {

@@ -1,71 +1,48 @@
 import request from '@/utils/request'
 
-// 禁用租户
-export function disableTenant(data) {
-    return request({
-        url: '/system/system/tenant/disable/' + data,
-        method: 'post',
-    })
-}
-// 启用租户
-export function enableTenant(data) {
-    return request({
-        url: '/system/system/tenant/enable/' + data,
-        method: 'post'
-    })
-}
 // 租户列表
 export function listTenant(data) {
     return request({
-        url: '/system/system/tenant/list',
+        url: '/system/tenant/info/page',
         method: 'get',
         params: data
     })
 }
-// 保存租户信息
+// 创建租户信息
 export function saveTenant(data) {
     return request({
-        url: '/system/system/tenant/save',
+        url: '/system/tenant/info/create',
         method: 'post',
         data
     })
 }
-// 查看租户企业代开发应用授权信息
-export function getTenantInfo(data){
+//修改租户
+export function updateTenant(data) {
     return request({
-        url: '/system/system/tenant/getTenantAgentInfo',
-        method: 'get',
-        params: data
-    })
-}
-// 查询租户菜单下拉树结构
-export function treeselectTenant(data) {
-    return request({
-        url: '/wecom/corpMenu/treeselect',
-        method: 'get',
-        params: data
-    })
-}
-// 根据租户菜单编号获取详情信息
-export function getTenant(menuId){
-    return request({
-        url: '/wecom/corpMenu/' + menuId,
-        method: 'get'
-    })
-}
-// 修改租户菜单
-export function updateTenant(data){
-    return request({
-        url: '/wecom/corpMenu/update',
+        url: '/system/tenant/info/update',
         method: 'put',
         data
     })
 }
-// 查看租户详情
-export function infoTenant(data){
+
+// 删除租户信息
+export function delTenant(id) {
     return request({
-        url: '/system/system/tenant/detail',
-        method: 'get',
-        params: data
+        url: `/system/tenant/info/delete?tenantId=${id}`,
+        method: 'delete'
+    })
+}
+// 查看租户详情
+export function getTenantDetail(id) {
+    return request({
+        url: `/system/tenant/info/detail?tenantId=${id}`,
+        method: 'get'
+    })
+}
+// 获取租户
+export function getTenantById(id) {
+    return request({
+        url: `/system/tenant/info/get?tenantId=${id}`,
+        method: 'get'
     })
 }
