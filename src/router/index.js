@@ -69,6 +69,19 @@ export const constantRoutes = [
       }
     ]
   },
+
+  {
+    path: '/insurance',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/insurance/handledBy/index'),
+        name: '经办人',
+        meta: { title: '经办人', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
   {
     path: '/user',
     component: Layout,

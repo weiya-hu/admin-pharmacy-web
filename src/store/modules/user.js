@@ -1,6 +1,8 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
+import Cookies from 'js-cookie'
+
 
 const useUserStore = defineStore(
     'user', {
@@ -38,6 +40,7 @@ const useUserStore = defineStore(
                         if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
                             this.roles = res.data.roles
                             this.permissions = res.data.permissions
+                            Cookies.set('userInfo',res.data.user)
                         } else {
                             this.roles = ['admin']
                             this.setRoutes = ['ROLE_DEFAULT']
