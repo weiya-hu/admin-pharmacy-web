@@ -92,9 +92,17 @@
 
     <!-- 添加或修改租户套餐对话框 -->
     <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="packageRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="packageRef" :model="form" :rules="rules" label-width="85px">
         <el-form-item label="套餐名" prop="name">
           <el-input v-model="form.name" placeholder="请输入套餐名"/>
+        </el-form-item>
+        <el-form-item label="平台产品ID">
+          <el-select v-model="form.platformProductId" placeholder="请输入平台产品ID" style="width: 100%;">
+            <el-option v-for="dict in platform_product_id"
+                       :key="dict.value"
+                       :label="dict.label"
+                       :value="dict.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="租户状态" prop="status">
           <el-radio-group v-model="form.status">
@@ -137,6 +145,7 @@ import {listPackage, getPackage, delPackage, addPackage, updatePackage} from "@/
 import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
 
 const {proxy} = getCurrentInstance();
+const { platform_product_id } = proxy.useDict("platform_product_id");
 // const { ${dictsNoSymbol} } = proxy.useDict(${dicts});
 
 const packageList = ref([]);
@@ -202,7 +211,8 @@ function reset() {
     createBy: null,
     createTime: null,
     updateBy: null,
-    updateTime: null
+    updateTime: null,
+    platformProductId: null
   };
   proxy.resetForm("packageRef");
 }

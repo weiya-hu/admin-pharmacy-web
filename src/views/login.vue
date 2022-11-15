@@ -74,6 +74,7 @@ const loginForm = ref({
   username: "",
   password: "",
   rememberMe: false,
+  platformProductId: 'admin'
 });
 
 const loginRules = {
