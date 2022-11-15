@@ -52,6 +52,9 @@
   </el-input>
 </div>
 
+<div class="search-item">
+  <el-button @click="handleShare" type="primary">分享</el-button>
+</div>
 </div>
 
 <!--制表  -->
@@ -71,29 +74,46 @@
         </el-button>
         </template>
       </el-table-column>
-<!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
-<!--        <el-button-->
-<!--            size="small"-->
-<!--            color="#008c8c"-->
-<!--        >编辑</el-button-->
-<!--        >-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
+      <!--        <el-button-->
+      <!--            size="small"-->
+      <!--            color="#008c8c"-->
+      <!--        >编辑</el-button-->
+      <!--        >-->
+      <!--      </el-table-column>-->
     </el-table>
   </div>
+  <el-dialog v-model="dialogVisible" width="750px" append-to-body>
+    <template #header>
+      <span>下方是您的专属 邀请链接，复制并分享给客户，客户通过此链接进行申请，即xa为您的业绩</span>
+    </template>
+    <div>
+      <span style="margin-right: 20px">{{ state.url }}</span>
+      <!--      <el-link :underline="false" icon="DocumentCopy" v-copyText="state.url" v-copyText:callback="copyTextSuccess">复制</el-link>-->
+    </div>
+
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import {ref,onMounted}  from 'vue'
-import { Search } from '@element-plus/icons-vue'
+import {ref, onMounted, reactive} from 'vue'
+import {Search} from '@element-plus/icons-vue'
 import {useRouter} from 'vue-router'
+import {returnUrl} from '../../../api/insurance/customer'
+import {ElMessage} from "element-plus";
 
-const router=useRouter()
-let area=ref(["重庆",'北京','成都','陕西']),
-    region=['店绩','线下'],
-    chooseArea=ref(''),
+const router = useRouter()
+const state = reactive({
+  url: ''
+})
+const dialogVisible = ref(false)
+
+let area = ref(["重庆", '北京', '成都', '陕西']),
+    region = ['店绩', '线下'],
+    chooseArea = ref(''),
     date = ref(''),
-    from=ref(''),
-    input= ref('');
+    from = ref(''),
+    input = ref('');
 
 //快速切换时间
 const shortcuts = [
@@ -162,20 +182,30 @@ onMounted(()=>{
   // })
 })
 
-
-
-
 function AreaChange(){
 
 }
 
-function goSignRecord(row){
+function goSignRecord(row) {
 
   router.push({
     path: '/customer/signRecord',
   })
 }
 
+// 分享
+const handleShare = () => {
+  dialogVisible.value = true
+  returnUrl({productId: 'admin'}).then(res => {
+    state.url = res.data
+  })
+}
+
+// 复制
+function copyTextSuccess() {
+  ElMessage.success('复制成功')
+  console.log('url', state.url)
+}
 
 </script>
 

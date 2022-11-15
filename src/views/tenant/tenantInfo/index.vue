@@ -56,7 +56,7 @@
           <el-input v-model="formData.name"/>
         </el-form-item>
         <el-form-item label="租户版本" prop="packageId">
-          <el-select v-model="formData.packageId" style="width: 100%">
+          <el-select v-model="formData.packageId" multiple style="width: 100%">
             <el-option v-for="(item,index) in packageList" :key="index" :value="item.id" :label="item.name"/>
           </el-select>
         </el-form-item>
@@ -121,7 +121,7 @@ const packageList = ref([])
 //新增表单
 const formData = ref({
   name: '',
-  packageId: '',
+  packageId: [],
   accountCount: 10,
   contactMobile: '',
   contactName: '',
@@ -171,7 +171,7 @@ const resetQueryParam = () => {
 const resetFormData = ()=>{
   formData.value = {
     name: '',
-    packageId: '',
+    packageId: [],
     accountCount: 10,
     contactMobile: '',
     contactName: '',

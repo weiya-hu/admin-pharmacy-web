@@ -57,3 +57,18 @@ export function logout() {
 //         timeout: 20000
 //     })
 // }
+
+// 微信扫码登录
+export function wechatLogin() {
+    return request({
+        url: '/auth/wechatLogin',
+        method: 'get'
+    })
+}
+// 企微扫码
+export function oauthLogin() {
+    return request({
+        url: '/auth/oauthLogin',
+        method: 'get'
+    })
+}
