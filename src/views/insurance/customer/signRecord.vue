@@ -61,36 +61,36 @@
       <div class="tab-list-item">
         <div class="item-wrapper">
           <div class="dot complete"></div>
-          <dvi>已失效</dvi>
+          <div>已失效</div>
         </div>
         <div class="item-wrapper">
           <div class="dot complete"></div>
-          <dvi>已归档</dvi>
+          <div>已归档</div>
         </div>
       </div>
       <div class="tab-list-item">
         <div class="item-wrapper">
           <div class="dot wait"></div>
-          <dvi>待签约</dvi>
+          <div>待签约</div>
         </div>
         <div class="item-wrapper">
           <div class="dot wait"></div>
-          <dvi>待付款</dvi>
+          <div>待付款</div>
         </div>
         <div class="item-wrapper">
           <div class="dot wait"></div>
-          <dvi>待进件</dvi>
+          <div>待进件</div>
         </div>
 
       </div>
       <div class="tab-list-item">
         <div class="item-wrapper">
           <div class="dot audit"></div>
-          <dvi>审核中</dvi>
+          <div>审核中</div>
         </div>
         <div class="item-wrapper">
           <div class="dot reject"></div>
-          <dvi>驳回</dvi>
+          <div>驳回</div>
         </div>
         <div class="item-wrapper">
           <div class="dot agree"></div>

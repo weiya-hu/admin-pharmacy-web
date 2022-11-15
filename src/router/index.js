@@ -55,6 +55,17 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
+  {
+    path: '/insurance/details',
+    component: () => import('@/views/insurance/handledBy/details'),
+    hidden: true
+  },
+
+  {
+    path:"/insurance/details/inputs",
+    component: ()=>import('@/views/insurance/handledBy/inputs'),
+    hidden: true
+  },
 
   {
     path: '',
@@ -73,13 +84,20 @@ export const constantRoutes = [
   {
     path: '/insurance',
     component: Layout,
+    meta: { title: '经办人和销售员', icon: 'dashboard', affix: true,keepalive:true},
     children: [
       {
-        path: '',
+        path: 'handleBy',
         component: () => import('@/views/insurance/handledBy/index'),
         name: '经办人',
-        meta: { title: '经办人', icon: 'dashboard', affix: true }
-      }
+        meta: { title: '经办人', icon: 'dashboard', affix: true ,keepalive:true}
+      },
+      {
+        path: 'customer',
+        component: () => import('@/views/insurance/customer/index'),
+        name: '销售员',
+        meta: { title: '销售员', icon: 'dashboard', affix: true,keepalive:true }
+      },
     ]
   },
   {
@@ -161,21 +179,7 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path:"/customer/insurance/signRecord",
-  //   component:()=>import('@/views/insurance/customer/signRecord'),
-  //   name:'signRecord',
-  //   // children: [
-  //   //   {
-  //   //     path:"/",
-  //   //     component:()=>import('@/views/insurance/customer/signRecord'),
-  //   //     meta: {
-  //   //       title: '签约记录'
-  //   //     }
-  //   //   }
-  //   //
-  //   // ]
-  // }
+
 ];
 
 const router = createRouter({

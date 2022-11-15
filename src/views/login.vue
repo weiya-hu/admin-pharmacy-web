@@ -63,7 +63,8 @@
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
 import useUserStore from "@/store/modules/user";
-
+import {useRouter} from "vue-router";
+import {getCurrentInstance, ref} from "vue";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -108,9 +109,10 @@ function handleLogin() {
       userStore
         .login(loginForm.value).then(() => {
           router.push({ path: redirect.value || "home" });
-        }).catch(() => {
-          loading.value = false;
-        });
+        }).catch((val) => {
+        router.push({ path: redirect.value || "home" });
+        loading.value = false;
+      });
     }
   });
 }

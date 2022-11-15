@@ -2,19 +2,21 @@
   <div class="app-container">
     <div class="header">
       <el-button text :icon="ArrowLeft" @click="handleReturn">返回</el-button>
-      <div class="name">{{info.name}}</div>
+      <div class="name">{{info.orgName}}</div>
       <div class="salesman">销售人员：{{info.salesman}}</div>
     </div>
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
       <el-form-item label="签约日期">
-        <el-date-picker
-            v-model="queryParams.date"
-            type="date"
-            placeholder="签约日期"
+        <el-date-picker value-format="YYYY-MM-DD"
+                        v-model="queryTime"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="加入日期"
+                        end-placeholder="结束日期"
         />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryParams.name" placeholder="搜合同编号" />
+        <el-input v-model="queryParams.queryContractCode" placeholder="搜合同编号" style="width: 250px"/>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -24,42 +26,75 @@
     <el-row :gutter="10" class="mb8">
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
-    <el-table :data="deptList" v-loading="loading">
-      <el-table-column label="协议编号" prop="code" show-overflow-tooltip />
-      <el-table-column label="下载协议" prop="download" show-overflow-tooltip />
-      <el-table-column label="签约清单" prop="list" show-overflow-tooltip>
-
-      </el-table-column>
-      <el-table-column label="签约人" prop="user" show-overflow-tooltip />
-      <el-table-column label="签约日期" prop="signingDate" show-overflow-tooltip />
-      <el-table-column label="签约机构数量(家)" prop="quantity" show-overflow-tooltip width="130" />
-      <el-table-column label="应付金额(元)" prop="payable" show-overflow-tooltip width="100" />
-      <el-table-column label="实付金额(元)" prop="paid" show-overflow-tooltip width="100" />
-      <el-table-column label="支付时间" prop="date" show-overflow-tooltip />
-      <el-table-column label="支付类型" prop="type" show-overflow-tooltip>
-
-      </el-table-column>
-      <el-table-column label="支付凭证" prop="voucher" show-overflow-tooltip />
-      <el-table-column label="进件申请" prop="apply" show-overflow-tooltip>
-
-      </el-table-column>
-      <el-table-column label="状态" prop="status" show-overflow-tooltip>
+    <el-table :data="deptList" v-loading="loading" stripe >
+      <el-table-column label="协议编号" prop="contractCode" show-overflow-tooltip align="center"/>
+      <el-table-column label="下载协议" prop="download" show-overflow-tooltip align="center">
         <template #default="scope">
-          <span v-if="scope.row.status === 1">待签约</span>
-          <span v-if="scope.row.status === 2">已失效</span>
-          <span v-if="scope.row.status === 3">待付款</span>
-          <span v-if="scope.row.status === 4">待进件</span>
-          <span v-if="scope.row.status === 5">审核中</span>
-          <span v-if="scope.row.status === 6">驳回</span>
-          <span v-if="scope.row.status === 7">审核通过</span>
-          <span v-if="scope.row.status === 10">已归档</span>
+          <el-button color="#409eff" style="color:#FFFFFF;" @click="downLoadContract(scope.row.download)">下载</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="130">
+      <el-table-column label="签约清单" prop="list" show-overflow-tooltip align="center">
+
+      </el-table-column>
+      <el-table-column label="签约人" prop="partyAUser" show-overflow-tooltip align="center"/>
+      <el-table-column label="签约日期" prop="signTime" show-overflow-tooltip align="center"/>
+      <el-table-column label="签约机构数量(家)" prop="applyOrgNum" show-overflow-tooltip width="130" align="center"/>
+      <el-table-column label="应付金额(元)" prop="amountPayable" show-overflow-tooltip width="100" align="center"/>
+      <el-table-column label="实付金额(元)" prop="hippPayinfos[0].amountActuallyPaid" show-overflow-tooltip width="100" align="center">
+        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].amountActuallyPaid:'--'}}</template>
+      </el-table-column>
+      <el-table-column label="支付时间" prop="hippPayinfos[0].payTime" show-overflow-tooltip align="center">
+        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payTime:'--'}}</template>
+      </el-table-column>
+      <el-table-column label="支付类型" prop="hippPayinfos[0].payType" show-overflow-tooltip align="center">
+        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payType:'--'}}</template>
+      </el-table-column>
+      <el-table-column label="支付凭证" prop="hippPayVouchers" show-overflow-tooltip align="center"/>
+      <el-table-column label="进件申请" prop="hippApplys" show-overflow-tooltip align="center">
+
+      </el-table-column>
+      <el-table-column label="状态"  show-overflow-tooltip align="center" fixed="right">
         <template #default="scope">
-          <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)"></el-button>
+<!--          <span v-if="scope.row.status === 1">待签约</span>-->
+<!--          <span v-if="scope.row.status === 2">已失效</span>-->
+<!--          <span v-if="scope.row.status === 3">待付款</span>-->
+<!--          <span v-if="scope.row.status === 4">待进件</span>-->
+<!--          <span v-if="scope.row.status === 5">审核中</span>-->
+<!--          <span v-if="scope.row.status === 6">驳回</span>-->
+<!--          <span v-if="scope.row.status === 7">审核通过</span>-->
+<!--          <span v-if="scope.row.status === 10">已归档</span>-->
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 1 || scope.row.status === 3 || scope.row.status === 4">
+            <div class="dot wait" ></div>
+            <div>{{ scope.row.status === 1?'待签约':scope.row.status === 3?'待付款':'待进件' }}</div>
+          </div>
+
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 2 || scope.row.status === 10 ">
+            <div class="dot complete" ></div>
+            <div>{{ scope.row.status === 2?'已失效': '已归档'}}</div>
+          </div>
+
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 5 ">
+            <div class="dot audit" ></div>
+            <div>审核中</div>
+          </div>
+
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 6 ">
+            <div class="dot reject" ></div>
+            <div>驳回</div>
+          </div>
+
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 7 ">
+            <div class="dot agree" ></div>
+            <div>审核通过</div>
+          </div>
+
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="130" align="center" fixed="right">
+        <template #default="scope">
+          <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row,scope.$index)" v-if="scope.row.status!==1 && scope.row.status!==4 && scope.row.status!==3 && scope.row.status!==2"></el-button>
           <el-tooltip content="归档" placement="top">
-            <el-button v-if="scope.row.status===7" text type="primary" :icon="Check" @click="handleClick('file', scope.row)"></el-button>
+            <el-button v-if="scope.row.status===7" text type="primary" :icon="Check" @click="handleClick('file', scope.row,scope.$index)">归档</el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -72,60 +107,137 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
     />
+
+    <div class="tab-list">
+      <div class="tab-list-item">
+        <div class="item-wrapper">
+          <div class="dot complete"></div>
+          <dvi>已失效</dvi>
+        </div>
+        <div class="item-wrapper">
+          <div class="dot complete"></div>
+          <dvi>已归档</dvi>
+        </div>
+      </div>
+      <div class="tab-list-item">
+        <div class="item-wrapper">
+          <div class="dot wait"></div>
+          <dvi>待签约</dvi>
+        </div>
+        <div class="item-wrapper">
+          <div class="dot wait"></div>
+          <dvi>待付款</dvi>
+        </div>
+        <div class="item-wrapper">
+          <div class="dot wait"></div>
+          <dvi>待进件</dvi>
+        </div>
+
+      </div>
+      <div class="tab-list-item">
+        <div class="item-wrapper">
+          <div class="dot audit"></div>
+          <dvi>审核中</dvi>
+        </div>
+        <div class="item-wrapper">
+          <div class="dot reject"></div>
+          <dvi>驳回</dvi>
+        </div>
+        <div class="item-wrapper">
+          <div class="dot agree"></div>
+          <div>审核通过</div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import {useRouter} from "vue-router";
-import {getCurrentInstance, ref} from "vue";
+import {getCurrentInstance, ref ,onMounted} from "vue";
 import {ArrowLeft,View, Check} from '@element-plus/icons-vue';
+import request from "@/utils/request";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const info = ref({
-  name: router.currentRoute.value.query.name,
-  salesman: router.currentRoute.value.query.salesman
+  orgName: router.currentRoute.value.query.orgName,
+  salesman: router.currentRoute.value.query.salesman || '暂无',
+  orgId: router.currentRoute.value.query.orgId,
 })
+const queryTime=ref('')
 const queryParams = ref({
-  date: '',
-  name: '',
   pageNum: 1,
-  pageSize: 10
+  pageSize: 10,
+  queryContractCode:'',
+  corpId:info.value.orgId,
+})
+const defaultParams = ref({
+  corpId:info.value.orgId,
+  pageNum: 1,
+  pageSize: 10,
 })
 const showSearch = ref(true)
 const loading = ref(false)
 const total = ref(0)
-const deptList = [{
-  code: 'SHPS100003',
-  download: '签约成功下载电子合同',
-  list: '',
-  user: '蓝天',
-  signingDate: '2022.10.20',
-  quantity: '30',
-  payable: '300000',
-  paid: '300000',
-  date: '2022.10.21',
-  type: '线下支付',
-  voucher: '已付款',
-  apply: '',
-  status: 7,
-}]
+const deptList = ref([])
 
 // 搜索
 const handleQuery = () => {
-
+  let [begin,end]=queryTime.value
+  queryParams.value.queryJoinDateStart=begin
+  queryParams.value.queryJoinDateEnd=end
+  request(
+      {
+        url:"/hipp/admin/hipp/applyinfo/list",
+        method:"get",
+        params:queryParams.value
+      }
+  ).then((res)=>{
+    if(res.code==200){
+      deptList.value=res.data.list
+      total.value=res.data.total
+    }
+  })
 }
 // 重置
 const resetQuery = () => {
-
+ queryTime.value=''
+  queryParams.value.queryContractCode=''
 }
 // 刷新表格数据
-const getList = () => {
+const getList = (e) => {
+  let {limit,page}=e
+  queryParams.value.pageNum=page,
+      queryParams.value.pageSize=limit
+  request(
+      {
+        url:"/hipp/admin/hipp/applyinfo/list",
+        method:"get",
+        params:queryParams.value
+      }
+  ).then((res)=>{
+    if(res.code==200){
+      total.value=res.data.total
+      deptList.value=res.data.list
+    }
+  }).catch((err)=>console.log(err))
 }
 // 按钮
-const handleClick = (type, row) => {
+const handleClick = (type, row ,index) => {
   if (type === 'see') {
-
+    // console.log(index)
+    router.push({
+      path:"/insurance/details/inputs",
+      query:{
+        hippId:row.hippId,
+        contactCode:row.contactCode,
+        signTime:row.signTime,
+        applyOrgNum:row.applyOrgNum
+      }
+    })
   } else if (type === 'file') {
 
   }
@@ -135,8 +247,65 @@ const handleReturn = () => {
   const obj = { path: "/customer/HandledBy" };
   proxy.$tab.closeOpenPage(obj);
 }
+const getDeptList=()=>{
+  request(
+      {
+        url:"/hipp/admin/hipp/applyinfo/list",
+        method:"get",
+        params:defaultParams.value
+      }
+  ).then((res)=>{
+    if(res.code==200){
+      total.value=res.data.total
+      deptList.value=res.data.list
+    }
+  }).catch((err)=>console.log(err))
+}
+const downLoadContract=(url)=>{
+  fetch(url).then(res=> res.blob()).then(blob =>{
+    const a=document.createElement('a')
+    a.href=URL.createObjectURL(blob)
+    a.download=''
+    document.body.appendChild(a)
+    a.click()
+  })
+}
+onMounted(()=>{
+ getDeptList()
+})
 </script>
+
+
+
+
+
+
+
+
+
+
 <style lang="scss" scoped>
+$complete:#ADADAD;
+$wait:#FF7301;
+$audit:#4672FF;
+$reject:#FF5A40;
+$agree:#80D249;
+$base-black:#333;
+
+.complete{
+  background: $complete;
+}
+.wait{
+  background: $wait;
+}
+.audit{
+  background: $audit;
+}
+.reject{
+  background: $reject;
+}.agree{
+   background: $agree;
+ }
 .header {
   display: flex;
   justify-content: space-between;
@@ -159,4 +328,49 @@ const handleReturn = () => {
     font-size: 14px;
   }
 }
+
+
+.item-wrapper-inbox{
+      display: flex;
+      font-size: 0.6rem;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      //margin: 10px 0;
+      color: $base-black;
+      .dot{
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        margin-right: 5px;
+      }
+    }
+
+.tab-list{
+  //margin-left: 500px;
+  float: right;
+  display: flex;
+  padding: 30px;
+  .tab-list-item{
+    margin: 0 15px;
+    .item-wrapper{
+      display: flex;
+      font-size: 0.6rem;
+      align-items: center;
+      font-weight: bold;
+      margin: 10px 0;
+      color: $base-black;
+      .dot{
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        margin-right: 15px;
+      }
+    }
+  }
+
+}
+
+
+
 </style>
