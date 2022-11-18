@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column label="申请函(附件)"  align="center">
         <template #default="scope">
-          <el-link href="scope.row.applyFiles[0].attachUrl" v-if=" scope.row.applyFiles && scope.row.applyFiles.length>0" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">查看</el-link>
+          <el-link href="scope.row.applyFiles[0].attachUrl" v-if=" scope.row.applyFiles && scope.row.applyFiles.length>0">查看</el-link>
             <span v-else>--</span>
 <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
         </template>
@@ -169,7 +169,7 @@
         <div class="diglog-item item-between">
           <div class="key">定点机构协议：</div>
           <div class="value">
-            <el-link :href=`${singleDetail}.institutionalAgreementList[0].attachUrl`></el-link>
+            <el-link :href="singleDetail.institutionalAgreementList[0].attachUrl"></el-link>
           </div>
         </div>
 
@@ -177,7 +177,7 @@
         <div class="diglog-item item-between">
           <div class="key">申请函：</div>
           <div class="value value-button">
-            <el-link :href=`${singleDetail}.applyFiles[0].attachUrl`></el-link>
+            <el-link :href="singleDetail.applyFiles[0].attachUrl"></el-link>
           </div>
         </div>
 
