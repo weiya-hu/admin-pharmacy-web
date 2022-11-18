@@ -1,62 +1,109 @@
 <template>
 
-
   <div class="wrapper" >
 
-    <div class="header">
-      <div class="goback">
-        <el-icon :size="15" color="#999999">
-          <ArrowLeft />
-        </el-icon>
-        <el-button size="small" color="">返回</el-button>
+      <div class="header">
+        <el-button text :icon="ArrowLeft" @click="handleReturn">返回</el-button>
+        <div class="name">{{info.orgName}}</div>
+        <div class="salesman">销售人员：{{info.saleUserName}}</div>
       </div>
 
-      <h2>{{fullName}}</h2>
-      <el-divider />
-    </div>
-
-    <div class="search-container">
-      <div class="date-choose">
-        <span>签约日期</span>
-        <el-date-picker
-            v-model="date"
-            type="daterange"
-            :shortcuts="shortcuts"
-            range-separator="—"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            size='large'
+    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form-item label="签约日期">
+        <el-date-picker value-format="YYYY-MM-DD"
+                        v-model="queryTime"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="加入日期"
+                        end-placeholder="结束日期"
+                        :shortcuts="shortcuts"
         />
-      </div>
-      <div class="all-search">
-        <el-input v-model="input2" placeholder="搜索合同编号" size="large">
-          <template #append><el-button :icon="Search" /></template>
-        </el-input>
-      </div>
-    </div>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="queryParams.queryContractCode" placeholder="搜合同编号" style="width: 250px"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-row :gutter="10" class="mb8">
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
 
     <div class="table-container">
-      <el-table :data="tableData" stripe style="width: 100%"  max-height="800"  border	>
-        <el-table-column prop="corp" label="合同编号" width="180" align="center" />
-        <el-table-column prop="contact" label="合同" width="180" align="center"/>
-        <el-table-column prop="phone" label="签约清单" align="center"/>
-        <el-table-column prop="area" label="签约日期"  align="center"/>
-        <el-table-column prop="address" label="签约人"  align="center"/>
-        <el-table-column prop="from" label="应付金额(元)"  align="center"/>
-        <el-table-column prop="date" label="实付金额(元)"   align="center"/>
-        <el-table-column prop="pay" label="支付类型" align="center" />
-        <el-table-column prop="pay" label="支付时间" align="center" />
-        <el-table-column prop="pay" label="支付凭证" align="center" />
-        <el-table-column prop="status" label="状态" align="center" >
-          <template #default="{row}">
-            <div class="dot"></div>
-            <div>{{ row.status }}</div>
+      <el-table :data="deptList" stripe  v-loading="loading">
+        <el-table-column prop="contractCode" label="合同编号" width="180" align="center" />
+        <el-table-column label="下载合同" prop="download" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <el-button link type="primary" @click="downloadContract(scope.row.hippId)" >下载</el-button>
+<!--            <span v-else>&#45;&#45;</span>-->
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="签约清单" align="center">
+          <template #default="scope">
+            <el-link :href="scope.row.applyListAttachFile[0].attachUrl" v-if=" scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">查看</el-link>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="signTime" label="签约日期"  align="center"/>
+        <el-table-column prop="partyAUser" label="签约人"  align="center"/>
+        <el-table-column prop="amountPayable" label="应付金额(元)"  align="center"/>
+        <el-table-column prop="hippPayinfos[0].amountActuallyPaid" label="实付金额(元)"   align="center"/>
+        <el-table-column label="支付时间" prop="hippPayinfos[0].payTime" show-overflow-tooltip align="center">
+          <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payTime:'--'}}</template>
+        </el-table-column>
+        <el-table-column label="支付类型" prop="hippPayinfos[0].payType" show-overflow-tooltip align="center">
+          <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payType==1?'微信':'线下':'--'}}</template>
+        </el-table-column>
+        <el-table-column label="支付凭证" prop="hippPayVouchers" show-overflow-tooltip align="center">
+          <template #default="scope">
+            <el-link :href="scope.row.paymentVoucherAttachFile[0].attachUrl" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-link>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态"  show-overflow-tooltip align="center" fixed="right">
+          <template #default="scope">
+            <div class="item-wrapper-inbox" v-if="scope.row.status === 1 || scope.row.status === 3 || scope.row.status === 4">
+              <div class="dot wait" ></div>
+              <div>{{ scope.row.status === 1?'待签约':scope.row.status === 3?'待付款':'待进件' }}</div>
+            </div>
+
+            <div class="item-wrapper-inbox" v-if="scope.row.status === 2 || scope.row.status === 10 ">
+              <div class="dot complete" ></div>
+              <div>{{ scope.row.status === 2?'已失效': '已归档'}}</div>
+            </div>
+
+            <div class="item-wrapper-inbox" v-if="scope.row.status === 5 ">
+              <div class="dot audit" ></div>
+              <div>审核中</div>
+            </div>
+
+            <div class="item-wrapper-inbox" v-if="scope.row.status === 6 ">
+              <div class="dot reject" ></div>
+              <div>驳回</div>
+            </div>
+
+            <div class="item-wrapper-inbox" v-if="scope.row.status === 7 ">
+              <div class="dot agree" ></div>
+              <div>审核通过</div>
+            </div>
+
+            <span v-if="!scope.row.status">--</span>
+
           </template>
         </el-table-column>
 
       </el-table>
     </div>
 
+    <pagination
+        v-if="total > 10"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getPagination"
+    />
     <div class="tab-list">
       <div class="tab-list-item">
         <div class="item-wrapper">
@@ -96,23 +143,43 @@
           <div class="dot agree"></div>
           <div>审核通过</div>
         </div>
-
       </div>
     </div>
 
 
   </div>
 
-
-
 </template>
 
 <script setup >
 
-import {computed, ref} from "vue";
-import {Search} from "@element-plus/icons-vue";
+import {useRouter} from "vue-router";
+import {getCurrentInstance, ref ,onMounted} from "vue";
+import {ArrowLeft,View,} from '@element-plus/icons-vue';
+import request from "@/utils/request";
+import {downLoadFile,downloadContract} from "@/api/insurance/customer";
 
 
+const queryTime=ref('')
+const router=useRouter()
+const {proxy}=getCurrentInstance()
+const info=ref({
+  orgName: router.currentRoute.value.query.orgName,
+  saleUserName: router.currentRoute.value.query.saleUserName || '暂无',
+  orgId: router.currentRoute.value.query.orgId,
+})
+const queryParams = ref({
+  pageNum: 1,
+  pageSize: 10,
+  corpId:info.value.orgId,
+  queryContractCode:'',
+
+})
+const defaultParams = ref({
+  corpId:info.value.orgId,
+  pageNum: 1,
+  pageSize: 10,
+})
 const shortcuts = [
   {
     text: '前一周',
@@ -142,29 +209,93 @@ const shortcuts = [
     },
   },
 ]
-
-let corpName=ref('xxx医药公司'),
-    input=ref(''),
-    date=ref('');
-
-let fullName=computed(()=>{
-  return corpName.value+` 签约记录`
-})
-
-let tableData=[{
-  status:"待付款"
-}]
+const showSearch = ref(true)
+const loading = ref(false)
+const total = ref(0)
+const deptList = ref([])
 
 
-
-</script>
-
-<style>
-body{
-  background-color: #FAFAFA ;
+//返回
+const handleReturn = () => {
+  const obj = { path: "/insurance/customer" };
+  proxy.$tab.closeOpenPage(obj);
 }
 
-</style>
+// 搜索
+const handleQuery = () => {
+  let [begin,end]=queryTime.value
+  queryParams.value.querySignTimeStart=begin
+  queryParams.value.querySignTimeEnd=end
+  getDeptList(queryParams.value)
+}
+
+//获取表格数据
+const getDeptList=(params)=>{
+  request(
+      {
+        url:"/hipp/admin/hipp/applyinfo/list",
+        method:"get",
+        params:params
+      }
+  ).then((res)=>{
+    if(res.code==200){
+      total.value=res.data.total
+      deptList.value=res.data.list
+    }
+  }).catch((err)=>console.log(err))
+}
+
+const resetQuery=()=>{
+  queryTime.value=''
+  queryParams.value.queryContractCode=''
+  queryParams.value.querySignTimeStart=''
+  queryParams.value.querySignTimeEnd=''
+  getDeptList(defaultParams.value)
+}
+
+const getList=()=>{
+  getDeptList(queryParams.value)
+}
+
+const getPagination = (e) => {
+
+  let {limit,page}=e
+  queryParams.value.pageNum=page,
+      queryParams.value.pageSize=limit,
+      getDeptList(queryParams.value)
+
+
+}
+
+// const downLoadContract=(url)=>{
+//   request({
+//     url:"/file/file/downloadFileByUrl",
+//     params:{
+//       url:btoa(url)
+//     },
+//     method:'get',
+//     responseType: 'blob'
+//   }).then((res)=>{
+//     const blobUrl = window.URL.createObjectURL(new Blob([res]))
+//     const a = document.createElement('a')
+//     const filename = 'xxxx.pdf'
+//     a.href = blobUrl
+//     a.download = filename
+//     a.target = filename
+//     a.click()
+//     window.URL.revokeObjectURL(blobUrl)
+//   })
+// }
+
+const preview=(url)=>{
+  window.location.href = url
+}
+
+onMounted(()=>{
+  getDeptList(defaultParams.value)
+})
+</script>
+
 
 <style lang="scss" >
 $complete:#ADADAD;
@@ -190,52 +321,33 @@ $base-black:#333;
  }
 
 .wrapper{
-
   margin: 20px;
-  padding:10px
-}
-.header {
-  .goback{
-    display: flex;
-    align-items: center;
-  }
-}
-.header {
- h2{
-   text-align: center;
- }
-}
-
-.goback{
-  span{
-    color: #999;
-    font-weight: bold;
-    font-size: 13px;
-  }
-}
-
-.search-container{
+  padding:10px;
+  .header {
   display: flex;
-  .date-choose{
-      span{
-        margin-right: 30px;
-        color: #333333;
-        font-size: 14px;
-        font-weight: bold;
-      }
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #E5E5E5;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: #333333;
+  line-height: 39px;
+  .name {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+    line-height: 39px;
   }
-  .all-search{
-    margin-left: 30px;
+  .salesman {
+    font-size: 14px;
   }
+}
 }
 
-.my-table-header{
-  background: #EDEDED !important;
-}
 
-.el-table th{
-  color: #666 !important;
-}
 
 .table-container{
   margin: 10px;
@@ -244,9 +356,9 @@ $base-black:#333;
 
 .tab-list{
   //margin-left: 500px;
-  float: right;
   display: flex;
   padding: 30px;
+  float:right;
   .tab-list-item{
     margin: 0 15px;
     .item-wrapper{
@@ -266,6 +378,21 @@ $base-black:#333;
   }
 }
 
+.item-wrapper-inbox{
+  display: flex;
+  font-size: 0.6rem;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  //margin: 10px 0;
+  color: $base-black;
+  .dot{
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+}
 
 
 .el-input{

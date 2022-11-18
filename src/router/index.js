@@ -56,8 +56,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/insurance/details',
+    path: '/handleBy/details',
     component: () => import('@/views/insurance/handledBy/details'),
+    hidden: true
+  },
+  {
+    path: '/customer/signRecord',
+    component: () => import('@/views/insurance/customer/signRecord'),
     hidden: true
   },
 

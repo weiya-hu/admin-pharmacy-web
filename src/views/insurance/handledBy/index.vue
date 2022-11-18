@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
       <el-form-item>
         <el-select v-model="queryParams.region" placeholder="所属区域">
-          <el-option v-for="item in regionList" :value="item.value" :label="item.name" :key="item.value"/>
+          <el-option v-for="item in regionList" :value="item.name" :label="item.name" :key="item.value"/>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -11,11 +11,11 @@
       </el-form-item>
       <el-form-item label="起止时间" >
         <el-date-picker value-format="YYYY-MM-DD"
-            v-model="queryTime"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="加入日期"
-            end-placeholder="结束日期"
+                        v-model="queryTime"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="加入日期"
+                        end-placeholder="结束日期"
         />
       </el-form-item>
 
@@ -32,7 +32,7 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table :data="deptList.value" >
+    <el-table :data="deptList" >
       <el-table-column prop="orgName" label="企业名称" show-overflow-tooltip align="center"/>
       <el-table-column prop="orgContactUser" label="联系人" align="center"/>
       <el-table-column prop="orgContactTel" label="联系电话" show-overflow-tooltip align="center"/>
@@ -44,7 +44,9 @@
       </el-table-column>
       <el-table-column label="申请记录">
         <template #default="scope">
-          <el-button text type="primary"  @click="handleSee(scope.row)">查看</el-button>
+          <el-tooltip content="查看" placement="top">
+            <el-button text type="primary" :icon="View" @click="handleSee(scope.row)"></el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -56,7 +58,7 @@
       :total="total"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
-      @pagination="getList"
+      @pagination="getPagination"
   />
 
 </template>
@@ -65,8 +67,9 @@
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import request from "@/utils/request";
-import {getUserInfo} from "@/utils/auth";
 import {onMounted} from "vue";
+import {View} from "@element-plus/icons-vue";
+
 
 const router = useRouter();
 const total = ref(0);
@@ -88,17 +91,14 @@ const showSearch = ref(true)
 
 // 所属区域
 const regionList = [
-  {value: '1', name: '四川'},
+  {value: '1', name: '成都'},
   {value: '2', name: '重庆'},
-  {value: '3', name: '陕西'}
+  {value: '3', name: '陕西'},
+  {value: '4', name: '北京'},
 ]
 
-let deptList =[]
+const deptList =ref([])
 
-
-onMounted(()=>{
-  getDeptList()
-})
 // 搜索
  const handleQuery = () => {
   let [begin,end]=queryTime.value
@@ -123,38 +123,31 @@ const resetQuery = () => {
   queryParams.value.queryQuickSearch=''
   queryTime.value=''
   queryParams.value.region=''
+  queryParams.value.queryJoinDateStart=''
+  queryParams.value.queryJoinDateEnd=''
+  getDeptList(defaultParams.value)
 }
-// 刷新表格数据
-const getList = (e) => {
+// 改变分页规则
+const getPagination = (e) => {
 
     let {limit,page}=e
    queryParams.value.pageNum=page,
    queryParams.value.pageSize=limit
-   request(
-       {
-         url:"/hipp/hipp/rel/getMyCustomer",
-         method:"get",
-         params:queryParams.value
-       }
-   ).then((res)=>{
-     if(res.code==200){
-       total.value=res.data.total
-       deptList.value=res.data.list
-     }
-   }).catch((err)=>console.log(err))
+   getDeptList(queryParams.value)
 
 }
+
 const caseTypeNamesFormat=(row)=>{
   return row.saleUserName?row.saleUserName:'--'
 }
 
 //获取我的客户
-const getDeptList=()=>{
+const getDeptList=(params=>{
    request(
       {
         url:"/hipp/hipp/rel/getMyCustomer",
         method:"get",
-        params:defaultParams.value
+        params
       }
   ).then((res)=>{
     if(res.code==200){
@@ -162,17 +155,22 @@ const getDeptList=()=>{
        deptList.value=res.data.list
     }
    }).catch((err)=>console.log(err))
-}
+})
 
 
 // 查看申请记录
 const handleSee = ({orgId,saleUserName,orgName}) => {
-  console.log(orgId,saleUserName,orgName)
   router.push({
-    path: '/insurance/details',
+    path: '/handleBy/details',
     query: {orgId,saleUserName,orgName}
   })
 }
+
+onMounted(()=>{
+
+  getPagination({limit:10,page:1})
+  // getDeptList(defaultParams.value)
+})
 
 
 </script>
