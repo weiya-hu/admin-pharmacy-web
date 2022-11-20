@@ -9,7 +9,7 @@
       </div>
 
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="签约日期">
+      <el-form-item label="加入日期">
         <el-date-picker value-format="YYYY-MM-DD"
                         v-model="queryTime"
                         type="daterange"
@@ -231,9 +231,15 @@ const handleReturn = () => {
 
 // 搜索
 const handleQuery = () => {
-  let [begin,end]=queryTime.value
-  queryParams.value.querySignTimeStart=begin
-  queryParams.value.querySignTimeEnd=end
+  if(queryTime.value.length >0){
+    let [begin,end]=queryTime.value
+    queryParams.value.querySignTimeStart=begin
+    queryParams.value.querySignTimeEnd=end
+  }else{
+    queryParams.value.querySignTimeStart=''
+    queryParams.value.querySignTimeEnd=''
+  }
+
   getDeptList(queryParams.value)
 }
 
