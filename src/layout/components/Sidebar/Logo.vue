@@ -25,7 +25,7 @@ defineProps({
   }
 })
 
-const title = ref('智慧药店管理系统');
+const title = ref('山海平');
 const settingsStore = useSettingsStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 </script>

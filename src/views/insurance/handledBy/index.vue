@@ -155,7 +155,7 @@ const getDeptList=(params=>{
 // 查看申请记录
 const handleSee = ({orgId,saleUserName,orgName}) => {
   router.push({
-    path: '/handleBy/details',
+    path: '/insurance/handleBy/details',
     query: {orgId,saleUserName,orgName}
   })
 }

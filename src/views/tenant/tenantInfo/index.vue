@@ -205,6 +205,7 @@ const queryInfoById = (row) => {
       .then(res => {
         if (res.code === 200) {
           formData.value = res.data
+          formData.value.packageId = res.data.packageId?res.data.packageId.split(','):[]
           shouAddDia.value = true
         }
       })
@@ -226,6 +227,7 @@ const handleEdit = (row) => {
       .then(res => {
         if (res.code === 200) {
           formData.value = res.data
+          formData.value.packageId = res.data.packageId?res.data.packageId.split(','):[]
         }
       })
 }
@@ -236,8 +238,12 @@ const handleDelete = (row) => {
 const formSubmit =  () => {
    formDataRef.value.validate(v => {
     if (v) {
+      let param = formData.value;
+      if(formData.value.packageId){
+        param.packageId = formData.value.packageId.toString()
+      }
       if(thisHandleType.value === '新增租户'){
-         saveTenant(formData.value)
+         saveTenant(param)
             .then(res=>{
               if(res.code === 200){
                 ElMessage.success('新增成功！')
@@ -246,7 +252,7 @@ const formSubmit =  () => {
               }
             })
       }else if(thisHandleType.value === '编辑租户'){
-         updateTenant(formData.value)
+         updateTenant(param)
             .then(res=>{
               if(res.code === 200){
                 ElMessage.success('编辑成功！')

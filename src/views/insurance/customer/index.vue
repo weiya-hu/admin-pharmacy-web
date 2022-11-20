@@ -194,7 +194,7 @@ const resetQuery=()=>{
 const goSignRecord =(row)=>{
   let {saleUserName,orgName,orgId}=row
   router.push({
-    path: '/customer/signRecord',
+    path: '/insurance/customer/signRecord',
     query:{
       saleUserName,
       orgId,

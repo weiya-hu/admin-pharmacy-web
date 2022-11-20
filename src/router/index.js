@@ -55,22 +55,22 @@ export const constantRoutes = [
     component: () => import('@/views/error/401'),
     hidden: true
   },
-  {
-    path: '/handleBy/details',
-    component: () => import('@/views/insurance/handledBy/details'),
-    hidden: true
-  },
-  {
-    path: '/customer/signRecord',
-    component: () => import('@/views/insurance/customer/signRecord'),
-    hidden: true
-  },
-
-  {
-    path:"/insurance/details/inputs",
-    component: ()=>import('@/views/insurance/handledBy/inputs'),
-    hidden: true
-  },
+  // {
+  //   path: '/handleBy/details',
+  //   component: () => import('@/views/insurance/handledBy/details'),
+  //   hidden: true
+  // },
+  // {
+  //   path: '/customer/signRecord',
+  //   component: () => import('@/views/insurance/customer/signRecord'),
+  //   hidden: true
+  // },
+  //
+  // {
+  //   path:"/insurance/details/inputs",
+  //   component: ()=>import('@/views/insurance/handledBy/inputs'),
+  //   hidden: true
+  // },
 
   {
     path: '',
@@ -86,25 +86,25 @@ export const constantRoutes = [
     ]
   },
 
-  {
-    path: '/insurance',
-    component: Layout,
-    meta: { title: '经办人和销售员', icon: 'dashboard', affix: true,keepalive:true},
-    children: [
-      {
-        path: 'handleBy',
-        component: () => import('@/views/insurance/handledBy/index'),
-        name: '经办人',
-        meta: { title: '经办人', icon: 'dashboard', affix: true ,keepalive:true}
-      },
-      {
-        path: 'customer',
-        component: () => import('@/views/insurance/customer/index'),
-        name: '销售员',
-        meta: { title: '销售员', icon: 'dashboard', affix: true,keepalive:true }
-      },
-    ]
-  },
+  // {
+  //   path: '/insurance',
+  //   component: Layout,
+  //   meta: { title: '经办人和销售员', icon: 'dashboard', affix: true,keepalive:true},
+  //   children: [
+  //     {
+  //       path: 'handleBy',
+  //       component: () => import('@/views/insurance/handledBy/index'),
+  //       name: '经办人',
+  //       meta: { title: '经办人', icon: 'dashboard', affix: true ,keepalive:true}
+  //     },
+  //     {
+  //       path: 'customer',
+  //       component: () => import('@/views/insurance/customer/index'),
+  //       name: '销售员',
+  //       meta: { title: '销售员', icon: 'dashboard', affix: true,keepalive:true }
+  //     },
+  //   ]
+  // },
   {
     path: '/user',
     component: Layout,

@@ -13,7 +13,7 @@
       >
         <div class="title-container">
           <img src="@/assets/images/logo.png" class="login_logo" />
-          <h3 class="title">智慧药店助手</h3>
+          <h3 class="title">山海平</h3>
         </div>
 
         <el-form-item prop="username">
@@ -127,7 +127,8 @@ function getCookie() {
   loginForm.value = {
     username: username === undefined ? loginForm.value.username : username,
     password: password === undefined ? loginForm.value.password : decrypt(password),
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    platformProductId : 'admin'
   };
 }
 

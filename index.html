@@ -7,7 +7,7 @@
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="icon" href="/favicon.ico">
-    <title>智慧药店管理系统</title>
+    <title>山海平</title>
     <!--[if lt IE 11]><script>window.location.href='/html/ie.html';</script><![endif]-->
     <style>
         html,
@@ -17,14 +17,14 @@
             margin: 0px;
             padding: 0px;
         }
-        
+
         .chromeframe {
             margin: 0.2em 0;
             background: #ccc;
             color: #000;
             padding: 0.2em 0;
         }
-        
+
         #loader-wrapper {
             position: fixed;
             top: 0;
@@ -33,7 +33,7 @@
             height: 100%;
             z-index: 999999;
         }
-        
+
         #loader {
             display: block;
             position: relative;
@@ -52,7 +52,7 @@
             animation: spin 2s linear infinite;
             z-index: 1001;
         }
-        
+
         #loader:before {
             content: "";
             position: absolute;
@@ -69,7 +69,7 @@
             -ms-animation: spin 3s linear infinite;
             animation: spin 3s linear infinite;
         }
-        
+
         #loader:after {
             content: "";
             position: absolute;
@@ -86,7 +86,7 @@
             -webkit-animation: spin 1.5s linear infinite;
             animation: spin 1.5s linear infinite;
         }
-        
+
         @-webkit-keyframes spin {
             0% {
                 -webkit-transform: rotate(0deg);
@@ -99,7 +99,7 @@
                 transform: rotate(360deg);
             }
         }
-        
+
         @keyframes spin {
             0% {
                 -webkit-transform: rotate(0deg);
@@ -112,7 +112,7 @@
                 transform: rotate(360deg);
             }
         }
-        
+
         #loader-wrapper .loader-section {
             position: fixed;
             top: 0;
@@ -124,15 +124,15 @@
             -ms-transform: translateX(0);
             transform: translateX(0);
         }
-        
+
         #loader-wrapper .loader-section.section-left {
             left: 0;
         }
-        
+
         #loader-wrapper .loader-section.section-right {
             right: 0;
         }
-        
+
         .loaded #loader-wrapper .loader-section.section-left {
             -webkit-transform: translateX(-100%);
             -ms-transform: translateX(-100%);
@@ -140,7 +140,7 @@
             -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
         }
-        
+
         .loaded #loader-wrapper .loader-section.section-right {
             -webkit-transform: translateX(100%);
             -ms-transform: translateX(100%);
@@ -148,13 +148,13 @@
             -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
         }
-        
+
         .loaded #loader {
             opacity: 0;
             -webkit-transition: all 0.3s ease-out;
             transition: all 0.3s ease-out;
         }
-        
+
         .loaded #loader-wrapper {
             visibility: hidden;
             -webkit-transform: translateY(-100%);
@@ -163,15 +163,15 @@
             -webkit-transition: all 0.3s 1s ease-out;
             transition: all 0.3s 1s ease-out;
         }
-        
+
         .no-js #loader-wrapper {
             display: none;
         }
-        
+
         .no-js h1 {
             color: #222222;
         }
-        
+
         #loader-wrapper .load_title {
             font-family: 'Open Sans';
             color: #FFF;
@@ -184,7 +184,7 @@
             opacity: 1;
             line-height: 30px;
         }
-        
+
         #loader-wrapper .load_title span {
             font-weight: normal;
             font-style: italic;
