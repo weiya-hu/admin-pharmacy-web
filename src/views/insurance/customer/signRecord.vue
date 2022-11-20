@@ -168,7 +168,7 @@ import request from "@/utils/request";
 import {downLoadFile,downloadContract} from "@/api/insurance/customer";
 
 
-const queryTime=ref('')
+const queryTime=ref([])
 const router=useRouter()
 const {proxy}=getCurrentInstance()
 const info=ref({
@@ -231,7 +231,7 @@ const handleReturn = () => {
 
 // 搜索
 const handleQuery = () => {
-  if(queryTime.value.length >0){
+  if(queryTime.value){
     let [begin,end]=queryTime.value
     queryParams.value.querySignTimeStart=begin
     queryParams.value.querySignTimeEnd=end
@@ -261,7 +261,7 @@ const getDeptList=(params)=>{
 }
 
 const resetQuery=()=>{
-  queryTime.value=''
+  queryTime.value=[]
   queryParams.value.queryContractCode=''
   queryParams.value.querySignTimeStart=''
   queryParams.value.querySignTimeEnd=''

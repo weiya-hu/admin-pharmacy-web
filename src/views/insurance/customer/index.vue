@@ -125,7 +125,7 @@ const state = reactive({
   url: ''
 })
 const dialogVisible = ref(false)
-const queryTime=ref('')
+const queryTime=ref([])
 const area=ref(["重庆",'北京','成都','陕西'])
 
 //快速切换时间
@@ -183,7 +183,7 @@ onMounted(() => {
 })
 
 const resetQuery=()=>{
-  queryTime.value=''
+  queryTime.value=[]
   queryParams.value.region=''
   queryParams.value.queryQuickSearch=''
   queryParams.value.queryJoinDateStart=''
@@ -218,9 +218,15 @@ function copyTextSuccess() {
 }
 
 const handleQuery = () => {
-  let [begin,end]=queryTime.value
-  queryParams.value.queryJoinDateStart=begin
-  queryParams.value.queryJoinDateEnd=end
+
+  if(queryTime.value){
+    let [begin,end]=queryTime.value
+    queryParams.value.querySignTimeStart=begin
+    queryParams.value.querySignTimeEnd=end
+  }else{
+    queryParams.value.querySignTimeStart=''
+    queryParams.value.querySignTimeEnd=''
+  }
   getDeptList(queryParams.value)
 }
 
