@@ -1,115 +1,116 @@
 <template>
+  <div>
+    <!--  筛选-->
+    <div class="search-container">
 
-  <!--  筛选-->
-  <div class="search-container">
+      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+        <el-form-item label="签约日期">
+          <el-date-picker value-format="YYYY-MM-DD"
+                          v-model="queryTime"
+                          type="daterange"
+                          range-separator="至"
+                          start-placeholder="加入日期"
+                          end-placeholder="结束日期"
+                          :shortcuts="shortcuts"
+          />
+        </el-form-item>
 
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item label="签约日期">
-        <el-date-picker value-format="YYYY-MM-DD"
-                        v-model="queryTime"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="加入日期"
-                        end-placeholder="结束日期"
-                        :shortcuts="shortcuts"
-        />
-      </el-form-item>
+  <el-form-item>
+    <el-select class="m-2" placeholder="所属区域" size="normal" v-model="queryParams.region" >
+      <el-option
+          v-for="(item,index) in area"
+          :key="index"
+          :value="item"
+      />
+    </el-select>
+  </el-form-item>
 
- <el-form-item>
-   <el-select class="m-2" placeholder="所属区域" size="normal" v-model="queryParams.region" >
-     <el-option
-         v-for="(item,index) in area"
-         :key="index"
-         :value="item"
-     />
-   </el-select>
- </el-form-item>
+        <el-form-item>
+          <el-input v-model="queryParams.queryQuickSearch" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+      <el-row :gutter="10" class="mb8">
+        <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      </el-row>
 
-      <el-form-item>
-        <el-input v-model="queryParams.queryQuickSearch" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-    <el-row :gutter="10" class="mb8">
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <div class="search-item">
-      <el-button @click="handleShare" type="primary">分享</el-button>
+      <div class="search-item">
+        <el-button @click="handleShare" type="primary">分享</el-button>
+      </div>
     </div>
-  </div>
 
-  <!--制表  -->
-  <div class="table-container">
-    <el-table :data="deptList" stripe  >
-      <el-table-column prop="orgName" label="企业名称"  align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.orgName?scope.row.orgName:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="orgContactUser" label="联系人"  align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.orgContactUser?scope.row.orgContactUser:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="orgContactTel" label="联系电话" align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.orgContactTel?scope.row.orgContactTel:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="orgRegion" label="所属区域" align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.orgRegion?scope.row.orgRegion:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="orgAddress" label="详细地址" width="300" align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.orgAddress?scope.row.orgAddress:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="joinDate" label="加入日期" sortable align="center" show-overflow-tooltip>
-        <template #default="scope">
-          {{scope.row.joinDate?scope.row.joinDate:'--'}}
-        </template>
-      </el-table-column>
-      <el-table-column prop="pay" label="签约付款" align="center">
-        <template #default="scope">
-      <el-tooltip content="查看" placement="top">
-        <el-button :icon='View' type="primary" text @click="goSignRecord(scope.row)" size="large">
-        </el-button>
-      </el-tooltip>
-        </template>
-      </el-table-column>
-      <!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
-      <!--        <el-button-->
-      <!--            size="small"-->
-      <!--            color="#008c8c"-->
-      <!--        >编辑</el-button-->
-      <!--        >-->
-      <!--      </el-table-column>-->
-    </el-table>
-  </div>
-  <el-dialog v-model="dialogVisible" width="750px" append-to-body draggable :close-on-click-modal="false">
-    <template #header>
-      <span>下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span>
-    </template>
-    <div>
-      <p class="state_url">{{ state.url }}</p>
-      <!--      <el-link :underline="false" icon="DocumentCopy" v-copyText="state.url" v-copyText:callback="copyTextSuccess">复制</el-link>-->
+    <!--制表  -->
+    <div class="table-container">
+      <el-table :data="deptList" stripe  >
+        <el-table-column prop="orgName" label="企业名称"  align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.orgName?scope.row.orgName:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgContactUser" label="联系人"  align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.orgContactUser?scope.row.orgContactUser:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgContactTel" label="联系电话" align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.orgContactTel?scope.row.orgContactTel:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgRegion" label="所属区域" align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.orgRegion?scope.row.orgRegion:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgAddress" label="详细地址" width="300" align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.orgAddress?scope.row.orgAddress:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="joinDate" label="加入日期" sortable align="center" show-overflow-tooltip>
+          <template #default="scope">
+            {{scope.row.joinDate?scope.row.joinDate:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="pay" label="签约付款" align="center">
+          <template #default="scope">
+        <el-tooltip content="查看" placement="top">
+          <el-button :icon='View' type="primary" text @click="goSignRecord(scope.row)" size="large">
+          </el-button>
+        </el-tooltip>
+          </template>
+        </el-table-column>
+        <!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
+        <!--        <el-button-->
+        <!--            size="small"-->
+        <!--            color="#008c8c"-->
+        <!--        >编辑</el-button-->
+        <!--        >-->
+        <!--      </el-table-column>-->
+      </el-table>
     </div>
-  </el-dialog>
+    <el-dialog v-model="dialogVisible" width="750px" append-to-body draggable :close-on-click-modal="false">
+      <template #header>
+        <span>下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span>
+      </template>
+      <div>
+        <p class="state_url">{{ state.url }}</p>
+        <!--      <el-link :underline="false" icon="DocumentCopy" v-copyText="state.url" v-copyText:callback="copyTextSuccess">复制</el-link>-->
+      </div>
+    </el-dialog>
 
 
-  <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getPagination"
-  />
+    <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getPagination"
+    />
+  </div>
 </template>
 
 <script  setup>

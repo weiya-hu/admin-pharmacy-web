@@ -1,70 +1,73 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
-      <el-form-item>
-        <el-select v-model="queryParams.region" placeholder="所属区域">
-          <el-option
-              v-for="(item,index) in area"
-              :key="index"
-              :value="item"
+  <div>
+
+  
+    <div class="app-container">
+      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+        <el-form-item>
+          <el-select v-model="queryParams.region" placeholder="所属区域">
+            <el-option
+                v-for="(item,index) in area"
+                :key="index"
+                :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+
+        </el-form-item>
+        <el-form-item label="起止时间" >
+          <el-date-picker value-format="YYYY-MM-DD"
+                          v-model="queryTime"
+                          type="daterange"
+                          range-separator="至"
+                          start-placeholder="加入日期"
+                          end-placeholder="结束日期"
           />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
+        </el-form-item>
+  ·
+        <el-form-item>
+          <el-input v-model="queryParams.queryQuickSearch" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
 
-      </el-form-item>
-      <el-form-item label="起止时间" >
-        <el-date-picker value-format="YYYY-MM-DD"
-                        v-model="queryTime"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="加入日期"
-                        end-placeholder="结束日期"
-        />
-      </el-form-item>
-·
-      <el-form-item>
-        <el-input v-model="queryParams.queryQuickSearch" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+      <el-row :gutter="10" class="mb8">
+        <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+      </el-row>
 
-    <el-row :gutter="10" class="mb8">
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+      <el-table :data="deptList" >
+        <el-table-column prop="orgName" label="企业名称" show-overflow-tooltip align="center"/>
+        <el-table-column prop="orgContactUser" label="联系人" align="center"/>
+        <el-table-column prop="orgContactTel" label="联系电话" show-overflow-tooltip align="center"/>
+        <el-table-column prop="orgRegion" label="所属区域" align="center">
+        </el-table-column>
+        <el-table-column prop="orgAddress" label="详细地址" show-overflow-tooltip align="center"/>
+        <el-table-column prop="joinDate" label="加入日期" show-overflow-tooltip align="center"/>
+        <el-table-column prop="saleUserName" label="销售人员" align="center" :formatter="caseTypeNamesFormat">
+        </el-table-column>
+        <el-table-column label="申请记录">
+          <template #default="scope">
+            <el-tooltip content="查看" placement="top">
+              <el-button text type="primary" :icon="View" @click="handleSee(scope.row)"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <el-table :data="deptList" >
-      <el-table-column prop="orgName" label="企业名称" show-overflow-tooltip align="center"/>
-      <el-table-column prop="orgContactUser" label="联系人" align="center"/>
-      <el-table-column prop="orgContactTel" label="联系电话" show-overflow-tooltip align="center"/>
-      <el-table-column prop="orgRegion" label="所属区域" align="center">
-      </el-table-column>
-      <el-table-column prop="orgAddress" label="详细地址" show-overflow-tooltip align="center"/>
-      <el-table-column prop="joinDate" label="加入日期" show-overflow-tooltip align="center"/>
-      <el-table-column prop="saleUserName" label="销售人员" align="center" :formatter="caseTypeNamesFormat">
-      </el-table-column>
-      <el-table-column label="申请记录">
-        <template #default="scope">
-          <el-tooltip content="查看" placement="top">
-            <el-button text type="primary" :icon="View" @click="handleSee(scope.row)"></el-button>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-    </el-table>
+    </div>
 
+    <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getPagination"
+    />
   </div>
-
-  <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getPagination"
-  />
-
 </template>
 
 <script setup>
