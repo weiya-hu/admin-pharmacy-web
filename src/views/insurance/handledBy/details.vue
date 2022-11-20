@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="签约清单" prop="list" show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.applyListAttachFile[0].attachUrl" v-if=" scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">查看</el-link>
+          <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile">查看</el-link>
 
           <!--          <el-button link type="primary" @click="downLoadFile(scope.row.applyListAttachFile[0])" v-if="scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">下载</el-button>-->
           <span v-else>--</span>
@@ -67,26 +67,26 @@
           <span>{{scope.row.amountPayable?scope.row.amountPayable:'--'}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="实付金额(元)" prop="hippPayinfos[0].amountActuallyPaid" show-overflow-tooltip width="100" align="center">
-        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].amountActuallyPaid:'--'}}</template>
+      <el-table-column label="实付金额(元)"  show-overflow-tooltip width="100" align="center">
+        <template #default="scope">{{scope.row.amountActuallyPaid?scope.row.amountActuallyPaid:'--'}}</template>
       </el-table-column>
-      <el-table-column label="支付时间" prop="hippPayinfos[0].payTime" show-overflow-tooltip align="center">
-        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payTime:'--'}}</template>
+      <el-table-column label="支付时间"  show-overflow-tooltip align="center">
+        <template #default="scope">{{scope.row.payTime?scope.row.payTime:'--'}}</template>
       </el-table-column>
-      <el-table-column label="支付类型" prop="hippPayinfos[0].payType" show-overflow-tooltip align="center">
-        <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payType==1?'微信':'线下':'--'}}</template>
+      <el-table-column label="支付类型" show-overflow-tooltip align="center">
+        <template #default="scope">{{scope.row.payType?scope.row.payType==1?'微信':'线下':'--'}}</template>
 
       </el-table-column>
-      <el-table-column label="支付凭证" prop="hippPayVouchers" show-overflow-tooltip align="center">
+      <el-table-column label="支付凭证"  show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.paymentVoucherAttachFile[0].attachUrl" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-link>
+          <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile">查看</el-link>
 <!--          <el-button link type="primary" @click="downLoadFile(scope.row.paymentVoucherAttachFile[0])" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-button>-->
           <span v-else>--</span>
         </template>
       </el-table-column>
       <el-table-column label="进件申请" prop="hippApplys" show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.incomingPartListAttachFile[0].attachUrl" v-if=" scope.row.incomingPartListAttachFile && scope.row.incomingPartListAttachFile.length>0">查看</el-link>
+          <el-link :href="scope.row.incomingPartListAttachFile" v-if=" scope.row.incomingPartListAttachFile">查看</el-link>
 
 <!--          <el-button type="primary" link @click="downLoadFile(scope.row.incomingPartListAttachFile[0])" v-if="scope.row.incomingPartListAttachFile && scope.row.incomingPartListAttachFile.length>0">查看</el-button>-->
           <span v-else>--</span>
@@ -126,8 +126,8 @@
       <el-table-column label="操作" width="130" align="center" fixed="right">
         <template #default="scope">
           <el-tooltip content="查看" placement="top">
-            <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" ></el-button>
-            <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" v-if="scope.row.status!==1 && scope.row.status!==4 && scope.row.status!==3 && scope.row.status!==2 &&scope.row.status"></el-button>
+<!--            <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" ></el-button>-->
+            <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" v-if="scope.row.status>4 && scope.row.status"></el-button>
           </el-tooltip>
           <el-tooltip content="归档" placement="top">
             <el-button v-if="scope.row.canArchive" text type="primary" :icon="Check" @click="handleClick('file', scope.row)">归档</el-button>

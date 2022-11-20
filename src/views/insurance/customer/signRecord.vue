@@ -36,29 +36,29 @@
         <el-table-column prop="contractCode" label="合同编号" width="180" align="center" />
         <el-table-column label="下载合同" prop="download" show-overflow-tooltip align="center">
           <template #default="scope">
-            <el-button link type="primary" @click="downloadContract(scope.row.hippId)" >下载</el-button>
-<!--            <span v-else>&#45;&#45;</span>-->
+            <el-button link type="primary" @click="downloadContract(scope.row.hippId)" v-if="scope.row.status>2">下载</el-button>
+            <span v-else>--</span>
           </template>
         </el-table-column>
         <el-table-column prop="phone" label="签约清单" align="center">
           <template #default="scope">
-            <el-link :href="scope.row.applyListAttachFile[0].attachUrl" v-if=" scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">查看</el-link>
+            <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile">查看</el-link>
             <span v-else>--</span>
           </template>
         </el-table-column>
         <el-table-column prop="signTime" label="签约日期"  align="center"/>
         <el-table-column prop="partyAUser" label="签约人"  align="center"/>
         <el-table-column prop="amountPayable" label="应付金额(元)"  align="center"/>
-        <el-table-column prop="hippPayinfos[0].amountActuallyPaid" label="实付金额(元)"   align="center"/>
-        <el-table-column label="支付时间" prop="hippPayinfos[0].payTime" show-overflow-tooltip align="center">
-          <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payTime:'--'}}</template>
+        <el-table-column prop="amountActuallyPaid" label="实付金额(元)"   align="center"/>
+        <el-table-column label="支付时间" prop="payTime" show-overflow-tooltip align="center">
+          <template #default="scope">{{scope.row.payTime?scope.row.payTime:'--'}}</template>
         </el-table-column>
-        <el-table-column label="支付类型" prop="hippPayinfos[0].payType" show-overflow-tooltip align="center">
-          <template #default="scope">{{scope.row.hippPayinfos?scope.row.hippPayinfos[0].payType==1?'微信':'线下':'--'}}</template>
+        <el-table-column label="支付类型" prop="payType" show-overflow-tooltip align="center">
+          <template #default="scope">{{scope.row.payType?scope.row.payType==1?'微信':'线下':'--'}}</template>
         </el-table-column>
         <el-table-column label="支付凭证" prop="hippPayVouchers" show-overflow-tooltip align="center">
           <template #default="scope">
-            <el-link :href="scope.row.paymentVoucherAttachFile[0].attachUrl" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-link>
+            <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile">查看</el-link>
             <span v-else>--</span>
           </template>
         </el-table-column>
