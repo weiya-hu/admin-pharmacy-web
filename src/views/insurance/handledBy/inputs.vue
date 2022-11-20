@@ -29,7 +29,7 @@
       </el-table-column>
       <el-table-column label="申请函(附件)"  align="center">
         <template #default="scope">
-          <el-link href="scope.row.applyFiles[0].attachUrl" v-if=" scope.row.applyFiles && scope.row.applyFiles.length>0">查看</el-link>
+          <el-link href="scope.row.applyFiles[0].attachUrl" v-if=" scope.row.applyFiles && scope.row.applyFiles.length>0" type="primary" target="_blank">查看</el-link>
             <span v-else>--</span>
 <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
         </template>
@@ -169,7 +169,7 @@
         <div class="diglog-item item-between">
           <div class="key">定点机构协议：</div>
           <div class="value">
-            <el-link :href="singleDetail.institutionalAgreementList[0].attachUrl"></el-link>
+            <el-link :href="singleDetail.institutionalAgreementList[0].attachUrl" type="primary" target="_blank">查看</el-link>
           </div>
         </div>
 
@@ -177,9 +177,18 @@
         <div class="diglog-item item-between">
           <div class="key">申请函：</div>
           <div class="value value-button">
-            <el-link :href="singleDetail.applyFiles[0].attachUrl"></el-link>
+            <el-link :href="singleDetail.applyFiles[0].attachUrl" type="primary" target="_blank">查看</el-link>
           </div>
         </div>
+
+        <div class="diglog-item item-between" v-if="singleDetail.status==5">
+          <div class="key">国家机构回执：</div>
+          <div class="value value-button">
+            <el-link :href="singleDetail.platformReceiptList[0].attachUrl" type="primary" target="_blank">查看</el-link>
+            <el-button type="warn" @click="upLoadFilled(singleDetail)">重新上传</el-button>
+          </div>
+        </div>
+
 
         <div class="diglog-item item-between" v-if="singleDetail.status==5 || singleDetail.status==3">
           <div class="key">国家平台回执：</div>
@@ -214,7 +223,7 @@
         </div>
 
         <div class="diglog-item item-center">
-          <el-button type="warn" @click="rejectApply(singleDetail.hippId)" v-if="singleDetail.status==3">驳回</el-button>
+          <el-button type="warn" @click="showRejectLog(singleDetail.hippId)" v-if="singleDetail.status==3">驳回</el-button>
           <el-button color="#FF5A40" size="normal" style="color:#fff;">关闭</el-button>
         </div>
       </div>
@@ -227,6 +236,7 @@
       width="60%"
       align-center
       center
+      z-index="1000"
   >
     <template #header>
       <div style="font-weight: bold">请上传回执</div>
@@ -260,7 +270,7 @@
       v-model="rejectDiglog"
       width="60%"
       center
-      z-index="100"
+      z-index="1000"
   >
     <template #header>
       <div style="font-weight: bold">请填写驳回原因</div>
@@ -275,8 +285,6 @@
 
     <template #footer><el-button type="warning" @click="rejectApply(rejectHippId)">驳回</el-button></template>
   </el-dialog>
-
-
 
 
   <pagination
@@ -386,7 +394,6 @@ const getDeptList=(params)=>{
 }
 
 const handleReturn=()=>{
-  // window.history.go(-1)
   proxy.$router.go(-1)
 }
 

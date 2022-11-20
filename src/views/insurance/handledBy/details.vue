@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column label="签约清单" prop="list" show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile">查看</el-link>
+          <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile" type="primary" target="_blank">查看</el-link>
 
           <!--          <el-button link type="primary" @click="downLoadFile(scope.row.applyListAttachFile[0])" v-if="scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">下载</el-button>-->
           <span v-else>--</span>
@@ -79,14 +79,14 @@
       </el-table-column>
       <el-table-column label="支付凭证"  show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile">查看</el-link>
+          <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile" type="primary" target="_blank">查看</el-link>
 <!--          <el-button link type="primary" @click="downLoadFile(scope.row.paymentVoucherAttachFile[0])" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-button>-->
           <span v-else>--</span>
         </template>
       </el-table-column>
       <el-table-column label="进件申请" prop="hippApplys" show-overflow-tooltip align="center">
         <template #default="scope">
-          <el-link :href="scope.row.incomingPartListAttachFile" v-if=" scope.row.incomingPartListAttachFile">查看</el-link>
+          <el-link :href="scope.row.incomingPartListAttachFile" v-if=" scope.row.incomingPartListAttachFile" type="primary" target="_blank">查看</el-link>
 
 <!--          <el-button type="primary" link @click="downLoadFile(scope.row.incomingPartListAttachFile[0])" v-if="scope.row.incomingPartListAttachFile && scope.row.incomingPartListAttachFile.length>0">查看</el-button>-->
           <span v-else>--</span>

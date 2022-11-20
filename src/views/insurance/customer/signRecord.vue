@@ -44,7 +44,7 @@
         </el-table-column>
         <el-table-column prop="phone" label="签约清单" align="center">
           <template #default="scope">
-            <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile" type="primary">查看</el-link>
+            <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile" type="primary" target="_blank">查看</el-link>
             <span v-else>--</span>
           </template>
         </el-table-column>
@@ -67,7 +67,7 @@
         </el-table-column>
         <el-table-column label="支付凭证" prop="hippPayVouchers" show-overflow-tooltip align="center">
           <template #default="scope">
-            <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile">查看</el-link>
+            <el-link :href="scope.row.paymentVoucherAttachFile" v-if=" scope.row.paymentVoucherAttachFile" type="primary" target="_blank">查看</el-link>
             <span v-else>--</span>
           </template>
         </el-table-column>
