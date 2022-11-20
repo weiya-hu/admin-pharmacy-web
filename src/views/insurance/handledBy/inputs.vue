@@ -429,7 +429,7 @@ const rejectApply=(hippId)=>{
 
 const getPagination=(e)=>{
   let {limit,page}=e
-  params.value.pageNum=1,
+  params.value.pageNum=page,
   params.value.pageSize=limit,
   getDeptList(params.value)
 }

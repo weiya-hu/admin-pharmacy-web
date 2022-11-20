@@ -221,11 +221,11 @@ const handleQuery = () => {
 
   if(queryTime.value){
     let [begin,end]=queryTime.value
-    queryParams.value.querySignTimeStart=begin
-    queryParams.value.querySignTimeEnd=end
+    queryParams.value.queryJoinDateStart=begin
+    queryParams.value.queryJoinDateEnd=end
   }else{
-    queryParams.value.querySignTimeStart=''
-    queryParams.value.querySignTimeEnd=''
+    queryParams.value.queryJoinDateStart=''
+    queryParams.value.queryJoinDateEnd=''
   }
   getDeptList(queryParams.value)
 }
@@ -251,7 +251,7 @@ const getList=()=>{
 
 const getPagination = (e) => {
   let {limit,page}=e
-  queryParams.value.pageNum=1,
+  queryParams.value.pageNum=page,
   queryParams.value.pageSize=limit,
   getDeptList(queryParams.value)
 

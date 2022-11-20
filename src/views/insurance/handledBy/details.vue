@@ -230,28 +230,23 @@ const deptList = ref([])
 
 // 搜索
 const handleQuery = () => {
-  let [begin,end]=queryTime.value
-  queryParams.value.queryJoinDateStart=begin
-  queryParams.value.queryJoinDateEnd=end
-  request(
-      {
-        url:"/hipp/admin/hipp/applyinfo/list",
-        method:"get",
-        params:queryParams.value
-      }
-  ).then((res)=>{
-    if(res.code==200){
-      deptList.value=res.data.list
-      total.value=res.data.total
-    }
-  })
+  if(queryTime.value){
+    let [begin,end]=queryTime.value
+    queryParams.value.querySignTimeStart=begin
+    queryParams.value.querySignTimeEnd=end
+  }else{
+    queryParams.value.querySignTimeStart=''
+    queryParams.value.querySignTimeEnd=''
+  }
+
+  getDeptList(queryParams.value)
 }
 // 重置
 const resetQuery = () => {
  queryTime.value=''
   queryParams.value.queryContractCode=''
-  queryParams.value.queryJoinDateStart=''
-  queryParams.value.queryJoinDateEnd=''
+  queryParams.value.querySignTimeStart=''
+  queryParams.value.querySignTimeEnd=''
   getDeptList(defaultParams.value)
 }
 
@@ -296,12 +291,13 @@ const handleReturn = () => {
   const obj = { path: "/insurance/handleBy" };
   proxy.$tab.closeOpenPage(obj);
 }
-const getDeptList=()=>{
+const getDeptList=(params)=>{
+
   request(
       {
         url:"/hipp/admin/hipp/applyinfo/list",
         method:"get",
-        params:defaultParams.value
+        params,
       }
   ).then((res)=>{
     if(res.code==200){
@@ -319,7 +315,7 @@ const preview=(url)=>{
 // 修改分页条件
 const getPagination = (e) => {
   let {limit,page}=e
-  queryParams.value.pageNum=1,
+  queryParams.value.pageNum=page,
       queryParams.value.pageSize=limit,
       getDeptList(queryParams.value)
 }
@@ -328,7 +324,7 @@ const getPagination = (e) => {
 
 
 onMounted(()=>{
- getDeptList()
+ getDeptList(defaultParams.value)
 })
 </script>
 

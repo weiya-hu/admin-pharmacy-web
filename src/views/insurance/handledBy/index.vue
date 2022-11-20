@@ -3,7 +3,11 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
       <el-form-item>
         <el-select v-model="queryParams.region" placeholder="所属区域">
-          <el-option v-for="item in regionList" :value="item.name" :label="item.name" :key="item.value"/>
+          <el-option
+              v-for="(item,index) in area"
+              :key="index"
+              :value="item"
+          />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -90,32 +94,22 @@ const defaultParams = ref({
 const showSearch = ref(true)
 
 // 所属区域
-const regionList = [
-  {value: '1', name: '成都'},
-  {value: '2', name: '重庆'},
-  {value: '3', name: '陕西'},
-  {value: '4', name: '北京'},
-]
+const area=ref(["重庆",'北京','成都','陕西'])
+
 
 const deptList =ref([])
 
 // 搜索
  const handleQuery = () => {
-  let [begin,end]=queryTime.value
-   queryParams.value.queryJoinDateStart=begin
-   queryParams.value.queryJoinDateEnd=end
-     request(
-        {
-          url:"/hipp/hipp/rel/getMyCustomer",
-          method:"get",
-          params:queryParams.value
-        }
-    ).then((res)=>{
-      if(res.code==200){
-        deptList.value=res.data.list
-        total.value=res.data.total
-      }
-    })
+   if(queryTime.value){
+     let [begin,end]=queryTime.value
+     queryParams.value.queryJoinDateStart=begin
+     queryParams.value.queryJoinDateEnd=end
+   }else{
+     queryParams.value.queryJoinDateStart=''
+     queryParams.value.queryJoinDateEnd=''
+   }
+    getDeptList(queryParams.value)
 
  }
 // 重置
@@ -131,7 +125,7 @@ const resetQuery = () => {
 const getPagination = (e) => {
 
     let {limit,page}=e
-   queryParams.value.pageNum=1,
+   queryParams.value.pageNum=page,
    queryParams.value.pageSize=limit
    getDeptList(queryParams.value)
 

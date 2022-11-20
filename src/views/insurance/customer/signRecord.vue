@@ -275,7 +275,7 @@ const getList=()=>{
 const getPagination = (e) => {
 
   let {limit,page}=e
-  queryParams.value.pageNum=1,
+  queryParams.value.pageNum=page,
   queryParams.value.pageSize=limit,
   getDeptList(queryParams.value)
 
