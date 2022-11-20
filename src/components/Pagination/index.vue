@@ -103,7 +103,7 @@ function handleCurrentChange(val) {
   padding: 32px 16px;
 }
 .pagination-container.hidden {
-  /*display: none;*/
+  display: none;
 }
 .pagination-container{
   position: relative;

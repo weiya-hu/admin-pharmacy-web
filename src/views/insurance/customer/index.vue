@@ -45,12 +45,36 @@
   <!--制表  -->
   <div class="table-container">
     <el-table :data="deptList" stripe  >
-      <el-table-column prop="orgName" label="企业名称"  align="center" show-overflow-tooltip/>
-      <el-table-column prop="orgContactUser" label="联系人"  align="center" show-overflow-tooltip/>
-      <el-table-column prop="orgContactTel" label="联系电话" align="center" show-overflow-tooltip/>
-      <el-table-column prop="orgRegion" label="所属区域" align="center" show-overflow-tooltip/>
-      <el-table-column prop="orgAddress" label="详细地址" width="300" align="center" show-overflow-tooltip/>
-      <el-table-column prop="joinDate" label="加入日期" sortable align="center" show-overflow-tooltip/>
+      <el-table-column prop="orgName" label="企业名称"  align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.orgName?scope.row.orgName:'--'}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="orgContactUser" label="联系人"  align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.orgContactUser?scope.row.orgContactUser:'--'}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="orgContactTel" label="联系电话" align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.orgContactTel?scope.row.orgContactTel:'--'}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="orgRegion" label="所属区域" align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.orgRegion?scope.row.orgRegion:'--'}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="orgAddress" label="详细地址" width="300" align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.orgAddress?scope.row.orgAddress:'--'}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="joinDate" label="加入日期" sortable align="center" show-overflow-tooltip>
+        <template #default="scope">
+          {{scope.row.joinDate?scope.row.joinDate:'--'}}
+        </template>
+      </el-table-column>
       <el-table-column prop="pay" label="签约付款" align="center">
         <template #default="scope">
       <el-tooltip content="查看" placement="top">
@@ -209,7 +233,7 @@ const getDeptList=(params)=>{
       }
   ).then((res)=>{
     if(res.code==200){
-      total.value=res.data.total
+      total.value=Number(res.data.total)
       deptList.value=res.data.list
     }
   }).catch((err)=>console.log(err))
@@ -221,7 +245,7 @@ const getList=()=>{
 
 const getPagination = (e) => {
   let {limit,page}=e
-  queryParams.value.pageNum=page,
+  queryParams.value.pageNum=1,
   queryParams.value.pageSize=limit,
   getDeptList(queryParams.value)
 

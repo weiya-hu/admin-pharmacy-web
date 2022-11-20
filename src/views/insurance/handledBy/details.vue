@@ -305,7 +305,7 @@ const getDeptList=()=>{
       }
   ).then((res)=>{
     if(res.code==200){
-      total.value=res.data.total
+      total.value=Number(res.data.total)
       deptList.value=res.data.list
     }
   }).catch((err)=>console.log(err))
@@ -319,7 +319,7 @@ const preview=(url)=>{
 // 修改分页条件
 const getPagination = (e) => {
   let {limit,page}=e
-  queryParams.value.pageNum=page,
+  queryParams.value.pageNum=1,
       queryParams.value.pageSize=limit,
       getDeptList(queryParams.value)
 }

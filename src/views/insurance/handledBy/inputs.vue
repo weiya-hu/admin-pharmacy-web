@@ -277,7 +277,7 @@
   </el-dialog>
 
 
-<!--    <el-button @click="dialogVisible=true">测试驳回</el-button>-->
+
 
   <pagination
       v-show="total > 0"
@@ -380,7 +380,7 @@ const getDeptList=(params)=>{
   ).then((res)=>{
     if(res.code==200){
       deptList.value=res.data.list
-      total.value=res.data.total
+      total.value=Number(res.data.total)
     }
   })
 }
@@ -429,7 +429,7 @@ const rejectApply=(hippId)=>{
 
 const getPagination=(e)=>{
   let {limit,page}=e
-  params.value.pageNum=page,
+  params.value.pageNum=1,
   params.value.pageSize=limit,
   getDeptList(params.value)
 }

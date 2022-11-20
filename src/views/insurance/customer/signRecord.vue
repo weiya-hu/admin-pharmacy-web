@@ -33,7 +33,9 @@
 
     <div class="table-container">
       <el-table :data="deptList" stripe  v-loading="loading">
-        <el-table-column prop="contractCode" label="合同编号" width="180" align="center" />
+        <el-table-column prop="contractCode" label="合同编号" width="180" align="center" >
+          <template #default="scope">{{scope.row.contractCode?scope.row.contractCode:'--'}}</template>
+        </el-table-column>
         <el-table-column label="下载合同" prop="download" show-overflow-tooltip align="center">
           <template #default="scope">
             <el-button link type="primary" @click="downloadContract(scope.row.hippId)" v-if="scope.row.status>2">下载</el-button>
@@ -42,14 +44,21 @@
         </el-table-column>
         <el-table-column prop="phone" label="签约清单" align="center">
           <template #default="scope">
-            <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile">查看</el-link>
+            <el-link :href="scope.row.applyListAttachFile" v-if=" scope.row.applyListAttachFile" type="primary">查看</el-link>
             <span v-else>--</span>
           </template>
         </el-table-column>
-        <el-table-column prop="signTime" label="签约日期"  align="center"/>
+        <el-table-column prop="signTime" label="签约日期"  align="center">
+          <template #default="scope">{{scope.row.signTime?scope.row.signTime:'--'}}</template>
+        </el-table-column>
         <el-table-column prop="partyAUser" label="签约人"  align="center"/>
-        <el-table-column prop="amountPayable" label="应付金额(元)"  align="center"/>
-        <el-table-column prop="amountActuallyPaid" label="实付金额(元)"   align="center"/>
+        <el-table-column prop="amountPayable" label="应付金额(元)"  align="center">
+          <template #default="scope">{{scope.row.amountPayable?scope.row.amountPayable:'--'}}</template>
+        </el-table-column>
+        <el-table-column prop="amountActuallyPaid" label="实付金额(元)"   align="center">
+          <template #default="scope">{{scope.row.amountActuallyPaid?scope.row.amountActuallyPaid:'--'}}</template>
+
+        </el-table-column>
         <el-table-column label="支付时间" prop="payTime" show-overflow-tooltip align="center">
           <template #default="scope">{{scope.row.payTime?scope.row.payTime:'--'}}</template>
         </el-table-column>
@@ -97,13 +106,6 @@
       </el-table>
     </div>
 
-    <pagination
-        v-if="total > 10"
-        :total="total"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        @pagination="getPagination"
-    />
     <div class="tab-list">
       <div class="tab-list-item">
         <div class="item-wrapper">
@@ -146,7 +148,13 @@
       </div>
     </div>
 
-
+    <pagination
+        v-show="total > 0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getPagination"
+    />
   </div>
 
 </template>
@@ -211,7 +219,7 @@ const shortcuts = [
 ]
 const showSearch = ref(true)
 const loading = ref(false)
-const total = ref(0)
+const total = ref('')
 const deptList = ref([])
 
 
@@ -239,9 +247,10 @@ const getDeptList=(params)=>{
       }
   ).then((res)=>{
     if(res.code==200){
-      total.value=res.data.total
+      total.value=Number(res.data.total)
       deptList.value=res.data.list
     }
+
   }).catch((err)=>console.log(err))
 }
 
@@ -260,10 +269,9 @@ const getList=()=>{
 const getPagination = (e) => {
 
   let {limit,page}=e
-  queryParams.value.pageNum=page,
-      queryParams.value.pageSize=limit,
-      getDeptList(queryParams.value)
-
+  queryParams.value.pageNum=1,
+  queryParams.value.pageSize=limit,
+  getDeptList(queryParams.value)
 
 }
 
@@ -356,6 +364,7 @@ $base-black:#333;
 
 .tab-list{
   //margin-left: 500px;
+  margin-top: 30px;
   display: flex;
   padding: 30px;
   float:right;

@@ -56,18 +56,18 @@ export  function  downloadContract(hippId){
                 method:'get',
                 responseType: 'blob'
             }).then((res)=>{
-                if(res.code==200){
                     const blobUrl = window.URL.createObjectURL(new Blob([res]))
                     const a = document.createElement('a')
                     const filename = `电子签合同`
+                console.log(blobUrl)
                     a.href = blobUrl
-                    a.download = filename
+                    a.download = filename+'.pdf'
                     a.target = filename
                     a.click()
                     window.URL.revokeObjectURL(blobUrl)
-                }
 
-            })
+            }).catch(err=>{
+                console.log(err)})
         }
      })
 
