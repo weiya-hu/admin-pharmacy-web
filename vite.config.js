@@ -6,6 +6,7 @@ import createVitePlugins from './vite/plugins'
 export default defineConfig(({ mode, command }) => {
     const env = loadEnv(mode, process.cwd())
     const { VITE_APP_ENV } = env
+
     return {
         // 部署生产环境和开发环境下的URL。
         // 默认情况下，vite 会假设你的应用是被部署在一个域名的根路径上
@@ -42,7 +43,7 @@ export default defineConfig(({ mode, command }) => {
                 },
                 '/prod-api': {
                     // target: 'http://192.168.123.67:8080/',
-                    target: 'http://api.sp.shanhaiping.com',
+                    target: 'https://api.sp.shanhaiping.com',
                     changeOrigin: true,
                     rewrite: (p) => p.replace(/^\/prod-api/, '')
                 }

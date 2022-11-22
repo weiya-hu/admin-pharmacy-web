@@ -40,14 +40,40 @@
       </el-row>
 
       <el-table :data="deptList" >
-        <el-table-column prop="orgName" label="企业名称" show-overflow-tooltip align="center"/>
-        <el-table-column prop="orgContactUser" label="联系人" align="center"/>
-        <el-table-column prop="orgContactTel" label="联系电话" show-overflow-tooltip align="center"/>
-        <el-table-column prop="orgRegion" label="所属区域" align="center">
+        <el-table-column prop="orgName" label="企业名称" show-overflow-tooltip align="center">
+          <template #default="scope">
+            {{scope.row.orgName?scope.row.orgName:'--'}}
+          </template>
         </el-table-column>
-        <el-table-column prop="orgAddress" label="详细地址" show-overflow-tooltip align="center"/>
-        <el-table-column prop="joinDate" label="加入日期" show-overflow-tooltip align="center"/>
+        <el-table-column prop="orgContactUser" label="联系人" align="center">
+          <template #default="scope">
+            {{scope.row.orgContactUser?scope.row.orgContactUser:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgContactTel" label="联系电话" show-overflow-tooltip align="center">
+          <template #default="scope">
+            {{scope.row.orgContactTel?scope.row.orgContactTel:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgRegion" label="所属区域" align="center">
+          <template #default="scope">
+            {{scope.row.orgRegion?scope.row.orgRegion:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="orgAddress" label="详细地址" show-overflow-tooltip align="center">
+          <template #default="scope">
+            {{scope.row.orgAddress?scope.row.orgAddress:'--'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="joinDate" label="加入日期" show-overflow-tooltip align="center">
+          <template #default="scope">
+            {{scope.row.joinDate?scope.row.joinDate:'--'}}
+          </template>
+        </el-table-column>
         <el-table-column prop="saleUserName" label="销售人员" align="center" :formatter="caseTypeNamesFormat">
+          <template #default="scope">
+            {{scope.row.saleUserName?scope.row.saleUserName:'--'}}
+          </template>
         </el-table-column>
         <el-table-column label="申请记录">
           <template #default="scope">

@@ -1,4 +1,5 @@
-import axios from 'axios'
+import
+    axios from 'axios'
 import { ElNotification, ElMessageBox, ElMessage, ElLoading } from 'element-plus'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
@@ -99,9 +100,9 @@ service.interceptors.response.use(res => {
             return Promise.reject(new Error(msg))
         } else if (code !== 200) {
             ElNotification.error({
-                title: msg
+                title: `操作失败:${msg}`
             })
-            return Promise.reject('error')
+            return Promise.reject(res.data)
         } else {
             return Promise.resolve(res.data)
         }

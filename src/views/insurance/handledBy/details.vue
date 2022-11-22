@@ -96,31 +96,35 @@
         <template #default="scope">
           <div class="item-wrapper-inbox" v-if="scope.row.status === 1 || scope.row.status === 3 || scope.row.status === 4">
             <div class="dot wait" ></div>
-            <div>{{ scope.row.status === 1?'待签约':scope.row.status === 3?'待付款':'待进件' }}</div>
+            <div>{{ scope.row.statusName }}</div>
           </div>
 
           <div class="item-wrapper-inbox" v-if="scope.row.status === 2 || scope.row.status === 10 ">
             <div class="dot complete" ></div>
-            <div>{{ scope.row.status === 2?'已失效': '已归档'}}</div>
+            <div>{{ scope.row.statusName }}</div>
           </div>
 
           <div class="item-wrapper-inbox" v-if="scope.row.status === 5 ">
             <div class="dot audit" ></div>
-            <div>审核中</div>
+            <div>{{ scope.row.statusName }}</div>
           </div>
 
-          <div class="item-wrapper-inbox" v-if="scope.row.status === 6 ">
-            <div class="dot reject" ></div>
-            <div>驳回</div>
-          </div>
+<!--          <div class="item-wrapper-inbox" v-if="scope.row.status === 6 ">-->
+<!--            <div class="dot reject" ></div>-->
+<!--            <div>驳回</div>-->
+<!--          </div>-->
 
           <div class="item-wrapper-inbox" v-if="scope.row.status === 7 ">
             <div class="dot agree" ></div>
-            <div>审核通过</div>
+            <div>{{ scope.row.statusName }}</div>
+          </div>
+
+          <div class="item-wrapper-inbox" v-if="scope.row.status === 8 ">
+            <div class="dot reject" ></div>
+            <div>{{ scope.row.statusName }}</div>
           </div>
 
           <span v-if="!scope.row.status">--</span>
-
         </template>
       </el-table-column>
       <el-table-column label="操作" width="130" align="center" fixed="right">
@@ -130,7 +134,7 @@
             <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" v-if="scope.row.status>4 && scope.row.status"></el-button>
           </el-tooltip>
           <el-tooltip content="归档" placement="top">
-            <el-button v-if="scope.row.canArchive" text type="primary" :icon="Check" @click="handleClick('file', scope.row)">归档</el-button>
+            <el-button  v-if="scope.row.canArchive" text type="primary" :icon='Finished' @click="handleClick('file', scope.row)"></el-button>
           </el-tooltip>
           <span v-if="scope.row.status==1 || scope.row.status==2 ||scope.row.status==3 || scope.row.status==4 || !scope.row.status">--</span>
         </template>
@@ -195,10 +199,10 @@
 <script setup>
 import {useRouter} from "vue-router";
 import {getCurrentInstance, ref ,onMounted} from "vue";
-import {ArrowLeft,View, Check} from '@element-plus/icons-vue';
+import {ArrowLeft,View, Finished} from '@element-plus/icons-vue';
 import request from "@/utils/request";
-import {downLoadFile,downloadContract} from "@/api/insurance/customer";
-import {ElNotification} from "element-plus";
+import {downloadContract} from "@/api/insurance/customer";
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 
 const router = useRouter();
@@ -224,6 +228,8 @@ const showSearch = ref(true)
 const loading = ref(false)
 const total = ref(0)
 const deptList = ref([])
+//归档hippId
+const archiveId = ref ('')
 
 
 
@@ -270,22 +276,49 @@ const handleClick = (type, row) => {
     })
   } else if (type === 'file') {
     let {hippId}=row
-    request({
-      url:"/hipp/admin/hipp/detail/updateState",
-      params:{
-        hippId,
-        status:10
-      }
-    }).then(res=>{
-      if(res.code==200){
-        ElNotification({
-          title:"归档成功",
-          type:'success'
-        })
-      }
-    })
+    archiveId.value=hippId
+    goArchive(archiveId.value)
+
   }
 }
+
+// 归档
+const goArchive=(hippId)=>{
+  ElMessageBox.confirm(
+      '确认归档此申请',
+      '',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        request({
+          url:"/hipp/admin/hipp/detail/updateState",
+          params:{
+            hippId,
+            status:10
+          }
+        }).then(res=>{
+          if(res.code==200){
+            ElMessage({
+              type: 'success',
+              message: '归档成功',
+            })
+          }
+        })
+
+      })
+      .catch(() => {
+
+      })
+
+}
+
+
+
+
 // 返回
 const handleReturn = () => {
   const obj = { path: "/insurance/handleBy" };
@@ -308,9 +341,6 @@ const getDeptList=(params)=>{
 }
 
 
-const preview=(url)=>{
-  window.location.herf=url
-}
 
 // 修改分页条件
 const getPagination = (e) => {
