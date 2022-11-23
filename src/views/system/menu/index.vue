@@ -388,17 +388,18 @@ function cancel() {
 /** 表单重置 */
 function reset() {
    form.value = {
-      menuId: undefined,
-      parentId: "0",
-      menuName: undefined,
-      icon: undefined,
-      menuType: "M",
-      orderNum: undefined,
-      isFrame: "1",
-      isCache: "0",
-      visible: "1",
-      status: "1",
-      menuCType: undefined
+     menuId: undefined,
+     parentId: "0",
+     menuName: undefined,
+     icon: undefined,
+     menuType: "M",
+     orderNum: undefined,
+     isFrame: "1",
+     isCache: "0",
+     visible: "1",
+     status: "1",
+     menuCType: undefined,
+     query: ''
    };
    proxy.resetForm("menuRef");
 }
