@@ -2,39 +2,61 @@
   <div>
     <!--  筛选-->
     <div class="search-container">
-
-      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
+      <el-form
+        :model="queryParams"
+        ref="queryRef"
+        :inline="true"
+        v-show="showSearch"
+      >
         <el-form-item label="签约日期">
-          <el-date-picker value-format="YYYY-MM-DD"
-                          v-model="queryTime"
-                          type="daterange"
-                          range-separator="至"
-                          start-placeholder="加入日期"
-                          end-placeholder="结束日期"
-                          :shortcuts="shortcuts"
+          <el-date-picker
+            value-format="YYYY-MM-DD"
+            v-model="queryTime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="加入日期"
+            end-placeholder="结束日期"
+            :shortcuts="shortcuts"
+            @change="dateChange"
           />
         </el-form-item>
 
-  <el-form-item>
-    <el-select class="m-2" placeholder="所属区域" size="normal" v-model="queryParams.region" >
-      <el-option
-          v-for="(item,index) in area"
-          :key="index"
-          :value="item"
-      />
-    </el-select>
-  </el-form-item>
+        <el-form-item>
+          <el-select
+            class="m-2"
+            placeholder="所属区域"
+            size="normal"
+            v-model="queryParams.region"
+            @change="selectChange"
+          >
+            <el-option
+              v-for="(item, index) in area"
+              :key="index"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
 
         <el-form-item>
-          <el-input v-model="queryParams.queryQuickSearch" placeholder="搜企业名称/联系人/联系电话" style="width: 250px"/>
+          <el-input
+            v-model="queryParams.queryQuickSearch"
+            placeholder="搜企业名称/联系人/联系电话"
+            style="width: 250px"
+            @change="inputChange"
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button type="primary" icon="Search" @click="handleQuery"
+            >搜索</el-button
+          >
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10" class="mb8">
-        <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
+        <right-toolbar
+          v-model:showSearch="showSearch"
+          @queryTable="getList"
+        ></right-toolbar>
       </el-row>
 
       <div class="search-item">
@@ -44,43 +66,81 @@
 
     <!--制表  -->
     <div class="table-container">
-      <el-table :data="deptList" stripe  >
-        <el-table-column prop="orgName" label="企业名称"  align="center" show-overflow-tooltip>
+      <el-table :data="deptList" stripe>
+        <el-table-column
+          prop="orgName"
+          label="企业名称"
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.orgName?scope.row.orgName:'--'}}
+            {{ scope.row.orgName ? scope.row.orgName : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="orgContactUser" label="联系人"  align="center" show-overflow-tooltip>
+        <el-table-column
+          prop="orgContactUser"
+          label="联系人"
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.orgContactUser?scope.row.orgContactUser:'--'}}
+            {{ scope.row.orgContactUser ? scope.row.orgContactUser : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="orgContactTel" label="联系电话" align="center" show-overflow-tooltip>
+        <el-table-column
+          prop="orgContactTel"
+          label="联系电话"
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.orgContactTel?scope.row.orgContactTel:'--'}}
+            {{ scope.row.orgContactTel ? scope.row.orgContactTel : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="orgRegion" label="所属区域" align="center" show-overflow-tooltip>
+        <el-table-column
+          prop="orgRegion"
+          label="所属区域"
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.orgRegion?scope.row.orgRegion:'--'}}
+            {{ scope.row.orgRegion ? scope.row.orgRegion : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="orgAddress" label="详细地址" width="300" align="center" show-overflow-tooltip>
+        <el-table-column
+          prop="orgAddress"
+          label="详细地址"
+          width="300"
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.orgAddress?scope.row.orgAddress:'--'}}
+            {{ scope.row.orgAddress ? scope.row.orgAddress : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="joinDate" label="加入日期" sortable align="center" show-overflow-tooltip>
+        <el-table-column
+          prop="joinDate"
+          label="加入日期"
+          sortable
+          align="center"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.joinDate?scope.row.joinDate:'--'}}
+            {{ scope.row.joinDate ? scope.row.joinDate : "--" }}
           </template>
         </el-table-column>
         <el-table-column prop="pay" label="签约付款" align="center">
           <template #default="scope">
-        <el-tooltip content="查看" placement="top">
-          <el-button :icon='View' type="primary" text @click="goSignRecord(scope.row)" size="large">
-          </el-button>
-        </el-tooltip>
+            <el-tooltip content="查看" placement="top">
+              <el-button
+                :icon="View"
+                type="primary"
+                text
+                @click="goSignRecord(scope.row)"
+                size="large"
+              >
+              </el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
         <!--      <el-table-column prop="operation" label="操作" fixed="right" align="center">-->
@@ -92,9 +152,17 @@
         <!--      </el-table-column>-->
       </el-table>
     </div>
-    <el-dialog v-model="dialogVisible" width="750px" append-to-body draggable :close-on-click-modal="false">
+    <el-dialog
+      v-model="dialogVisible"
+      width="750px"
+      append-to-body
+      draggable
+      :close-on-click-modal="false"
+    >
       <template #header>
-        <span>下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span>
+        <span
+          >下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span
+        >
       </template>
       <div>
         <p class="state_url">{{ state.url }}</p>
@@ -102,163 +170,178 @@
       </div>
     </el-dialog>
 
-
     <pagination
-        v-show="total > 0"
-        :total="total"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        @pagination="getPagination"
+      v-show="total > 0"
+      :total="total"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      @pagination="getPagination"
     />
   </div>
 </template>
 
-<script  setup>
-import {ref, onMounted, reactive} from 'vue'
-import {View} from '@element-plus/icons-vue'
-import {useRouter} from 'vue-router'
-import {returnUrl} from '../../../api/insurance/customer'
-import {ElMessage} from "element-plus";
+<script setup>
+import { ref, onMounted, reactive } from "vue";
+import { View } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
+import { returnUrl } from "../../../api/insurance/customer";
+import { ElMessage } from "element-plus";
 import request from "@/utils/request";
 
-const router = useRouter()
+const router = useRouter();
 const state = reactive({
-  url: ''
-})
-const dialogVisible = ref(false)
-const queryTime=ref([])
-const area=ref(["重庆",'北京','成都','陕西'])
+  url: "",
+});
+const dialogVisible = ref(false);
+const queryTime = ref([]);
+const area = ref(["重庆", "北京", "成都", "陕西"]);
 
 //快速切换时间
 const shortcuts = [
   {
-    text: '前一周',
+    text: "前一周",
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      return [start, end]
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+      return [start, end];
     },
   },
   {
-    text: '前一月',
+    text: "前一月",
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      return [start, end]
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+      return [start, end];
     },
   },
   {
-    text: '前一季度',
+    text: "前一季度",
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      return [start, end]
+      const end = new Date();
+      const start = new Date();
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+      return [start, end];
     },
   },
-]
+];
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType:2
-})
+  userType: 2,
+});
 const defaultParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType:2
-})
-const showSearch = ref(true)
-const loading = ref(false)
-const total = ref(0)
-const deptList = ref([])
+  userType: 2,
+});
+const showSearch = ref(true);
+const loading = ref(false);
+const total = ref(0);
+const deptList = ref([]);
 
 onMounted(() => {
-  getDeptList(defaultParams.value)
+  getDeptList(defaultParams.value);
   // tableData.value.map(i=>{
   //   i['pay']='查看'
   //   i['operation']='编辑'
   //   return i
   // })
-})
+});
 
-const resetQuery=()=>{
-  queryTime.value=[]
-  queryParams.value.region=''
-  queryParams.value.queryQuickSearch=''
-  queryParams.value.queryJoinDateStart=''
-  queryParams.value.queryJoinDateEnd=''
-  getDeptList(defaultParams.value)
-}
+const resetQuery = () => {
+  queryTime.value = [];
+  queryParams.value.region = "";
+  queryParams.value.queryQuickSearch = "";
+  queryParams.value.queryJoinDateStart = "";
+  queryParams.value.queryJoinDateEnd = "";
+  getDeptList(defaultParams.value);
+};
 
-const goSignRecord =(row)=>{
-  let {saleUserName,orgName,orgId}=row
+const goSignRecord = (row) => {
+  let { saleUserName, orgName, orgId } = row;
   router.push({
-    path: '/insurance/customer/signRecord',
-    query:{
+    path: "/insurance/customer/signRecord",
+    query: {
       saleUserName,
       orgId,
-      orgName
-    }
-  })
-}
+      orgName,
+    },
+  });
+};
 
 // 分享
 const handleShare = () => {
-  dialogVisible.value = true
-  returnUrl({productId: 'admin'}).then(res => {
-    state.url = res.data
-  })
-}
+  dialogVisible.value = true;
+  returnUrl({ productId: "admin" }).then((res) => {
+    state.url = res.data;
+  });
+};
 
 // 复制
 function copyTextSuccess() {
-  ElMessage.success('复制成功')
-  console.log('url', state.url)
+  ElMessage.success("复制成功");
+  console.log("url", state.url);
 }
 
 const handleQuery = () => {
-
-  if(queryTime.value){
-    let [begin,end]=queryTime.value
-    queryParams.value.queryJoinDateStart=begin
-    queryParams.value.queryJoinDateEnd=end
-  }else{
-    queryParams.value.queryJoinDateStart=''
-    queryParams.value.queryJoinDateEnd=''
+  if (queryTime.value) {
+    let [begin, end] = queryTime.value;
+    queryParams.value.queryJoinDateStart = begin;
+    queryParams.value.queryJoinDateEnd = end;
+  } else {
+    queryParams.value.queryJoinDateStart = "";
+    queryParams.value.queryJoinDateEnd = "";
   }
-  getDeptList(queryParams.value)
-}
+  getDeptList(queryParams.value);
+};
 
-const getDeptList=(params)=>{
-  request(
-      {
-        url:"/hipp/hipp/rel/getMyCustomer",
-        method:"get",
-        params:params
+const getDeptList = (params) => {
+  request({
+    url: "/hipp/hipp/rel/getMyCustomer",
+    method: "get",
+    params: params,
+  })
+    .then((res) => {
+      if (res.code == 200) {
+        total.value = Number(res.data.total);
+        deptList.value = res.data.list;
       }
-  ).then((res)=>{
-    if(res.code==200){
-      total.value=Number(res.data.total)
-      deptList.value=res.data.list
-    }
-  }).catch((err)=>console.log(err))
-}
+    })
+    .catch((err) => console.log(err));
+};
 
-const getList=()=>{
-  getDeptList(queryParams.value)
-}
+const getList = () => {
+  getDeptList(queryParams.value);
+};
 
 const getPagination = (e) => {
-  let {limit,page}=e
-  queryParams.value.pageNum=page,
-  queryParams.value.pageSize=limit,
-  getDeptList(queryParams.value)
+  let { limit, page } = e;
+  (queryParams.value.pageNum = page),
+    (queryParams.value.pageSize = limit),
+    getDeptList(queryParams.value);
+};
 
-}
+const dateChange = (date) => {
+  if (!date) {
+    queryParams.value.queryJoinDateStart = "";
+    queryParams.value.queryJoinDateEnd = "";
+    getDeptList(queryParams.value);
+  } else {
+    queryParams.value.queryJoinDateStart = date[0];
+    queryParams.value.queryJoinDateEnd = date[1];
+    getDeptList(queryParams.value);
+  }
+};
 
+const selectChange = () => {
+  getDeptList(queryParams.value);
+};
 
+const inputChange = () => {
+  getDeptList(queryParams.value);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -271,7 +354,6 @@ const getPagination = (e) => {
   padding: 30px;
 }
 
-
 .table-container {
   margin: 10px;
 }
@@ -282,5 +364,4 @@ const getPagination = (e) => {
   font-weight: bold;
   font-size: 18px;
 }
-
 </style>

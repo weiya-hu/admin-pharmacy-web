@@ -1,296 +1,469 @@
 <template>
   <div>
-
-  
     <div class="app-container">
+      <el-button :icon="ArrowLeft" text @click="handleReturn">返回</el-button>
 
-
-      <el-button text :icon="ArrowLeft" @click="handleReturn">返回</el-button>
-
-      <h3 style="text-align: center;font-weight: bold" s>进件清单</h3>
+      <h3 s style="text-align: center; font-weight: bold">进件清单</h3>
       <el-divider />
       <div class="header">
-        <div class="salesman">合同号：{{info.contractCode}}</div>
-        <div class="salesman">签约日期：{{info.signTime}}</div>
-        <div class="salesman">本单签约机构 {{info.applyOrgNum}} 家</div>
+        <div class="salesman">合同号：{{ info.contractCode }}</div>
+        <div class="salesman">签约日期：{{ info.signTime }}</div>
+        <div class="salesman">本单签约机构 {{ info.applyOrgNum }} 家</div>
       </div>
-      <el-table :data="deptList" v-loading="loading" stripe >
-        <el-table-column label="机构名称" prop="orgName" show-overflow-tooltip align="center"/>
-        <el-table-column label="医药机构编码" prop="orgCode" show-overflow-tooltip align="center"/>
-        <el-table-column label="统一社会信用代码" prop="orgCreditCode" show-overflow-tooltip align="center">
+      <el-table v-loading="loading" :data="deptList" stripe>
+        <el-table-column
+          align="center"
+          label="机构名称"
+          prop="orgName"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          label="医药机构编码"
+          prop="orgCode"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          align="center"
+          label="统一社会信用代码"
+          min-width="120"
+          prop="orgCreditCode"
+          show-overflow-tooltip
+        >
         </el-table-column>
-        <el-table-column label="拟定电子凭证接入通道" prop="accessChannel" show-overflow-tooltip align="center">
+        <el-table-column
+          align="center"
+          label="拟定电子凭证接入通道"
+          prop="accessChannel"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            {{scope.row.accessChannel==1?'微信':scope.row.accessChannel==2?'支付宝':'国家医保App'}}
+            {{
+              scope.row.accessChannel == 1
+                ? "微信"
+                : scope.row.accessChannel == 2
+                ? "支付宝"
+                : "国家医保App"
+            }}
           </template>
         </el-table-column>
-        <el-table-column label="申请接入应用类型" prop="appType" show-overflow-tooltip align="center">
-          <template #default="{row:{appType}}">
-            {{appType==1?'微信小程序':appType=='2'?'微信公众号':appType=='5'?'网页':'移动App'}}
+        <el-table-column
+          align="center"
+          label="申请接入应用类型"
+          prop="appType"
+          show-overflow-tooltip
+        >
+          <template #default="{ row: { appType } }">
+            {{
+              appType == 1
+                ? "微信小程序"
+                : appType == "2"
+                ? "微信公众号"
+                : appType == "5"
+                ? "网页"
+                : "移动App"
+            }}
           </template>
         </el-table-column>
-        <el-table-column label="申请接入应用名称" prop="appName" show-overflow-tooltip width="130" align="center"/>
-        <el-table-column label="定点医药机构联系人" prop="orgContactUser" show-overflow-tooltip width="100" align="center"/>
-        <el-table-column label="定点医药机构联系电话" prop="orgContactTel" show-overflow-tooltip width="100" align="center">
-
-        </el-table-column>
-        <el-table-column label="申请函(附件)"  align="center">
+        <el-table-column
+          align="center"
+          label="申请接入应用名称"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            <el-link href="scope.row.applyFiles[0].attachUrl" v-if=" scope.row.applyFiles && scope.row.applyFiles.length>0" type="primary" target="_blank">查看</el-link>
-              <span v-else>--</span>
-  <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
+            <span>{{ scope.row.appName ? scope.row.appName : "--" }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态"  show-overflow-tooltip align="center" fixed="right">
+        <el-table-column
+          align="center"
+          label="定点医药机构联系人"
+          prop="orgContactUser"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            <div class="item-wrapper-inbox" v-if="scope.row.status === 1 ">
-              <div class="dot complete" ></div>
-              <div>请上传附件</div>
-            </div>
-
-            <div class="item-wrapper-inbox" v-if="scope.row.status === 2 ">
-              <div class="dot wait" ></div>
-              <div>待提交</div>
-            </div>
-
-            <div class="item-wrapper-inbox" v-if="scope.row.status === 3 ">
-              <div class="dot audit" ></div>
-              <div>审核中</div>
-            </div>
-
-            <div class="item-wrapper-inbox" v-if="scope.row.status === 8 ">
-              <div class="dot reject" ></div>
-              <div>驳回</div>
-            </div>
-
-            <div class="item-wrapper-inbox" v-if="scope.row.status === 5 ">
-              <div class="dot agree" ></div>
-              <div>审核通过</div>
-            </div>
-
+            <span>{{
+              scope.row.orgContactUser ? scope.row.orgContactUser : "--"
+            }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="130" align="center" fixed="right">
+        <el-table-column
+          align="center"
+          label="定点医药机构联系电话"
+          min-width="100"
+          prop="orgContactTel"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            <el-tooltip content="查看" placement="top">
-              <el-button text type="primary" :icon="View" @click="goDetail(scope.$index)" v-if="scope.row.canCheck==true"></el-button>
+            <span>{{
+              scope.row.orgContactTel ? scope.row.orgContactTel : "--"
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="申请函(附件)">
+          <template #default="scope">
+            <el-link
+              v-if="scope.row.applyFiles && scope.row.applyFiles.length > 0"
+              :href="scope.row.applyFiles[0].attachUrl"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+            <span v-else>--</span>
+            <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="定点机构协议">
+          <template #default="scope">
+            <el-link
+              v-if="
+                scope.row.institutionalAgreementList &&
+                scope.row.institutionalAgreementList.length > 0
+              "
+              :href="scope.row.institutionalAgreementList[0].attachUrl"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+            <span v-else>--</span>
+            <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="国家平台回执">
+          <template #default="scope">
+            <el-link
+              v-if="
+                scope.row.platformReceiptList &&
+                scope.row.platformReceiptList.length > 0
+              "
+              :href="scope.row.platformReceiptList[0].attachUrl"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+            <span v-else>--</span>
+            <!--          <el-button type="primary" link @click="downLoadFile(scope.row.applyFiles[0])" v-if="scope.row.applyFiles && scope.row.applyFiles.length>0">下载</el-button>-->
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          fixed="right"
+          label="状态"
+          show-overflow-tooltip
+        >
+          <template #default="scope">
+            <div v-if="scope.row.status === 1" class="item-wrapper-inbox">
+              <div class="dot complete"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+
+            <div v-if="scope.row.status === 2" class="item-wrapper-inbox">
+              <div class="dot wait"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+
+            <div v-if="scope.row.status === 3" class="item-wrapper-inbox">
+              <div class="dot audit"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+
+            <div v-if="scope.row.status === 4" class="item-wrapper-inbox">
+              <div class="dot reject"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+
+            <div v-if="scope.row.status === 5" class="item-wrapper-inbox">
+              <div class="dot agree"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          fixed="right"
+          label="操作"
+          min-width="200"
+        >
+          <template #default="scope">
+            <el-tooltip content="查看" hide-after="0" placement="top">
+              <el-button
+                v-if="scope.row.canCheck == true"
+                :icon="View"
+                text
+                type="primary"
+                @click="goDetail(scope.$index)"
+              ></el-button>
             </el-tooltip>
-            <el-tooltip content="上传回执" placement="top" v-if="scope.row.canUpLoadFile">
-              <el-button  text type="primary" :icon="UploadFilled" @click="upLoadFilled(scope.row)"></el-button>
+            <el-tooltip
+              v-if="scope.row.canUpLoadFile"
+              :content="scope.row.status == 3 ? '上传回执' : '重新上传回执'"
+              hide-after="0"
+              placement="top"
+            >
+              <el-button
+                :icon="UploadFilled"
+                text
+                type="primary"
+                @click="upLoadFilled(scope.row)"
+              ></el-button>
             </el-tooltip>
-            <el-tooltip content="驳回" placement="top" v-if="scope.row.status==3">
-              <el-button type="danger"  @click="showRejectLog(scope.row.hippId)" :icon="Remove" text></el-button>
+            <el-tooltip
+              v-if="scope.row.status == 3"
+              content="驳回"
+              hide-after="0"
+              placement="top"
+            >
+              <el-button
+                :icon="Remove"
+                text
+                type="danger"
+                @click="showRejectLog(scope.row.detailId)"
+              ></el-button>
             </el-tooltip>
+            <span
+              v-if="
+                scope.row.status != 3 &&
+                !scope.row.canUpLoadFile &&
+                !scope.row.canCheck
+              "
+              >--</span
+            >
           </template>
         </el-table-column>
       </el-table>
     </div>
 
-  <!--  进件明细弹出层-->
-    <el-dialog
-        v-model="dialogVisible"
-        width="40%"
-        center
-        align-center
-    >
+    <!--  进件明细弹出层-->
+    <el-dialog v-model="dialogVisible" align-center center width="40%">
       <template #header>
-        <div style="font-weight: bold">请根据实际情况确认下列信息，可直接提交审核</div>
+        <div style="font-weight: bold">
+          请根据实际情况确认下列信息，可直接提交审核
+        </div>
       </template>
 
-        <div class="dialog-container">
-          <div class="diglog-item">
-            <div class="key">机构名称：</div>
-            <div class="value">{{singleDetail.orgName}}</div>
+      <div class="dialog-container">
+        <div class="diglog-item">
+          <div class="key">机构名称：</div>
+          <div class="value">{{ singleDetail.orgName }}</div>
+        </div>
+        <div class="diglog-item">
+          <div class="key">定点医药机构编码：</div>
+          <div class="value">
+            {{ singleDetail.orgCode }}
           </div>
-          <div class="diglog-item">
-            <div class="key">定点医药机构编码：
-            </div>
-            <div class="value">
-              {{singleDetail.orgCode}}
-            </div>
+        </div>
+        <div class="diglog-item">
+          <div class="key">统一社会信用代码：</div>
+          <div class="value">
+            {{ singleDetail.orgCreditCode }}
           </div>
-          <div class="diglog-item">
-            <div class="key">统一社会信用代码：
-            </div>
-            <div class="value">
-              {{singleDetail.orgCreditCode}}
-            </div>
+        </div>
+        <div class="diglog-item">
+          <div class="key">拟定电子凭证接入渠道：</div>
+          <div class="value">
+            {{
+              singleDetail.accessChanne == 1
+                ? "微信"
+                : singleDetail.accessChanne == 2
+                ? "支付宝"
+                : "国家医保App"
+            }}
           </div>
-          <div class="diglog-item">
-            <div class="key">拟定电子凭证接入渠道：
-            </div>
-            <div class="value">
-              {{singleDetail.accessChanne==1?'微信':singleDetail.accessChanne==2?'支付宝':'国家医保App'}}
-            </div>
-          </div>
-          <div class="diglog-item">
-            <div class="key">申请接入应用类型：
-            </div>
-            <div class="value">
-              {{singleDetail.appType==1?'微信小程序':singleDetail.appType==2?'微信公众号':singleDetail.appType==5?'h5网页':'移动App'}}
-            </div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">申请接入应用名称：
-            </div>
-            <div class="value">
-              {{singleDetail['appName']}}
-            </div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">定点医药机构联系人：
-            </div>
-            <div class="value">{{singleDetail.orgContactUser}}
-            </div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">定点医药机构联系电话：</div>
-            <div class="value">
-              {{singleDetail.orgContactTel}}
-            </div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">授权经办人：</div>
-            <div class="value">
-              {{singleDetail.platformOperatorName || '暂无'}}
-            </div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">授权经办人账号：</div>
-            <div class="value">{{singleDetail.platformOperatorAccount || '暂无'}}</div>
-          </div>
-
-          <div class="diglog-item">
-            <div class="key">授权经办人密码：</div>
-            <div class="value">
-              {{singleDetail.platformOperatorPwd || '暂无'}}
-            </div>
-          </div>
-
-          <div class="diglog-item item-between" v-if="singleDetail.institutionalAgreementList.length>0 && singleDetail.institutionalAgreementList">
-            <div class="key">定点机构协议：</div>
-            <div class="value">
-              <el-link :href="singleDetail.institutionalAgreementList[0].attachUrl" type="primary" target="_blank">查看</el-link>
-            </div>
-          </div>
-
-
-          <div class="diglog-item item-between" v-if="singleDetail.applyFiles.length>0 && singleDetail.applyFiles">
-            <div class="key">申请函：</div>
-            <div class="value value-button">
-
-              <el-link :href="singleDetail.applyFiles[0].attachUrl" type="primary" target="_blank" v-if="singleDetail.applyFiles.length>0 && singleDetail.applyFiles">查看</el-link>
-<!--              <span v-else>暂无</span>-->
-            </div>
-          </div>
-
-          <div class="diglog-item item-between" v-if="singleDetail.canUpLoadFile">
-            <div class="key">国家平台回执：</div>
-            <div class="value value-button value-flex">
-              <el-link :href="singleDetail.platformReceiptList[0].attachUrl" type="primary" target="_blank" style="margin-right: 20px" :underline="false" v-if="singleDetail.platformReceiptList && singleDetail.platformReceiptList.length>0">查看</el-link>
-
-              <el-upload
-                  v-model:file-list="fileList"
-                  class="upload-demo"
-                  :action="rewriteAction()"
-                  multiple
-                  :data="upLoadData"
-                  name="files"
-                  :headers="{'Authorization':getToken()}"
-                  accept=".pdf"
-                  :limit=1
-                  :on-exceed="exceed"
-                  :on-success="upLoadSuccess"
-                  :on-error="upLoadError"
-                  :before-upload="beforeUpLoad"
-                  v-if="singleDetail.canUpLoadFile"
-              >
-                <el-button type="primary">重新上传</el-button>
-                <template #tip>
-                  <div class="el-upload__tip">
-                    回执需要以pdf的格式上传且最多上传一张
-                  </div>
-                </template>
-              </el-upload>
-
-            </div>
-          </div>
-
-
-          <div class="diglog-item item-between" v-if="singleDetail.canUpLoadFile">
-            <div class="key">国家平台回执：</div>
-            <div class="value value-button">
-<!--              <el-button type="primary" @click="upLoadFilled(singleDetail)">上传回执</el-button>-->
-              <el-upload
-                  v-model:file-list="fileList"
-                  class="upload-demo"
-                  :action="rewriteAction()"
-                  multiple
-                  :data="upLoadData"
-                  name="files"
-                  :headers="{'Authorization':getToken()}"
-                  accept=".pdf"
-                  :limit=1
-                  :on-exceed="exceed"
-                  :on-success="upLoadSuccess"
-                  :on-error="upLoadError"
-                  :before-upload="beforeUpLoad"
-              >
-                <el-button type="primary">选择文件后自动上传</el-button>
-                <template #tip>
-                  <div class="el-upload__tip">
-                    回执需要以pdf的格式上传且最多上传一张
-                  </div>
-                </template>
-              </el-upload>
-            </div>
-          </div>
-
-          <div class="diglog-item item-between" v-if="singleDetail.status==4">
-            <div class="key">驳回原因：</div>
-            <div>{{singleDetail.reason}}</div>
-          </div>
-
-          <el-divider></el-divider>
-          <div class="diglog-item item-between">
-            <el-button type="warning" @click="showRejectLog(singleDetail.hippId)" v-if="singleDetail.status==3">驳回</el-button>
-            <el-button color="#FF5A40" size="normal" style="color:#fff; " @click="dialogVisible=false">关闭</el-button>
+        </div>
+        <div class="diglog-item">
+          <div class="key">申请接入应用类型：</div>
+          <div class="value">
+            {{
+              singleDetail.appType == 1
+                ? "微信小程序"
+                : singleDetail.appType == 2
+                ? "微信公众号"
+                : singleDetail.appType == 5
+                ? "h5网页"
+                : "移动App"
+            }}
           </div>
         </div>
 
+        <div class="diglog-item">
+          <div class="key">申请接入应用名称：</div>
+          <div class="value">
+            {{ singleDetail["appName"] }}
+          </div>
+        </div>
+
+        <div class="diglog-item">
+          <div class="key">定点医药机构联系人：</div>
+          <div class="value">{{ singleDetail.orgContactUser }}</div>
+        </div>
+
+        <div class="diglog-item">
+          <div class="key">定点医药机构联系电话：</div>
+          <div class="value">
+            {{ singleDetail.orgContactTel }}
+          </div>
+        </div>
+
+        <div class="diglog-item">
+          <div class="key">授权经办人：</div>
+          <div class="value">
+            {{ singleDetail.platformOperatorName || "暂无" }}
+          </div>
+        </div>
+
+        <div class="diglog-item">
+          <div class="key">授权经办人账号：</div>
+          <div class="value">
+            {{ singleDetail.platformOperatorAccount || "暂无" }}
+          </div>
+        </div>
+
+        <div class="diglog-item">
+          <div class="key">授权经办人密码：</div>
+          <div class="value">
+            {{ singleDetail.platformOperatorPwd || "暂无" }}
+          </div>
+        </div>
+
+        <div
+          v-if="
+            singleDetail.institutionalAgreementList.length > 0 &&
+            singleDetail.institutionalAgreementList
+          "
+          class="diglog-item item-between"
+        >
+          <div class="key">定点机构协议：</div>
+          <div class="value">
+            <el-link
+              :href="singleDetail.institutionalAgreementList[0].attachUrl"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+          </div>
+        </div>
+
+        <div
+          v-if="singleDetail.applyFiles.length > 0 && singleDetail.applyFiles"
+          class="diglog-item item-between"
+        >
+          <div class="key">申请函：</div>
+          <div class="value value-button">
+            <el-link
+              v-if="
+                singleDetail.applyFiles.length > 0 && singleDetail.applyFiles
+              "
+              :href="singleDetail.applyFiles[0].attachUrl"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+          </div>
+        </div>
+
+        <div
+          v-if="singleDetail.status == 3 || singleDetail.status == 5"
+          class="diglog-item item-between"
+        >
+          <div class="key">国家平台回执：</div>
+          <div class="value value-button value-flex">
+            <el-link
+              v-if="
+                singleDetail.platformReceiptList &&
+                singleDetail.platformReceiptList.length > 0
+              "
+              :href="singleDetail.platformReceiptList[0].attachUrl"
+              :underline="false"
+              style="margin-right: 20px"
+              target="_blank"
+              type="primary"
+              >查看
+            </el-link>
+
+            <el-upload
+              ref="uploadRef2"
+              v-model:file-list="fileList"
+              :action="rewriteAction()"
+              :before-upload="beforeUpLoad"
+              :data="upLoadData"
+              :headers="{ Authorization: getToken() }"
+              :limit="1"
+              :on-error="upLoadError"
+              :on-exceed="exceed"
+              :on-success="upLoadSuccess"
+              accept=".pdf"
+              class="upload-demo"
+              multiple
+              name="files"
+            >
+              <el-button type="primary"
+                >{{
+                  singleDetail.platformReceiptList &&
+                  singleDetail.platformReceiptList.length > 0
+                    ? "重新上传"
+                    : "上传"
+                }}
+              </el-button>
+              <template #tip>
+                <div class="el-upload__tip">
+                  回执需要以pdf的格式上传且最多上传一张
+                </div>
+              </template>
+            </el-upload>
+          </div>
+        </div>
+
+        <div v-if="singleDetail.status == 4" class="diglog-item item-between">
+          <div class="key">驳回原因：</div>
+          <div>{{ singleDetail.reason }}</div>
+        </div>
+
+        <el-divider></el-divider>
+        <div class="diglog-item item-center">
+          <el-button
+            v-if="singleDetail.status == 3"
+            type="warning"
+            @click="showRejectLog(singleDetail.detailId)"
+            >驳回
+          </el-button>
+          <el-button
+            color="#FF5A40"
+            size="normal"
+            style="color: #fff"
+            @click="dialogVisible = false"
+            >关闭
+          </el-button>
+        </div>
+      </div>
     </el-dialog>
 
-  <!--  上传回执弹出层-->
+    <!--  上传回执弹出层-->
     <el-dialog
-        v-model="upLoadShow"
-        width="60%"
-        align-center="true"
-        center
-        z-index="100"
-        :append-to-body=true
+      v-model="upLoadShow"
+      :append-to-body="true"
+      align-center="true"
+      center
+      width="60%"
+      z-index="100"
     >
       <template #header>
         <div style="font-weight: bold">请上传回执</div>
       </template>
 
       <el-upload
-          v-model:file-list="fileList"
-          class="upload-demo"
-          :action="rewriteAction()"
-          multiple
-          :data="upLoadData"
-          name="files"
-          :headers="{'Authorization':getToken()}"
-          accept=".pdf"
-          :limit="1"
-          :on-exceed="exceed"
-          :on-success="upLoadSuccess"
-          :on-error="upLoadError"
+        ref="uploadRef1"
+        v-model:file-list="fileList"
+        :action="rewriteAction()"
+        :before-upload="beforeUpLoad"
+        :data="upLoadData"
+        :headers="{ Authorization: getToken() }"
+        :limit="1"
+        :on-error="upLoadError"
+        :on-exceed="exceed"
+        :on-success="upLoadSuccess"
+        accept=".pdf"
+        class="upload-demo"
+        multiple
+        name="files"
       >
         <el-button type="primary">选择文件后自动上传</el-button>
         <template #tip>
@@ -301,240 +474,269 @@
       </el-upload>
     </el-dialog>
 
-  <!--  驳回弹出层-->
+    <!--  驳回弹出层-->
     <el-dialog
-        v-model="rejectDiglog"
-        width="60%"
-        center
-        z-index="3000"
-        append-to-body
+      v-model="rejectDiglog"
+      append-to-body
+      center
+      width="60%"
+      z-index="3000"
     >
       <template #header>
         <div style="font-weight: bold">请填写驳回原因</div>
       </template>
 
       <el-input
-          v-model="rejectReason"
-          :rows="2"
-          type="textarea"
-          placeholder="请输入驳回原因"
+        v-model="rejectReason"
+        :rows="2"
+        placeholder="请输入驳回原因"
+        type="textarea"
       />
 
-      <template #footer><el-button type="warning" @click="rejectApply(rejectHippId)">驳回</el-button></template>
+      <template #footer>
+        <el-button type="warning" @click="rejectApply(rejectHippId)"
+          >驳回
+        </el-button>
+      </template>
     </el-dialog>
 
-
     <pagination
-        v-show="total > 0"
-        :total="total"
-        v-model:page="params.pageNum"
-        v-model:limit="params.pageSize"
-        @pagination="getPagination"
+      v-show="total > 0"
+      v-model:limit="params.pageSize"
+      v-model:page="params.pageNum"
+      :total="total"
+      @pagination="getPagination"
     />
   </div>
 </template>
 
 <script setup>
-import {useRouter} from "vue-router";
-import {getCurrentInstance, ref ,onMounted} from "vue";
+import { useRouter } from "vue-router";
+import { getCurrentInstance, onMounted, ref } from "vue";
 import request from "@/utils/request";
-import {ArrowLeft,UploadFilled,View,Remove} from "@element-plus/icons-vue";
-import {getToken} from "@/utils/auth";
-import {ElMessage, ElNotification} from 'element-plus';
-import {downLoadFile} from "@/api/insurance/customer";
+import { ArrowLeft, Remove, UploadFilled, View } from "@element-plus/icons-vue";
+import { getToken } from "@/utils/auth";
+import { ElMessage, ElNotification } from "element-plus";
 
-const router=useRouter();
+const uploadRef1 = ref();
+const uploadRef2 = ref();
+
+const router = useRouter();
 const { proxy } = getCurrentInstance();
 const info = ref({
   hippId: router.currentRoute.value.query.hippId,
   contractCode: router.currentRoute.value.query.contractCode,
   signTime: router.currentRoute.value.query.signTime,
   applyOrgNum: router.currentRoute.value.query.applyOrgNum,
-})
-const singleDetail=ref({})
+});
+const singleDetail = ref("");
 
-const dialogVisible=ref(false)
+const dialogVisible = ref(false);
 
-const upLoadShow=ref(false)
+const upLoadShow = ref(false);
 
-const rejectDiglog=ref(false)
+const rejectDiglog = ref(false);
 
-const deptList=ref([])
+const deptList = ref([]);
 
-const total=ref(0)
+const total = ref(0);
 
-const fileList=ref([])
+const fileList = ref([]);
 
-const upLoadData=ref({
+const upLoadData = ref({});
 
-})
-
-const params=ref({
+const params = ref({
   hippId: info.value.hippId,
-  pageSize:10,
-  pageNum:1
-})
+  pageSize: 10,
+  pageNum: 1,
+});
 
 //驳回HippID
-const rejectHippId=ref('')
+const rejectHippId = ref("");
 
 //驳回原因
-const rejectReason=ref('')
+const rejectReason = ref("");
 
+const exceed = () => {
+  ElNotification({
+    message: "只能上传1个文件",
+    type: "warning",
+    duration: 2000,
+    zIndex: 1000,
+  });
+};
 
-const exceed=()=>{
-  ElNotification ({
-    message: '只能上传1个文件',
-    type: 'warning',
-    duration:2000,
-    zIndex:1000
-
-  })
-}
-
-const upLoadSuccess=(res, {name})=>{
-
-  if(res.code==200){
-    ElNotification ({
-      title: '上传成功',
-      message:`${name}上传成功`,
-      type: 'success',
-      zIndex:100000
-})
-  }
-  else{
+const upLoadSuccess = (res, { name }) => {
+  fileList.value = [];
+  if (res.code == 200) {
     ElNotification({
-      title:'上传失败',
-      message:res.msg,
-      duration:2000,
-      type:'error',
-      zIndex:100000
-    })
-  }
-}
-
-const upLoadError=(err)=>{
-  ElNotification({
-    title:'上传失败',
-    message:err,
-    duration:2000,
-    type:'error'
-  })
-}
-
-const rewriteAction=()=>{
-  return import.meta.env.VITE_APP_BASE_API+'/hipp/hipp/attachment/uploadAttachment'
-}
-
-const beforeUpLoad=()=>{
-  upLoadData.value={
-    bizId:singleDetail.value.detailId,
-    bizType:6,
-    hippId:info.value.hippId
-  }
-
-}
-
-
-
-const getDeptList=(params)=>{
-  request(
-      {
-        url:"/hipp/admin/hipp/detail/list",
-        method:"get",
-        params
-      }
-  ).then((res)=>{
-    if(res.code==200){
-      deptList.value=res.data.list
-      total.value=Number(res.data.total)
-    }
-  })
-}
-
-const handleReturn=()=>{
-  proxy.$router.go(-1)
-}
-
-const goDetail=(index)=>{
-
-
-    dialogVisible.value=true
-    singleDetail.value=deptList.value[index]
-
-}
-
-const upLoadFilled=({detailId})=>{
-
-  upLoadShow.value=true
-  upLoadData.value={
-    bizId:detailId,
-    bizType:6,
-    hippId:info.value.hippId
-  }
-
-}
-
-
-const showRejectLog=(hippId)=>{
-  rejectHippId.value=hippId
-  rejectDiglog.value=true
-}
-
-const rejectApply= (hippId)=>{
-if(rejectReason.value){
-  request({
-    url: '/hipp/admin/hipp/detail/updateState',
-    params:{
-      errReason:rejectReason.value,
-      status:4,
-      hippId,
-    }
-  }).then(res=>{
-     ElMessage({
-       type:'success',
-       message:"驳回成功"
-     })
-
-  }).catch((err)=>{
-      ElMessage({
-        type:'error',
-        message:`驳回失败: ${err.msg}`,
-        zIndex:10000
+      title: "上传成功",
+      message: `${name}上传成功`,
+      type: "success",
+      zIndex: 100000,
+    });
+    // console.log(singleDetail.value.status);
+    if (singleDetail.value.status == 3) {
+      request({
+        url: "/hipp/admin/hipp/detail/updateState",
+        params: {
+          status: 5,
+          detailId: singleDetail.value.detailId,
+        },
       })
+        .then((res) => {
+          if (res.code == 200) {
+            ElMessage({
+              type: "success",
+              message: "明细已审核通过",
+              zIndex: 10000,
+            });
+          } else {
+            ElMessage({
+              type: "error",
+              message: "明细审核通过失败",
+              zIndex: 10000,
+            });
+          }
+        })
+        .catch((err) => {});
+    }
+    upLoadShow.value = false;
+    let { attachUrl } = res.data[0];
+    if (singleDetail.value) {
+      if (
+        singleDetail.value.platformReceiptList.length > 0 &&
+        singleDetail.value.platformReceiptList
+      ) {
+        singleDetail.value.platformReceiptList[0].attachUrl = attachUrl;
+      } else {
+        singleDetail.value.platformReceiptList.push({
+          attachUrl: attachUrl,
+        });
+      }
+    }
+    getDeptList(params.value);
+  } else {
+    upLoadShow.value = false;
+    ElNotification({
+      title: "上传失败",
+      message: res.data.msg,
+      duration: 2000,
+      type: "error",
+      zIndex: 100000,
+    });
+  }
+};
 
-  })
-}
-else{
+const upLoadError = (err) => {
   ElNotification({
-    title:"驳回理由不能为空",
-    type:'warning',
-    duration:2000
-  })
-}
-}
+    title: "上传失败",
+    message: err,
+    duration: 2000,
+    type: "error",
+  });
+};
 
-const getPagination=(e)=>{
-  let {limit,page}=e
-  params.value.pageNum=page,
-  params.value.pageSize=limit,
-  getDeptList(params.value)
-}
+const rewriteAction = () => {
+  return (
+    import.meta.env.VITE_APP_BASE_API + "/hipp/hipp/attachment/uploadAttachment"
+  );
+};
 
+const beforeUpLoad = () => {
+  upLoadData.value = {
+    bizId: singleDetail.value.detailId,
+    bizType: 6,
+    hippId: info.value.hippId,
+  };
+};
 
-onMounted(()=>{
-  getDeptList(params.value)
-})
+const getDeptList = (params) => {
+  request({
+    url: "/hipp/admin/hipp/detail/list",
+    method: "get",
+    params,
+  }).then((res) => {
+    if (res.code == 200) {
+      deptList.value = res.data.list;
+      total.value = Number(res.data.total);
+    }
+  });
+};
 
+const handleReturn = () => {
+  proxy.$router.go(-1);
+};
+
+const goDetail = (index) => {
+  dialogVisible.value = true;
+  singleDetail.value = deptList.value[index];
+};
+
+const upLoadFilled = (row) => {
+  upLoadShow.value = true;
+  singleDetail.value = row;
+};
+
+const showRejectLog = (detailId) => {
+  rejectHippId.value = detailId;
+  rejectDiglog.value = true;
+};
+
+const rejectApply = (detailId) => {
+  if (rejectReason.value) {
+    request({
+      url: "/hipp/admin/hipp/detail/updateState",
+      params: {
+        errReason: rejectReason.value,
+        status: 4,
+        detailId,
+      },
+    })
+      .then(() => {
+        ElMessage({
+          type: "success",
+          message: "驳回成功",
+          zIndex: 10000,
+        });
+        rejectDiglog.value = false;
+        getDeptList(params.value);
+      })
+      .catch((err) => {
+        ElMessage({
+          type: "error",
+          message: err.msg ? `驳回失败: ${err.msg}` : `驳回失败`,
+          zIndex: 10000,
+        });
+      });
+  } else {
+    ElNotification({
+      title: "驳回理由不能为空",
+      type: "warning",
+      zIndex: 10000,
+    });
+  }
+};
+
+const getPagination = (e) => {
+  let { limit, page } = e;
+  (params.value.pageNum = page),
+    (params.value.pageSize = limit),
+    getDeptList(params.value);
+};
+
+onMounted(() => {
+  getDeptList(params.value);
+});
 </script>
 
-<style scoped lang="scss">
-$complete:#ADADAD;
-$wait:#FF7301;
-$audit:#4672FF;
-$reject:#FF5A40;
-$agree:#80D249;
-$base-black:#333;
+<style lang="scss" scoped>
+$complete: #adadad;
+$wait: #ff7301;
+$audit: #4672ff;
+$reject: #ff5a40;
+$agree: #80d249;
+$base-black: #333;
 .header {
   justify-content: center;
   display: flex;
@@ -544,6 +746,7 @@ $base-black:#333;
   font-weight: bold;
   color: #333333;
   line-height: 39px;
+
   .name {
     text-align: center;
     font-size: 16px;
@@ -551,6 +754,7 @@ $base-black:#333;
     color: #333333;
     line-height: 39px;
   }
+
   .salesman {
     font-size: 14px;
     margin-right: 80px;
@@ -558,7 +762,7 @@ $base-black:#333;
   }
 }
 
-.item-wrapper-inbox{
+.item-wrapper-inbox {
   display: flex;
   font-size: 0.6rem;
   align-items: center;
@@ -566,29 +770,49 @@ $base-black:#333;
   font-weight: bold;
   //margin: 10px 0;
   color: $base-black;
-  .dot{
+
+  .dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
     margin-right: 5px;
   }
+
+  .wait {
+    background: $wait;
+  }
+
+  .audit {
+    background: $audit;
+  }
+
+  .reject {
+    background: $reject;
+  }
+
+  .agree {
+    background: $agree;
+  }
 }
 
-.tab-list{
+.tab-list {
   //margin-left: 500px;
   float: right;
   display: flex;
   padding: 30px;
-  .tab-list-item{
+
+  .tab-list-item {
     margin: 0 15px;
-    .item-wrapper{
+
+    .item-wrapper {
       display: flex;
       font-size: 0.6rem;
       align-items: center;
       font-weight: bold;
       margin: 10px 0;
       color: $base-black;
-      .dot{
+
+      .dot {
         width: 5px;
         height: 5px;
         border-radius: 50%;
@@ -596,50 +820,46 @@ $base-black:#333;
       }
     }
   }
-
 }
 
-.dialog-container{
-
-  .diglog-item{
+.dialog-container {
+  .diglog-item {
     margin: 30px 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    .key{
+
+    .key {
       font-size: 14px;
       color: #666;
-
     }
-    .value{
+
+    .value {
       font-size: 16px;
       color: $base-black;
       font-weight: bold;
     }
-    .value-flex{
+
+    .value-flex {
       display: flex;
       align-items: center;
     }
-
   }
-  .item-between{
+
+  .item-between {
     justify-content: space-between !important;
   }
-  .item-center{
+
+  .item-center {
     justify-content: center !important;
   }
 }
 
-//.single-dialog{
-//  border-radius: 20px !important;
-//}
-//
-//.el-dialog {
-//  .el-dialog__body{
-//    display: flex;
-//    justify-content: center;
-//    align-items: center;
-//  }
-//}
+.complete {
+  background: $complete;
+}
 
+:deep .el-upload-list__item-file-name {
+  width: 250px !important;
+}
 </style>
