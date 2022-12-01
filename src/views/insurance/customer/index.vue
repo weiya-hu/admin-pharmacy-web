@@ -3,30 +3,29 @@
     <!--  筛选-->
     <div class="search-container">
       <el-form
-        :model="queryParams"
+        v-show="showSearch"
         ref="queryRef"
         :inline="true"
-        v-show="showSearch"
+        :model="queryParams"
       >
         <el-form-item label="签约日期">
           <el-date-picker
-            value-format="YYYY-MM-DD"
             v-model="queryTime"
-            type="daterange"
+            :shortcuts="shortcuts"
+            end-placeholder="结束日期"
             range-separator="至"
             start-placeholder="加入日期"
-            end-placeholder="结束日期"
-            :shortcuts="shortcuts"
+            type="daterange"
+            value-format="YYYY-MM-DD"
             @change="dateChange"
           />
         </el-form-item>
 
         <el-form-item>
           <el-select
+            v-model="queryParams.region"
             class="m-2"
             placeholder="所属区域"
-            size="normal"
-            v-model="queryParams.region"
             @change="selectChange"
           >
             <el-option
@@ -46,9 +45,9 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery"
-            >搜索</el-button
-          >
+          <el-button icon="Search" type="primary" @click="handleQuery"
+            >搜索
+          </el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
@@ -60,7 +59,7 @@
       </el-row>
 
       <div class="search-item">
-        <el-button @click="handleShare" type="primary">分享</el-button>
+        <el-button type="primary" @click="handleShare">分享</el-button>
       </div>
     </div>
 
@@ -68,9 +67,9 @@
     <div class="table-container">
       <el-table :data="deptList" stripe>
         <el-table-column
-          prop="orgName"
-          label="企业名称"
           align="center"
+          label="企业名称"
+          prop="orgName"
           show-overflow-tooltip
         >
           <template #default="scope">
@@ -78,9 +77,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="orgContactUser"
-          label="联系人"
           align="center"
+          label="联系人"
+          prop="orgContactUser"
           show-overflow-tooltip
         >
           <template #default="scope">
@@ -88,9 +87,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="orgContactTel"
-          label="联系电话"
           align="center"
+          label="联系电话"
+          prop="orgContactTel"
           show-overflow-tooltip
         >
           <template #default="scope">
@@ -98,9 +97,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="orgRegion"
-          label="所属区域"
           align="center"
+          label="所属区域"
+          prop="orgRegion"
           show-overflow-tooltip
         >
           <template #default="scope">
@@ -108,36 +107,36 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="orgAddress"
-          label="详细地址"
-          width="300"
           align="center"
+          label="详细地址"
+          prop="orgAddress"
           show-overflow-tooltip
+          width="300"
         >
           <template #default="scope">
             {{ scope.row.orgAddress ? scope.row.orgAddress : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-          prop="joinDate"
-          label="加入日期"
-          sortable
           align="center"
+          label="加入日期"
+          prop="joinDate"
           show-overflow-tooltip
+          sortable
         >
           <template #default="scope">
             {{ scope.row.joinDate ? scope.row.joinDate : "--" }}
           </template>
         </el-table-column>
-        <el-table-column prop="pay" label="签约付款" align="center">
+        <el-table-column align="center" label="签约付款" prop="pay">
           <template #default="scope">
             <el-tooltip content="查看" placement="top">
               <el-button
                 :icon="View"
-                type="primary"
-                text
-                @click="goSignRecord(scope.row)"
                 size="large"
+                text
+                type="primary"
+                @click="goSignRecord(scope.row)"
               >
               </el-button>
             </el-tooltip>
@@ -154,10 +153,10 @@
     </div>
     <el-dialog
       v-model="dialogVisible"
-      width="750px"
+      :close-on-click-modal="false"
       append-to-body
       draggable
-      :close-on-click-modal="false"
+      width="750px"
     >
       <template #header>
         <span
@@ -172,21 +171,21 @@
 
     <pagination
       v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
+      v-model:page="queryParams.pageNum"
+      :total="total"
       @pagination="getPagination"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { View } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
-import { returnUrl } from "../../../api/insurance/customer";
+import { getMyCustomer, returnUrl } from "@/api/insurance/insurance";
+import modal from "@/plugins/modal";
 import { ElMessage } from "element-plus";
-import request from "@/utils/request";
 
 const router = useRouter();
 const state = reactive({
@@ -243,11 +242,6 @@ const deptList = ref([]);
 
 onMounted(() => {
   getDeptList(defaultParams.value);
-  // tableData.value.map(i=>{
-  //   i['pay']='查看'
-  //   i['operation']='编辑'
-  //   return i
-  // })
 });
 
 const resetQuery = () => {
@@ -298,18 +292,18 @@ const handleQuery = () => {
 };
 
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/hipp/rel/getMyCustomer",
-    method: "get",
-    params: params,
-  })
-    .then((res) => {
-      if (res.code == 200) {
-        total.value = Number(res.data.total);
-        deptList.value = res.data.list;
-      }
-    })
-    .catch((err) => console.log(err));
+  getMyCustomer(params).then((res) => {
+    if (res.code === 200) {
+      total.value = Number(res.data.total);
+      deptList.value = res.data.list;
+    } else {
+      modal.msgError({
+        message: "获取客户失败",
+        type: "error",
+        center: true,
+      });
+    }
+  });
 };
 
 const getList = () => {
@@ -318,9 +312,9 @@ const getList = () => {
 
 const getPagination = (e) => {
   let { limit, page } = e;
-  (queryParams.value.pageNum = page),
-    (queryParams.value.pageSize = limit),
-    getDeptList(queryParams.value);
+  queryParams.value.pageNum = page;
+  queryParams.value.pageSize = limit;
+  getDeptList(queryParams.value);
 };
 
 const dateChange = (date) => {
@@ -363,5 +357,11 @@ const inputChange = () => {
   line-height: 27px;
   font-weight: bold;
   font-size: 18px;
+}
+
+.search-item {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
 }
 </style>

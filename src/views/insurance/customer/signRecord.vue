@@ -207,6 +207,11 @@
               <div>{{ scope.row.statusName }}</div>
             </div>
 
+            <div v-if="scope.row.status === 8" class="item-wrapper-inbox">
+              <div class="dot reject"></div>
+              <div>{{ scope.row.statusName }}</div>
+            </div>
+
             <div v-if="scope.row.status === 11" class="item-wrapper-inbox">
               <div class="dot audit"></div>
               <div>{{ scope.row.statusName }}</div>
@@ -293,8 +298,8 @@
 import { useRouter } from "vue-router";
 import { getCurrentInstance, onMounted, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import request from "@/utils/request";
-import { downloadContract } from "@/api/insurance/customer";
+import { downloadContract, getHippList } from "@/api/insurance/insurance";
+import modal from "@/plugins/modal";
 
 const queryTime = ref([]);
 const router = useRouter();
@@ -309,11 +314,13 @@ const queryParams = ref({
   pageSize: 10,
   corpId: info.value.orgId,
   queryContractCode: "",
+  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const defaultParams = ref({
   corpId: info.value.orgId,
   pageNum: 1,
   pageSize: 10,
+  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const shortcuts = [
   {
@@ -346,7 +353,7 @@ const shortcuts = [
 ];
 const showSearch = ref(true);
 const loading = ref(false);
-const total = ref("");
+const total = ref(0);
 const deptList = ref([]);
 
 // 支付凭证变量
@@ -375,15 +382,17 @@ const handleQuery = () => {
 
 //获取表格数据
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/admin/hipp/applyinfo/list",
-    method: "get",
-    params: params,
-  })
+  getHippList(params)
     .then((res) => {
       if (res.code == 200) {
         total.value = Number(res.data.total);
         deptList.value = res.data.list;
+      } else {
+        modal.msgError({
+          message: "获取客户失败",
+          type: "error",
+          center: true,
+        });
       }
     })
     .catch((err) => console.log(err));
@@ -407,26 +416,6 @@ const getPagination = (e) => {
     (queryParams.value.pageSize = limit),
     getDeptList(queryParams.value);
 };
-
-// const downLoadContract=(url)=>{
-//   request({
-//     url:"/file/file/downloadFileByUrl",
-//     params:{
-//       url:btoa(url)
-//     },
-//     method:'get',
-//     responseType: 'blob'
-//   }).then((res)=>{
-//     const blobUrl = window.URL.createObjectURL(new Blob([res]))
-//     const a = document.createElement('a')
-//     const filename = 'xxxx.pdf'
-//     a.href = blobUrl
-//     a.download = filename
-//     a.target = filename
-//     a.click()
-//     window.URL.revokeObjectURL(blobUrl)
-//   })
-// }
 
 const dateChange = (date) => {
   if (!date) {

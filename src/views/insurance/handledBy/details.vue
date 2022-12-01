@@ -3,7 +3,7 @@
     <div class="header">
       <el-button :icon="ArrowLeft" text @click="handleReturn">返回</el-button>
       <div class="name">{{ info.orgName }}</div>
-      <div class="salesman">销售人员：{{ info.salesman }}</div>
+      <div class="salesman">销售人员：{{ info.saleUserName }}</div>
     </div>
     <el-form
       v-show="showSearch"
@@ -216,6 +216,7 @@
         fixed="right"
         label="状态"
         show-overflow-tooltip
+        width="180"
       >
         <template #default="scope">
           <div
@@ -258,11 +259,6 @@
             <div>{{ scope.row.statusName }}</div>
           </div>
 
-          <div v-if="scope.row.status === 10" class="item-wrapper-inbox">
-            <div class="dot complete"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
           <div v-if="scope.row.status === 11" class="item-wrapper-inbox">
             <div class="dot audit"></div>
             <div>{{ scope.row.statusName }}</div>
@@ -280,9 +276,10 @@
         <template #default="scope">
           <el-tooltip
             v-if="
-              scope.row.status > 3 &&
+              scope.row.status > 4 &&
               scope.row.status &&
               scope.row.status != 11 &&
+              scope.row.status != 10 &&
               scope.row.status != 12
             "
             content="查看"
@@ -297,26 +294,16 @@
               @click="handleClick('see', scope.row)"
             ></el-button>
           </el-tooltip>
-          <el-tooltip content="归档" hide-after="0" placement="top">
-            <el-button
-              v-if="scope.row.canArchive"
-              :icon="Finished"
-              text
-              type="primary"
-              @click="handleClick('file', scope.row)"
-            ></el-button>
-          </el-tooltip>
-          <span
-            v-if="
-              scope.row.status == 1 ||
-              scope.row.status == 2 ||
-              scope.row.status == 3 ||
-              scope.row.status == 11 ||
-              scope.row.status == 12 ||
-              !scope.row.status
-            "
-            >--</span
-          >
+          <!--          <el-tooltip content="归档" hide-after="0" placement="top">-->
+          <!--            <el-button-->
+          <!--              v-if="scope.row.canArchive"-->
+          <!--              :icon="Finished"-->
+          <!--              text-->
+          <!--              type="primary"-->
+          <!--              @click="handleClick('file', scope.row)"-->
+          <!--            ></el-button>-->
+          <!--          </el-tooltip>-->
+          <span v-else>--</span>
         </template>
       </el-table-column>
     </el-table>
@@ -393,16 +380,14 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { getCurrentInstance, onMounted, ref } from "vue";
-import { ArrowLeft, Finished, View } from "@element-plus/icons-vue";
-import request from "@/utils/request";
-import { downloadContract } from "@/api/insurance/customer";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ArrowLeft, View } from "@element-plus/icons-vue";
+import { downloadContract, getHippList } from "@/api/insurance/insurance";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const info = ref({
   orgName: router.currentRoute.value.query.orgName,
-  salesman: router.currentRoute.value.query.salesman || "暂无",
+  saleUserName: router.currentRoute.value.query.saleUserName || "暂无",
   orgId: router.currentRoute.value.query.orgId,
 });
 const deptList = ref([]);
@@ -412,11 +397,13 @@ const queryParams = ref({
   pageSize: 10,
   queryContractCode: "",
   corpId: info.value.orgId,
+  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const defaultParams = ref({
   corpId: info.value.orgId,
   pageNum: 1,
   pageSize: 10,
+  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const showSearch = ref(true);
 const loading = ref(false);
@@ -428,11 +415,6 @@ const archiveId = ref("");
 // 支付凭证变量
 const paymentVoucherDialog = ref(false);
 const paymentVoucherList = ref([]);
-// const deptListByFilter = computed(() => {
-//   return deptList.value.filter((i) => {
-//
-//   });
-// });
 
 // 搜索
 const handleQuery = () => {
@@ -460,24 +442,6 @@ const getList = () => {
   getDeptList(defaultParams.value);
 };
 
-const filterByStatus = (target) => {
-  if (Array.isArray(target)) {
-    return target.filter((i) => {
-      return (
-        i.status == 4 ||
-        i.status == 5 ||
-        i.status == 6 ||
-        i.status == 7 ||
-        i.status == 10 ||
-        i.status == 11 ||
-        i.status == 12 ||
-        i.status == 8
-      );
-    });
-  }
-  return;
-};
-
 // 按钮
 const handleClick = (type, row) => {
   if (type === "see") {
@@ -488,45 +452,51 @@ const handleClick = (type, row) => {
         contractCode: row.contractCode,
         signTime: row.signTime,
         applyOrgNum: row.applyOrgNum,
+        hippIdStatus: row.status,
       },
     });
   } else if (type === "file") {
-    let { hippId } = row;
-    archiveId.value = hippId;
-    goArchive(archiveId.value);
+    // let { hippId } = row;
+    // archiveId.value = hippId;
+    // goArchive(archiveId.value);
   }
 };
 
 // 归档
-const goArchive = (hippId) => {
-  ElMessageBox.confirm("确认归档此申请", "", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(() => {
-      request({
-        url: "/hipp/admin/hipp/detail/updateState",
-        params: {
-          hippId,
-          status: 10,
-        },
-      }).then((res) => {
-        if (res.code == 200) {
-          ElMessage({
-            type: "success",
-            message: "归档成功",
-          });
-        }
-      });
-    })
-    .catch(() => {
-      ElMessage({
-        type: "warning",
-        message: "你已经取消归档",
-      });
-    });
-};
+// const goArchive = (hippId) => {
+//   ElMessageBox.confirm("确认归档此申请", "", {
+//     confirmButtonText: "确认",
+//     cancelButtonText: "取消",
+//     type: "warning",
+//   })
+//     .then(() => {
+//       request({
+//         url: "/hipp/admin/hipp/updateState",
+//         params: {
+//           hippId,
+//           status: 10,
+//         },
+//       }).then((res) => {
+//         if (res.code == 200) {
+//           ElMessage({
+//             type: "success",
+//             message: "归档成功",
+//           });
+//         } else {
+//           ElMessage({
+//             type: "error",
+//             message: "归档失败",
+//           });
+//         }
+//       });
+//     })
+//     .catch(() => {
+//       ElMessage({
+//         type: "warning",
+//         message: "你已经取消归档",
+//       });
+//     });
+// };
 
 // 返回
 const handleReturn = () => {
@@ -534,11 +504,7 @@ const handleReturn = () => {
   proxy.$tab.closeOpenPage(obj);
 };
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/admin/hipp/applyinfo/list",
-    method: "get",
-    params,
-  })
+  getHippList(params)
     .then((res) => {
       if (res.code == 200) {
         deptList.value = res.data.list;

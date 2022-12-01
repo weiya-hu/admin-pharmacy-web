@@ -145,8 +145,9 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import request from "@/utils/request";
 import { View } from "@element-plus/icons-vue";
+import { getMyCustomer } from "@/api/insurance/insurance";
+import modal from "@/plugins/modal";
 
 const router = useRouter();
 const total = ref(0);
@@ -205,18 +206,18 @@ const caseTypeNamesFormat = (row) => {
 
 //获取我的客户
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/hipp/rel/getMyCustomer",
-    method: "get",
-    params,
-  })
-    .then((res) => {
-      if (res.code == 200) {
-        total.value = Number(res.data.total);
-        deptList.value = res.data.list;
-      }
-    })
-    .catch((err) => console.log(err));
+  getMyCustomer(params).then((res) => {
+    if (res.code === 200) {
+      total.value = Number(res.data.total);
+      deptList.value = res.data.list;
+    } else {
+      modal.msgError({
+        message: "获取客户失败",
+        type: "error",
+        center: true,
+      });
+    }
+  });
 };
 
 // 查看申请记录

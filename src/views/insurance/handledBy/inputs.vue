@@ -168,7 +168,7 @@
 
             <div v-if="scope.row.status === 4" class="item-wrapper-inbox">
               <div class="dot reject"></div>
-              <div>{{ scope.row.statusName }}</div>
+              <div>驳回</div>
             </div>
 
             <div v-if="scope.row.status === 5" class="item-wrapper-inbox">
@@ -414,7 +414,7 @@
 
         <div v-if="singleDetail.status == 4" class="diglog-item item-between">
           <div class="key">驳回原因：</div>
-          <div>{{ singleDetail.reason }}</div>
+          <div>{{ singleDetail.reason || "暂无" }}</div>
         </div>
 
         <el-divider></el-divider>
@@ -494,9 +494,7 @@
       />
 
       <template #footer>
-        <el-button type="warning" @click="rejectApply(rejectHippId)"
-          >驳回
-        </el-button>
+        <el-button type="warning" @click="rejectApply()">驳回</el-button>
       </template>
     </el-dialog>
 
@@ -513,10 +511,13 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { getCurrentInstance, onMounted, ref } from "vue";
-import request from "@/utils/request";
 import { ArrowLeft, Remove, UploadFilled, View } from "@element-plus/icons-vue";
 import { getToken } from "@/utils/auth";
 import { ElMessage, ElNotification } from "element-plus";
+import {
+  changeDetailStatus,
+  getHippDetailList,
+} from "@/api/insurance/insurance";
 
 const uploadRef1 = ref();
 const uploadRef2 = ref();
@@ -524,10 +525,10 @@ const uploadRef2 = ref();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const info = ref({
-  hippId: router.currentRoute.value.query.hippId,
-  contractCode: router.currentRoute.value.query.contractCode,
-  signTime: router.currentRoute.value.query.signTime,
-  applyOrgNum: router.currentRoute.value.query.applyOrgNum,
+  hippId: router.currentRoute.value.query.hippId || "暂无",
+  contractCode: router.currentRoute.value.query.contractCode || "暂无",
+  signTime: router.currentRoute.value.query.signTime || "暂无",
+  applyOrgNum: router.currentRoute.value.query.applyOrgNum || "暂无",
 });
 const singleDetail = ref("");
 
@@ -557,6 +558,7 @@ const rejectHippId = ref("");
 //驳回原因
 const rejectReason = ref("");
 
+//methods
 const exceed = () => {
   ElNotification({
     message: "只能上传1个文件",
@@ -575,15 +577,9 @@ const upLoadSuccess = (res, { name }) => {
       type: "success",
       zIndex: 100000,
     });
-    // console.log(singleDetail.value.status);
+
     if (singleDetail.value.status == 3) {
-      request({
-        url: "/hipp/admin/hipp/detail/updateState",
-        params: {
-          status: 5,
-          detailId: singleDetail.value.detailId,
-        },
-      })
+      changeDetailStatus(singleDetail.value.detailId, 5)
         .then((res) => {
           if (res.code == 200) {
             ElMessage({
@@ -652,11 +648,7 @@ const beforeUpLoad = () => {
 };
 
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/admin/hipp/detail/list",
-    method: "get",
-    params,
-  }).then((res) => {
+  getHippDetailList(params).then((res) => {
     if (res.code == 200) {
       deptList.value = res.data.list;
       total.value = Number(res.data.total);
@@ -683,32 +675,28 @@ const showRejectLog = (detailId) => {
   rejectDiglog.value = true;
 };
 
-const rejectApply = (detailId) => {
+const rejectApply = () => {
   if (rejectReason.value) {
-    request({
-      url: "/hipp/admin/hipp/detail/updateState",
-      params: {
-        errReason: rejectReason.value,
-        status: 4,
-        detailId,
-      },
-    })
-      .then(() => {
-        ElMessage({
-          type: "success",
-          message: "驳回成功",
-          zIndex: 10000,
-        });
-        rejectDiglog.value = false;
-        getDeptList(params.value);
+    changeDetailStatus(rejectHippId.value, 4, rejectReason.value)
+      .then((res) => {
+        if (res.code == 200) {
+          ElMessage({
+            type: "success",
+            message: "驳回成功",
+            zIndex: 10000,
+          });
+          rejectDiglog.value = false;
+          rejectReason.value = "";
+          getDeptList(params.value);
+        } else {
+          ElMessage({
+            type: "error",
+            message: res.data.msg ? `驳回失败: ${err.msg}` : `驳回失败`,
+            zIndex: 10000,
+          });
+        }
       })
-      .catch((err) => {
-        ElMessage({
-          type: "error",
-          message: err.msg ? `驳回失败: ${err.msg}` : `驳回失败`,
-          zIndex: 10000,
-        });
-      });
+      .catch(() => {});
   } else {
     ElNotification({
       title: "驳回理由不能为空",

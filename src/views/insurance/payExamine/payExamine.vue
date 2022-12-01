@@ -230,86 +230,86 @@
         </template>
       </el-table-column>
     </el-table>
-  </div>
 
-  <pagination
-    v-show="total > 0"
-    v-model:limit="queryParams.pageSize"
-    v-model:page="queryParams.pageNum"
-    :total="total"
-    @pagination="getPagination"
-  />
-
-  <!--  驳回弹出层-->
-  <el-dialog
-    v-model="rejectDialog"
-    append-to-body
-    center
-    width="60%"
-    z-index="3000"
-  >
-    <template #header>
-      <div style="font-weight: bold">请填写驳回原因</div>
-    </template>
-
-    <el-input
-      v-model="rejectReason"
-      :rows="2"
-      placeholder="请输入驳回原因"
-      type="textarea"
+    <pagination
+      v-show="total > 0"
+      v-model:limit="queryParams.pageSize"
+      v-model:page="queryParams.pageNum"
+      :total="total"
+      @pagination="getPagination"
     />
 
-    <template #footer>
-      <el-button type="warning" @click="goReject(2, rejectReason)"
-        >驳回
-      </el-button>
-    </template>
-  </el-dialog>
+    <!--  驳回弹出层-->
+    <el-dialog
+      v-model="rejectDialog"
+      append-to-body
+      center
+      width="60%"
+      z-index="3000"
+    >
+      <template #header>
+        <div style="font-weight: bold">请填写驳回原因</div>
+      </template>
 
-  <!--  支付凭证-->
-  <el-dialog v-model="paymentVoucherDialog" align-center center width="50%">
-    <template #header>共计{{ paymentVoucherList.length }}张图片</template>
-
-    <div class="demo-image__lazy">
-      <el-image
-        v-for="attachUrl in paymentVoucherList"
-        :key="attachUrl"
-        :src="attachUrl"
-        fit="contain"
-        lazy
-        preview-teleported
+      <el-input
+        v-model="rejectReason"
+        :rows="2"
+        placeholder="请输入驳回原因"
+        type="textarea"
       />
-    </div>
-  </el-dialog>
+
+      <template #footer>
+        <el-button type="warning" @click="goReject(2, rejectReason)"
+          >驳回
+        </el-button>
+      </template>
+    </el-dialog>
+
+    <!--  支付凭证-->
+    <el-dialog v-model="paymentVoucherDialog" align-center center width="50%">
+      <template #header>共计{{ paymentVoucherList.length }}张图片</template>
+
+      <div class="demo-image__lazy">
+        <el-image
+          v-for="attachUrl in paymentVoucherList"
+          :key="attachUrl"
+          :src="attachUrl"
+          fit="contain"
+          lazy
+          preview-teleported
+        />
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { Finished, RemoveFilled } from "@element-plus/icons-vue";
-import request from "@/utils/request";
-import { downloadContract } from "@/api/insurance/customer";
+import {
+  auditPayment,
+  downloadContract,
+  getAuditHippList,
+} from "@/api/insurance/insurance";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getInfo } from "@/api/login";
 
 const showSearch = ref(true);
 const deptList = ref([]);
 const total = ref(0);
-const corpId = ref("");
 const queryTime = ref("");
 const loading = ref(false);
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
   queryContractCode: "",
-  corpId,
-  statusList: ["4", "5", "6", "7", "10", "11", "12"],
+  statusList: ["11", "12"],
 });
 const defaultParams = ref({
-  corpId,
   pageNum: 1,
   pageSize: 10,
-  statusList: ["4", "5", "6", "7", "10", "11", "12"],
+  statusList: ["11", "12"],
 });
+
 const rejectDialog = ref(false);
 const rejectReason = ref("");
 const detailHippId = ref("");
@@ -366,13 +366,14 @@ const handleClick = async (type, row) => {
       type: "warning",
     })
       .then(() => {
-        changeStatus(1).then((res) => {
+        auditPayment(detailHippId.value, 1).then((res) => {
           if (res.code == 200) {
             ElMessage({
               message: "确认凭证真实性成功",
               type: "success",
             });
-            getDeptList(queryParams.value);
+            let index = deptList.value.indexOf(row);
+            deptList.value[index].statusName = "凭证真实";
           } else {
             ElMessage({
               message: "确认凭证真实性失败",
@@ -381,18 +382,14 @@ const handleClick = async (type, row) => {
           }
         });
       })
-      .catch((err) => {});
+      .catch(() => {});
   } else {
     rejectDialog.value = true;
   }
 };
 
 const getDeptList = (params) => {
-  request({
-    url: "/hipp/admin/payOrderList",
-    method: "get",
-    params,
-  })
+  getAuditHippList(params)
     .then((res) => {
       if (res.code == 200) {
         total.value = Number(res.data.total);
@@ -402,19 +399,8 @@ const getDeptList = (params) => {
     .catch((err) => console.log(err));
 };
 
-const changeStatus = (status, errReason = "") => {
-  return request({
-    url: "/hipp/hipp/payinfo/paymentVoucherApproval",
-    params: {
-      hippId: detailHippId.value,
-      operation: status,
-      errReason,
-    },
-  });
-};
-
-const goReject = (status, errReason) => {
-  changeStatus(status, errReason).then((res) => {
+const goReject = () => {
+  auditPayment(detailHippId.value, 2, rejectReason.value).then((res) => {
     if (res.code == 200) {
       ElMessage({
         message: "驳回支付凭证成功",
@@ -422,6 +408,7 @@ const goReject = (status, errReason) => {
         zIndex: 10000,
       });
       rejectDialog.value = false;
+      rejectReason.value = "";
       getDeptList(queryParams.value);
     } else {
       ElMessage({
@@ -452,10 +439,7 @@ const showPaymentPictures = async (row) => {
 };
 
 onMounted(() => {
-  getInfo().then((res) => {
-    // corpId.value = res.data.user.corpId;
-    getDeptList(defaultParams.value);
-  });
+  getDeptList(defaultParams.value);
 });
 </script>
 
