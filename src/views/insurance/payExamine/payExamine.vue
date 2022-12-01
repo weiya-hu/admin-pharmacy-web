@@ -1,4 +1,5 @@
 <template>
+  <div>
   <div class="app-container">
     <!--  筛选-->
     <el-form>
@@ -281,6 +282,7 @@
       />
     </div>
   </el-dialog>
+</div>
 </template>
 
 <script setup>
@@ -290,6 +292,7 @@ import request from "@/utils/request";
 import { downloadContract } from "@/api/insurance/customer";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getInfo } from "@/api/login";
+const { proxy } = getCurrentInstance();
 
 const showSearch = ref(true);
 const deptList = ref([]);
