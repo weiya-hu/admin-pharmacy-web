@@ -45,6 +45,7 @@
           />
         </el-form-item>
         <el-form-item>
+          <div class="search-item"></div>
           <el-button icon="Search" type="primary" @click="handleQuery"
             >搜索
           </el-button>
@@ -56,11 +57,14 @@
           v-model:showSearch="showSearch"
           @queryTable="getList"
         ></right-toolbar>
+        <el-button
+          icon="Share"
+          style="margin-left: 20px"
+          type="warning"
+          @click="handleShare"
+          >分享
+        </el-button>
       </el-row>
-
-      <div class="search-item">
-        <el-button type="primary" @click="handleShare">分享</el-button>
-      </div>
     </div>
 
     <!--制表  -->
@@ -151,6 +155,7 @@
         <!--      </el-table-column>-->
       </el-table>
     </div>
+
     <el-dialog
       v-model="dialogVisible"
       :close-on-click-modal="false"
@@ -359,9 +364,9 @@ const inputChange = () => {
   font-size: 18px;
 }
 
-.search-item {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 30px;
-}
+//.search-item {
+//  display: flex;
+//  justify-content: flex-end;
+//  margin-top: 30px;
+//}
 </style>

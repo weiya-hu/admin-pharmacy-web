@@ -7,18 +7,18 @@
 
       <div class="login-right">
         <el-tabs v-model="activeName" class="demo-tabs" stretch>
-          <el-tab-pane label="微信扫码登录" name="first">
-            <wxlogin
-              :redirect_uri="redirectUri"
-              :scope="'snsapi_login'"
-              :theme="'black'"
-              appid="wxb5823246252c172d"
-              href="data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7d2lkdGg6IDI0MHB4O2JvcmRlcjogMDt9Ci5pbXBvd2VyQm94IC50aXRsZSB7ZGlzcGxheTogbm9uZTt9Ci5pbXBvd2VyQm94IC5pbmZvIHt3aWR0aDogMjQwcHg7fQouc3RhdHVzX2ljb24ge2Rpc3BsYXk6IG5vbmV9Ci5pbXBvd2VyQm94IC5zdGF0dXMge3RleHQtYWxpZ246IGNlbnRlcjt9IA=="
-              state="wechat"
-            >
-            </wxlogin>
-          </el-tab-pane>
-          <el-tab-pane label="企业微信扫码登陆" name="second">
+          <!--          <el-tab-pane label="微信扫码登录" name="first">-->
+          <!--            <wxlogin-->
+          <!--              :redirect_uri="redirectUri"-->
+          <!--              :scope="'snsapi_login'"-->
+          <!--              :theme="'black'"-->
+          <!--              appid="wxb5823246252c172d"-->
+          <!--              href="data:text/css;base64,LmltcG93ZXJCb3ggLnFyY29kZSB7d2lkdGg6IDI0MHB4O2JvcmRlcjogMDt9Ci5pbXBvd2VyQm94IC50aXRsZSB7ZGlzcGxheTogbm9uZTt9Ci5pbXBvd2VyQm94IC5pbmZvIHt3aWR0aDogMjQwcHg7fQouc3RhdHVzX2ljb24ge2Rpc3BsYXk6IG5vbmV9Ci5pbXBvd2VyQm94IC5zdGF0dXMge3RleHQtYWxpZ246IGNlbnRlcjt9IA=="-->
+          <!--              state="wechat"-->
+          <!--            >-->
+          <!--            </wxlogin>-->
+          <!--          </el-tab-pane>-->
+          <el-tab-pane label="企业微信扫码登陆" name="first">
             <iframe
               :src="authUrl"
               frameborder="0"
@@ -26,7 +26,7 @@
               width="100%"
             ></iframe>
           </el-tab-pane>
-          <el-tab-pane label="账号密码登录" name="third">
+          <el-tab-pane label="账号密码登录" name="second">
             <el-form
               ref="loginRef"
               :model="loginForm"
@@ -100,6 +100,7 @@ import { getCurrentInstance, ref } from "vue";
 import { oauthLogin, wechatLogin } from "@/api/login";
 import { GetQueryString } from "@/utils/validate";
 import { removeToken, setToken } from "@/utils/auth";
+import wxlogin from "vue-wxlogin";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -211,6 +212,7 @@ function getOauthLogin() {
   let params = {
     authCode: GetQueryString("auth_code") ? GetQueryString("auth_code") : "",
     state: "qrLoginsplit",
+    platformProductId: "admin",
   };
   if (params.authCode !== "") {
     loading.value = true;
@@ -240,6 +242,7 @@ const wecomControlLogin = () => {
   let params = {
     authCode: GetQueryString("auth_code") ? GetQueryString("auth_code") : "",
     state: "oauthLoginsplit",
+    platformProductId: "admin",
   };
   if (params.authCode !== "") {
     loading.value = true;

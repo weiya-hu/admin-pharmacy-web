@@ -80,7 +80,6 @@
             <el-link
               v-if="scope.row.applyListAttachFile"
               :href="scope.row.applyListAttachFile"
-              target="_blank"
               type="primary"
               >查看
             </el-link>
@@ -314,13 +313,13 @@ const queryParams = ref({
   pageSize: 10,
   corpId: info.value.orgId,
   queryContractCode: "",
-  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
+  statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const defaultParams = ref({
   corpId: info.value.orgId,
   pageNum: 1,
   pageSize: 10,
-  statusList: ["4", "5", "6", "7", "8", "10", "11", "12"],
+  statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const shortcuts = [
   {
@@ -448,7 +447,7 @@ onMounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 $complete: #adadad;
 $wait: #ff7301;
 $audit: #4672ff;
@@ -570,9 +569,5 @@ $base-black: #333;
 
 .demo-image__lazy .el-image:last-child {
   margin-bottom: 0;
-}
-
-.el-input {
-  width: 400px !important;
 }
 </style>

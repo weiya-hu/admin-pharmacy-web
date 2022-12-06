@@ -43,7 +43,9 @@
                 ? "微信"
                 : scope.row.accessChannel == 2
                 ? "支付宝"
-                : "国家医保App"
+                : scope.row.accessChannel == 3
+                ? "国家医保APP"
+                : "地方APP"
             }}
           </template>
         </el-table-column>
@@ -59,9 +61,13 @@
                 ? "微信小程序"
                 : appType == "2"
                 ? "微信公众号"
+                : appType == "3"
+                ? "支付宝小程序"
+                : appType == "4"
+                ? "支付宝生活号"
                 : appType == "5"
-                ? "网页"
-                : "移动App"
+                ? "h5网页"
+                : "移动APP"
             }}
           </template>
         </el-table-column>
@@ -184,41 +190,43 @@
           min-width="200"
         >
           <template #default="scope">
-            <el-tooltip content="查看" hide-after="0" placement="top">
-              <el-button
-                v-if="scope.row.canCheck == true"
-                :icon="View"
-                text
-                type="primary"
-                @click="goDetail(scope.$index)"
-              ></el-button>
-            </el-tooltip>
-            <el-tooltip
-              v-if="scope.row.canUpLoadFile"
-              :content="scope.row.status == 3 ? '上传回执' : '重新上传回执'"
-              hide-after="0"
-              placement="top"
-            >
-              <el-button
-                :icon="UploadFilled"
-                text
-                type="primary"
-                @click="upLoadFilled(scope.row)"
-              ></el-button>
-            </el-tooltip>
-            <el-tooltip
-              v-if="scope.row.status == 3"
-              content="驳回"
-              hide-after="0"
-              placement="top"
-            >
-              <el-button
-                :icon="Remove"
-                text
-                type="danger"
-                @click="showRejectLog(scope.row.detailId)"
-              ></el-button>
-            </el-tooltip>
+            <div class="operation-container">
+              <el-tooltip content="查看" hide-after="0" placement="top">
+                <el-button
+                  v-if="scope.row.canCheck == true"
+                  :icon="View"
+                  text
+                  type="primary"
+                  @click="goDetail(scope.$index)"
+                ></el-button>
+              </el-tooltip>
+              <el-tooltip
+                v-if="scope.row.canUpLoadFile"
+                :content="scope.row.status == 3 ? '上传回执' : '重新上传回执'"
+                hide-after="0"
+                placement="top"
+              >
+                <el-button
+                  :icon="UploadFilled"
+                  text
+                  type="primary"
+                  @click="upLoadFilled(scope.row)"
+                ></el-button>
+              </el-tooltip>
+              <el-tooltip
+                v-if="scope.row.status == 3"
+                content="驳回"
+                hide-after="0"
+                placement="top"
+              >
+                <el-button
+                  :icon="Remove"
+                  text
+                  type="danger"
+                  @click="showRejectLog(scope.row.detailId)"
+                ></el-button>
+              </el-tooltip>
+            </div>
             <span
               v-if="
                 scope.row.status != 3 &&
@@ -261,11 +269,13 @@
           <div class="key">拟定电子凭证接入渠道：</div>
           <div class="value">
             {{
-              singleDetail.accessChanne == 1
+              singleDetail.accessChannel == 1
                 ? "微信"
-                : singleDetail.accessChanne == 2
+                : singleDetail.accessChannel == 2
                 ? "支付宝"
-                : "国家医保App"
+                : singleDetail.accessChannel == 3
+                ? "国家医保APP"
+                : "地方APP"
             }}
           </div>
         </div>
@@ -275,11 +285,15 @@
             {{
               singleDetail.appType == 1
                 ? "微信小程序"
-                : singleDetail.appType == 2
+                : singleDetail.appType == "2"
                 ? "微信公众号"
-                : singleDetail.appType == 5
+                : singleDetail.appType == "3"
+                ? "支付宝小程序"
+                : singleDetail.appType == "4"
+                ? "支付宝生活号"
+                : singleDetail.appType == "5"
                 ? "h5网页"
-                : "移动App"
+                : "移动APP"
             }}
           </div>
         </div>
@@ -373,7 +387,7 @@
               "
               :href="singleDetail.platformReceiptList[0].attachUrl"
               :underline="false"
-              style="margin-right: 20px"
+              style="margin-right: 20px; font-family: Arial"
               target="_blank"
               type="primary"
               >查看
@@ -395,7 +409,7 @@
               multiple
               name="files"
             >
-              <el-button type="primary"
+              <el-button link style="padding: 0" type="primary"
                 >{{
                   singleDetail.platformReceiptList &&
                   singleDetail.platformReceiptList.length > 0
@@ -587,6 +601,7 @@ const upLoadSuccess = (res, { name }) => {
               message: "明细已审核通过",
               zIndex: 10000,
             });
+            singleDetail.value.status = 5;
           } else {
             ElMessage({
               type: "error",
@@ -849,5 +864,18 @@ $base-black: #333;
 
 :deep .el-upload-list__item-file-name {
   width: 250px !important;
+}
+
+.el-button > span {
+  height: 19.2px !important;
+  display: inline-block;
+}
+
+.operation-container {
+  display: flex;
+
+  el-tooltip {
+    margin-right: 10px;
+  }
 }
 </style>

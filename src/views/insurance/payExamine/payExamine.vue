@@ -143,47 +143,15 @@
       <el-table-column align="center" fixed="right" label="状态">
         <template #default="scope">
           <div
-            v-if="
-              scope.row.status === 1 ||
-              scope.row.status === 3 ||
-              scope.row.status === 4
-            "
+            v-if="scope.row.status > 3 && scope.row.status < 11"
             class="item-wrapper-inbox"
           >
-            <div class="dot wait"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
-          <div
-            v-if="scope.row.status === 2 || scope.row.status === 10"
-            class="item-wrapper-inbox"
-          >
-            <div class="dot complete"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
-          <div v-if="scope.row.status === 5" class="item-wrapper-inbox">
-            <div class="dot audit"></div>
-            <div>{{ scope.row.statusName }}</div>
+            <div class="dot agree"></div>
+            <div>凭证真实</div>
           </div>
 
           <div v-if="scope.row.status === 11" class="item-wrapper-inbox">
             <div class="dot audit"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
-          <div v-if="scope.row.status === 6" class="item-wrapper-inbox">
-            <div class="dot reject"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
-          <div v-if="scope.row.status === 7" class="item-wrapper-inbox">
-            <div class="dot agree"></div>
-            <div>{{ scope.row.statusName }}</div>
-          </div>
-
-          <div v-if="scope.row.status === 8" class="item-wrapper-inbox">
-            <div class="dot reject"></div>
             <div>{{ scope.row.statusName }}</div>
           </div>
 
@@ -302,12 +270,12 @@ const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
   queryContractCode: "",
-  statusList: ["11", "12"],
+  statusList: ["11", "12", "4", "5", "6", "7", "10"],
 });
 const defaultParams = ref({
   pageNum: 1,
   pageSize: 10,
-  statusList: ["11", "12"],
+  statusList: ["11", "12", "4", "5", "6", "7", "10"],
 });
 
 const rejectDialog = ref(false);
@@ -374,6 +342,7 @@ const handleClick = async (type, row) => {
             });
             let index = deptList.value.indexOf(row);
             deptList.value[index].statusName = "凭证真实";
+            deptList.value[index].status = "4";
           } else {
             ElMessage({
               message: "确认凭证真实性失败",

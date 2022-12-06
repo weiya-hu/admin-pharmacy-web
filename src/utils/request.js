@@ -92,9 +92,6 @@ service.interceptors.response.use(
     // console.log(res);
     // 未设置状态码则默认成功状态
     const code = res.data.code;
-    if (!code) {
-      return Promise.reject("系统未知错误，后端未返回code");
-    }
     // 获取错误信息
     const msg = errorCode[code] || res.data.msg || errorCode["default"];
     // 二进制数据则直接返回
@@ -102,7 +99,7 @@ service.interceptors.response.use(
       res.request.responseType === "blob" ||
       res.request.responseType === "arraybuffer"
     ) {
-      return res.data;
+      return Promise.resolve(res.data);
     }
     if (code === 401) {
       if (!isRelogin.show) {
@@ -145,7 +142,6 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    // console.log("err" + error);
     let { message } = error;
     if (message == "Network Error") {
       message = "后端接口连接异常";
