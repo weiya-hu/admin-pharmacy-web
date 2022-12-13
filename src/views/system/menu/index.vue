@@ -406,7 +406,7 @@ function reset() {
 /** 展示下拉图标 */
 function showSelectIcon() {
   iconSelectRef.value.reset();
-  showChooseIcon.value = true;
+  // showChooseIcon.value = true;
 }
 /** 选择图标 */
 function selected(name) {
