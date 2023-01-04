@@ -46,3 +46,10 @@ export function getTenantById(id) {
         method: 'get'
     })
 }
+// 查看租户企业代开发应用授权信息
+export function getTenantInfo(id) {
+    return request({
+        url: `/system/tenant/info/getTenantAgentInfo?tenantId=${id}`,
+        method: 'get'
+    })
+}

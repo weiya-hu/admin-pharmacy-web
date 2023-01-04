@@ -25,20 +25,25 @@
     </el-row>
 
     <el-table v-loading="loading" :data="tableListData">
-      <el-table-column label="租户编号" prop="tenantId" fixed/>
-      <el-table-column label="租户名称" prop="name" :show-overflow-tooltip="true" fixed/>
-      <el-table-column label="租户版本" prop="packageId" :show-overflow-tooltip="true" fixed/>
-      <el-table-column label="联系人" prop="contactName"/>
-      <el-table-column label="联系电话" prop="contactMobile"/>
-      <el-table-column label="账号额度" prop="accountCount"/>
-      <el-table-column label="过期时间" prop="expireTime"/>
-      <el-table-column label="绑定域名" prop="domain"/>
-      <el-table-column label="租户状态" prop="status"/>
-      <el-table-column label="创建时间" prop="createTime"/>
-      <el-table-column label="操作" fixed="right">
+      <el-table-column label="租户编号" prop="tenantId" fixed width="180" show-overflow-tooltip />
+      <el-table-column label="租户名称" prop="name" fixed width="160" show-overflow-tooltip />
+      <el-table-column label="租户版本" prop="packageId" fixed width="100" show-overflow-tooltip />
+      <el-table-column label="联系人" prop="contactName" width="150" show-overflow-tooltip />
+      <el-table-column label="联系电话" prop="contactMobile" width="120" show-overflow-tooltip />
+      <el-table-column label="账号额度" prop="accountCount" />
+      <el-table-column label="过期时间" prop="expireTime" width="150" show-overflow-tooltip />
+      <el-table-column label="绑定域名" prop="domain" width="150" show-overflow-tooltip />
+      <el-table-column label="租户状态" prop="status">
         <template #default="scope">
-          <el-button type="text" icon="View" @click="queryInfoById(scope.row)">查看</el-button>
-          <el-button type="text" icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
+          <dict-tag :options="wecom_tenant_staus" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" prop="createTime" width="140" show-overflow-tooltip />
+      <el-table-column label="操作" fixed="right" width="270">
+        <template #default="scope">
+          <el-button type="text" icon="View" size="small" @click="queryInfoById(scope.row)">查看</el-button>
+          <el-button type="text" icon="Edit" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" icon="Pointer" size="small" @click="handleView(scope.row)">查看参数</el-button>
           <!--          <el-button type="text" icon="Delete"  @click="handleDelete(scope.row)"  >删除  </el-button>-->
         </template>
       </el-table-column>
@@ -52,49 +57,66 @@
     <!-- 新增 -->
     <el-dialog :title="thisHandleType"  v-model="shouAddDia" width="60%" :close-on-click-modal="false" draggable>
       <el-form :model="formData" ref="formDataRef" label-width="150px" :rules="formRule" :disabled="thisHandleType==='查看详情'">
-        <el-form-item label="租户名称" prop="name">
-          <el-input v-model="formData.name"/>
-        </el-form-item>
-        <el-form-item label="租户版本" prop="packageId">
-          <el-select v-model="formData.packageId" multiple style="width: 100%">
-            <el-option v-for="(item,index) in packageList" :key="index" :value="item.id" :label="item.name"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="租户账号" prop="username" v-if="thisHandleType==='新增租户'">
-          <el-input v-model="formData.username"/>
-        </el-form-item>
-        <el-form-item label="租户密码" prop="password" v-if="thisHandleType==='新增租户'">
-          <el-input type="password" v-model="formData.password"/>
-        </el-form-item>
-        <el-form-item label="联系人" prop="contactName">
-          <el-input v-model="formData.contactName"/>
-        </el-form-item>
-        <el-form-item label="联系人电话" prop="contactMobile">
-          <el-input v-model="formData.contactMobile"/>
-        </el-form-item>
-        <el-form-item label="账号数量" prop="accountCount">
-          <el-input type="number" v-model.number="formData.accountCount"/>
-        </el-form-item>
-        <el-form-item label="绑定域名" prop="domain">
-          <el-input v-model="formData.domain"/>
-        </el-form-item>
-        <el-form-item label="过期时间" prop="expireTime">
-          <el-date-picker style="width: 100%" v-model="formData.expireTime" type="date" placeholder="请选择版本到期时间"
-                          value-format="YYYY-MM-DD HH:mm:ss"/>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-switch
-              width="50"
-              v-model="formData.status"
-              class="ml-2"
-              inline-prompt
-              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949;"
-              :active-value="1"
-              :inactive-value="0"
-              active-text="启用"
-              inactive-text="停用"
-          />
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="租户账号" prop="username" v-if="thisHandleType==='新增租户'">
+              <el-input v-model="formData.username"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="租户密码" prop="password" v-if="thisHandleType==='新增租户'">
+              <el-input type="password" v-model="formData.password"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="租户名称" prop="name">
+              <el-input v-model="formData.name"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="租户版本" prop="packageId">
+              <el-select v-model="formData.packageId" multiple style="width: 100%">
+                <el-option v-for="(item,index) in packageList" :key="index" :value="item.id" :label="item.name"/>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="联系人" prop="contactName">
+              <el-input v-model="formData.contactName"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系人电话" prop="contactMobile">
+              <el-input v-model="formData.contactMobile"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="过期时间" prop="expireTime">
+              <el-date-picker style="width: 100%" v-model="formData.expireTime" type="date" placeholder="请选择版本到期时间"
+                              value-format="YYYY-MM-DD HH:mm:ss"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="账号数量" prop="accountCount">
+              <el-input type="number" v-model.number="formData.accountCount"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="状态" prop="status">
+              <el-switch
+                v-model="formData.status"
+                inline-prompt
+                :active-value="0"
+                :inactive-value="1"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="绑定域名" prop="domain">
+              <el-input v-model="formData.domain"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -103,12 +125,21 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 回调参数 -->
+    <el-dialog title="查看参数" v-model="dialogVisible" width="680px" :close-on-click-modal="false" draggable>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="企业ID" label-align="right" align="center">{{ state.corpId }}</el-descriptions-item>
+        <el-descriptions-item label="应用名" label-align="right" align="center">{{ state.agentName }}</el-descriptions-item>
+        <el-descriptions-item label="应用密钥" label-align="right" align="center">{{ state.agentSecret }}</el-descriptions-item>
+        <el-descriptions-item label="回调url" label-align="right" align="center">{{ state.backOffUrl }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Tenant">
 import {lastYear} from '@/utils/dateUtils'
-import {listTenant, saveTenant, updateTenant, getTenantDetail} from "@/api/tenant/tenant";
+import {listTenant, saveTenant, updateTenant, getTenantDetail, getTenantInfo} from "@/api/tenant/tenant";
 import {getSimpleList} from "@/api/tenant/tenantPackage";
 import {ElMessage} from "element-plus";
 
@@ -130,7 +161,13 @@ const formData = ref({
   password: '',
   status: 1,
   username: '',
-
+})
+// 参数
+const state = ref({
+  corpId: '',
+  agentName: '',
+  agentSecret: '',
+  backOffUrl: ''
 })
 //表单验证
 const formRule = reactive({
@@ -146,6 +183,8 @@ const formRule = reactive({
 
 //新增表单弹窗
 const shouAddDia = ref(false)
+// 查看参数
+const dialogVisible = ref(false)
 
 //查询表单
 const queryRef = ref()
@@ -231,8 +270,13 @@ const handleEdit = (row) => {
         }
       })
 }
-const handleDelete = (row) => {
-
+const handleView = (row) => {
+  getTenantInfo(row.tenantId).then(res => {
+    if (res.code === 200) {
+      dialogVisible.value = true
+      state.value = res.data[0]
+    }
+  })
 }
 //提交
 const formSubmit =  () => {
@@ -261,8 +305,6 @@ const formSubmit =  () => {
               }
             })
       }
-    }else{
-      shouAddDia.value = false
     }
   })
 }
