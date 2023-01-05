@@ -313,13 +313,13 @@ const queryParams = ref({
   pageSize: 10,
   corpId: info.value.orgId,
   queryContractCode: "",
-  statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
+  // statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const defaultParams = ref({
   corpId: info.value.orgId,
   pageNum: 1,
   pageSize: 10,
-  statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
+  // statusList: ["1", "2", "4", "5", "6", "7", "8", "10", "11", "12"],
 });
 const shortcuts = [
   {

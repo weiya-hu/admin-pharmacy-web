@@ -19,6 +19,17 @@ tagsViewStore.addCachedView(route)
 const cachedViews = computed(() => {
     return tagsViewStore.cachedViews
 })
+
+let threeSum = function(nums=[]) {
+  let total=0
+  if(nums.length<3) return
+   if(nums.length==3){
+     total=nums.reduce((total,b)=>{
+       return total+=b
+     })
+     return total==0?[[...nums]]:[]
+   }
+};
 </script>
 
 <style lang="scss" scoped>
