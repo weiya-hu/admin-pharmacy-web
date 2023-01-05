@@ -126,8 +126,8 @@
       </template>
     </el-dialog>
     <!-- 回调参数 -->
-    <el-dialog title="查看参数" v-model="dialogVisible" width="680px" :close-on-click-modal="false" draggable>
-      <el-descriptions :column="2" border>
+    <el-dialog title="查看参数" v-model="dialogVisible" width="720px" :close-on-click-modal="false" draggable destroy-on-close>
+      <el-descriptions :column="1" border size="large">
         <el-descriptions-item label="企业ID" label-align="right" align="center">{{ state.corpId }}</el-descriptions-item>
         <el-descriptions-item label="应用名" label-align="right" align="center">{{ state.agentName }}</el-descriptions-item>
         <el-descriptions-item label="应用密钥" label-align="right" align="center">{{ state.agentSecret }}</el-descriptions-item>
@@ -274,7 +274,16 @@ const handleView = (row) => {
   getTenantInfo(row.tenantId).then(res => {
     if (res.code === 200) {
       dialogVisible.value = true
-      state.value = res.data[0]
+      if (res.data == null) {
+        state.value = {
+          corpId: '',
+          agentName: '',
+          agentSecret: '',
+          backOffUrl: ''
+        }
+      } else {
+        state.value = res.data
+      }
     }
   })
 }

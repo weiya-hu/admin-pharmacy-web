@@ -45,6 +45,7 @@ export default defineConfig(({ mode, command }) => {
         "/prod-api": {
           // target: 'http://192.168.123.67:8080/',
           target: "https://api.sp.shanhaiping.com",
+          // target: "http://test.api.shanhaiping.com/",
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/prod-api/, ""),
         },
