@@ -119,7 +119,7 @@
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
+        <div class="dialog-footer" v-if="thisHandleType!=='查看详情'">
           <el-button @click="formCancel">取 消</el-button>
           <el-button type="primary" @click="formSubmit">确 定</el-button>
         </div>
