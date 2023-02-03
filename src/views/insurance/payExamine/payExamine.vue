@@ -51,15 +51,37 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="下载合同">
+      <el-table-column align="center" label="签约方式">
+        <template #default="scope">
+          {{scope.row.signType==2?'线下':'线上'}}
+        </template>
+      </el-table-column>
+
+      <el-table-column
+          align="center"
+          label="下载合同"
+          prop="download"
+      >
         <template #default="scope">
           <el-button
-            v-if="scope.row.status > 2"
-            link
-            type="primary"
-            @click="downloadContract(scope.row.hippId)"
-            >下载
+              v-if="scope.row.status > 2 && scope.row.signType!=2"
+              link
+              type="primary"
+              @click="downloadContract(scope.row.hippId)"
+          >下载
           </el-button>
+          <template v-else-if="scope.row.signType==2 && scope.row.status > 2 ">
+            <div >
+              <el-image
+                  style="width: 50px; height: 50px"
+                  :src="scope.row.offLineContractFile[0].attachUrl"
+                  :zoom-rate="1.2"
+                  :preview-src-list="getOfflineUrlList(scope.row)"
+                  fit="cover"
+                  preview-teleported
+              />
+            </div>
+          </template>
           <span v-else>--</span>
         </template>
       </el-table-column>
@@ -406,6 +428,15 @@ const showPaymentPictures = async (row) => {
     paymentVoucherDialog.value = true;
   }
 };
+
+const getOfflineUrlList=({offLineContractFile})=>{
+  let arr=[];
+  offLineContractFile.map(i=>{
+    arr.push(i.attachUrl)
+  })
+  // console.log(arr)
+  return arr
+}
 
 onMounted(() => {
   getDeptList(defaultParams.value);

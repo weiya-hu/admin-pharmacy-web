@@ -66,7 +66,7 @@
 
         <el-table-column
           align="center"
-          label="下载"
+          label="下载合同"
           prop="download"
         >
           <template #default="scope">
@@ -78,16 +78,22 @@
               >下载
             </el-button>
             <template v-else-if="scope.row.signType==2 && scope.row.status > 2 ">
-<!--              <div >-->
+              <div >
                 <el-image
-                    style="width: 100px; height: 100px"
+                    style="width: 50px; height: 50px"
                     :src="scope.row.offLineContractFile[0].attachUrl"
                     :zoom-rate="1.2"
                     :preview-src-list="getOfflineUrlList(scope.row)"
                     fit="cover"
-                    :z-index="1000"
-                />
-<!--              </div>-->
+                    preview-teleported
+                    @switch="setUrl"
+                    @close="urlIndex.value=0"
+                >
+                  <template #viewer >
+                    <div class="downLoad-viewer" @click="picdownLoad(scope.row)">下载</div>
+                  </template>
+                </el-image>
+              </div>
             </template>
             <span v-else>--</span>
           </template>
@@ -302,10 +308,11 @@
 
       <div class="demo-image__lazy">
         <el-image
+            style="width: 50px;height: 50px"
           v-for="attachUrl in paymentVoucherList"
           :key="attachUrl"
           :src="attachUrl"
-          fit="contain"
+          fit="cover"
           lazy
           preview-teleported
         />
@@ -318,7 +325,7 @@
 import { useRouter } from "vue-router";
 import {computed, getCurrentInstance, onMounted, ref} from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { downloadContract, getHippList } from "@/api/insurance/insurance";
+import {downloadContract, downLoadFile, getHippList} from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
 
 const queryTime = ref([]);
@@ -375,6 +382,7 @@ const showSearch = ref(true);
 const loading = ref(false);
 const total = ref(0);
 const deptList = ref([]);
+const urlIndex=ref(0)
 
 // 支付凭证变量
 const paymentVoucherDialog = ref(false);
@@ -468,8 +476,20 @@ const getOfflineUrlList=({offLineContractFile})=>{
   offLineContractFile.map(i=>{
       arr.push(i.attachUrl)
   })
-  // console.log(arr)
   return arr
+}
+
+// const setFile=()=>{
+//   console.log(1)
+// }
+
+const setUrl=(num)=>{
+let num1=num==0?0:num;
+urlIndex.value=num1
+}
+
+const picdownLoad=({offLineContractFile})=>{
+downLoadFile(offLineContractFile[urlIndex.value],'合同照片')
 }
 
 onMounted(() => {
@@ -591,13 +611,32 @@ $base-black: #333;
   text-align: center;
 }
 
-.demo-image__lazy .el-image {
+::v-deep.demo-image__lazy .el-image {
   display: block;
-  min-height: 200px;
+  max-height: 50px;
+  min-height: 50px;
   margin-bottom: 10px;
 }
 
 .demo-image__lazy .el-image:last-child {
   margin-bottom: 0;
+}
+
+.downLoad-viewer{
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(160px);
+  width: 44px;
+  height: 44px;
+  background: #606266;
+  border-radius: 50%;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px !important;
+  cursor: pointer;
 }
 </style>

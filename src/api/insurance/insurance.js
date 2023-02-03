@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import {nextTick, ref} from "vue";
 
 // 推荐人注册
 export function returnUrl(data) {
@@ -10,7 +11,7 @@ export function returnUrl(data) {
 }
 
 //blob下载
-export function downLoadFile(file) {
+export function downLoadFile(file,type='合同照片') {
   let { attachId, attachUrl } = file;
   request({
     url: "/file/file/downloadFileByUrl",
@@ -20,15 +21,16 @@ export function downLoadFile(file) {
     method: "get",
     responseType: "blob",
   }).then((res) => {
-    if (res.code == 200) {
+    if (res) {
       const blobUrl = window.URL.createObjectURL(new Blob([res]));
-      const a = document.createElement("a");
-      const filename = `文件${attachId}`;
+      let a = document.createElement("a")
+      const filename = `${type}${attachId}.png`;
       a.href = blobUrl;
       a.download = filename;
       a.target = filename;
       a.click();
       window.URL.revokeObjectURL(blobUrl);
+      a=null;
     }
   });
 }
