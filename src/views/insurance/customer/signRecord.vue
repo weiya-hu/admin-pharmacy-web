@@ -58,20 +58,37 @@
             >{{ scope.row.contractCode ? scope.row.contractCode : "--" }}
           </template>
         </el-table-column>
+        <el-table-column align="center" label="签约方式">
+          <template #default="scope">
+            {{scope.row.signType==2?'线下':'线上'}}
+          </template>
+        </el-table-column>
+
         <el-table-column
           align="center"
-          label="下载合同"
+          label="下载"
           prop="download"
-          show-overflow-tooltip
         >
           <template #default="scope">
             <el-button
-              v-if="scope.row.status > 2"
+              v-if="scope.row.status > 2 && scope.row.signType!=2"
               link
               type="primary"
               @click="downloadContract(scope.row.hippId)"
               >下载
             </el-button>
+            <template v-else-if="scope.row.signType==2 && scope.row.status > 2 ">
+<!--              <div >-->
+                <el-image
+                    style="width: 100px; height: 100px"
+                    :src="scope.row.offLineContractFile[0].attachUrl"
+                    :zoom-rate="1.2"
+                    :preview-src-list="getOfflineUrlList(scope.row)"
+                    fit="cover"
+                    :z-index="1000"
+                />
+<!--              </div>-->
+            </template>
             <span v-else>--</span>
           </template>
         </el-table-column>
@@ -96,14 +113,18 @@
             >{{ scope.row.signTime ? scope.row.signTime : "--" }}
           </template>
         </el-table-column>
-        <el-table-column align="center" label="签约人" prop="partyAUser" />
+        <el-table-column align="center" label="签约人" prop="partyAUser" >
+          <template #default="scope">
+            {{ scope.row.partyAUser ? scope.row.partyAUser : "--" }}
+          </template>
+        </el-table-column>
         <el-table-column
           align="center"
           label="应付金额(元)"
           prop="amountPayable"
         >
           <template #default="scope"
-            >{{ scope.row.amountPayable ? scope.row.amountPayable : "--" }}
+            >{{ scope.row.salesperson ? scope.row.amountPayable : "--" }}
           </template>
         </el-table-column>
         <el-table-column
@@ -295,7 +316,7 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import { getCurrentInstance, onMounted, ref } from "vue";
+import {computed, getCurrentInstance, onMounted, ref} from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { downloadContract, getHippList } from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
@@ -441,6 +462,15 @@ const showPaymentPictures = async (row) => {
     paymentVoucherDialog.value = true;
   }
 };
+
+const getOfflineUrlList=({offLineContractFile})=>{
+  let arr=[];
+  offLineContractFile.map(i=>{
+      arr.push(i.attachUrl)
+  })
+  // console.log(arr)
+  return arr
+}
 
 onMounted(() => {
   getDeptList(defaultParams.value);
