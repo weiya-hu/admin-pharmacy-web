@@ -11,6 +11,7 @@ import { blobValidate, tansParams } from "@/utils/ruoyi";
 import cache from "@/plugins/cache";
 import { saveAs } from "file-saver";
 import useUserStore from "@/store/modules/user";
+import qs from "qs";
 
 let downloadLoadingInstance;
 // 是否显示重新登录
@@ -37,10 +38,13 @@ service.interceptors.request.use(
     }
     // get请求映射params参数
     if (config.method === "get" && config.params) {
-      let url = config.url + "?" + tansParams(config.params);
-      url = url.slice(0, -1);
-      config.params = {};
-      config.url = url;
+      config.paramsSerializer = function(params) {
+        return qs.stringify(params, { arrayFormat: 'repeat' })
+        let url = config.url + "?" + tansParams(config.params);
+        url = url.slice(0, -1);
+        config.params = {};
+        config.url = url;
+      }
     }
     if (
       !isRepeatSubmit &&
