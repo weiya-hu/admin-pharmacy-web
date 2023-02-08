@@ -189,7 +189,7 @@ function handleClick() {
       userId: relayTags.value[0].userId,
       userName: relayTags.value[0].userName
     }
-    ElMessageBox.confirm('你所选择的客户会移交给 "' + relayTags.value[0].userName + '" 吗', '提示', {
+    ElMessageBox.confirm('你所选择的客户会移交给 ' + relayTags.value[0].userName + ' ', '提示', {
       confirmButtonText: '立即移交',
       cancelButtonText: '再想想',
       type: 'warning'
