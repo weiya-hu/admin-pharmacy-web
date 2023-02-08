@@ -160,8 +160,10 @@ function onClick(type) {
     dialogVisible.value = true
     title.value = '接替成员'
     getRelayList()
-    if (relayTags.value[0] !== undefined) {
+    if (relayTags.value.length !== 0) {
       relays.value = relayTags.value[0].userId
+    } else {
+      relays.value = ''
     }
   }
 }
