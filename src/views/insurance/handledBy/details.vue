@@ -6,62 +6,62 @@
       <div class="salesman">销售人员：{{ info.saleUserName }}</div>
     </div>
     <el-form
-      v-show="showSearch"
-      ref="queryRef"
-      :inline="true"
-      :model="queryParams"
+        v-show="showSearch"
+        ref="queryRef"
+        :inline="true"
+        :model="queryParams"
     >
       <el-form-item label="签约日期">
         <el-date-picker
-          v-model="queryTime"
-          end-placeholder="结束日期"
-          range-separator="至"
-          start-placeholder="加入日期"
-          type="daterange"
-          value-format="YYYY-MM-DD"
-          @change="dateChange"
+            v-model="queryTime"
+            end-placeholder="结束日期"
+            range-separator="至"
+            start-placeholder="加入日期"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            @change="dateChange"
         />
       </el-form-item>
       <el-form-item>
         <el-input
-          v-model="queryParams.queryContractCode"
-          placeholder="搜合同编号"
-          style="width: 250px"
-          @change="inputChange"
+            v-model="queryParams.queryContractCode"
+            placeholder="搜合同编号"
+            style="width: 250px"
+            @change="inputChange"
         />
       </el-form-item>
       <el-form-item>
         <el-button icon="Search" type="primary" @click="handleQuery"
-          >搜索
+        >搜索
         </el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
     <el-row :gutter="10" class="mb8">
       <right-toolbar
-        v-model:showSearch="showSearch"
-        @queryTable="getList"
+          v-model:showSearch="showSearch"
+          @queryTable="getList"
       ></right-toolbar>
     </el-row>
 
     <el-table v-loading="loading" :data="deptList" stripe>
       <el-table-column
-        align="center"
-        label="合同编号"
-        min-width="150"
-        prop="contractCode"
-        show-overflow-tooltip
+          align="center"
+          label="合同编号"
+          min-width="150"
+          prop="contractCode"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <span>{{
-            scope.row.contractCode ? scope.row.contractCode : "--"
-          }}</span>
+              scope.row.contractCode ? scope.row.contractCode : "--"
+            }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="签约方式">
         <template #default="scope">
-          {{scope.row.signType==2?'线下':'线上'}}
+          {{ scope.row.signType == 2 ? '线下' : '线上' }}
         </template>
       </el-table-column>
 
@@ -71,40 +71,55 @@
           prop="download"
       >
         <template #default="scope">
-          <el-button
-              v-if="scope.row.status > 2 && scope.row.signType!=2"
-              link
-              type="primary"
-              @click="downloadContract(scope.row.hippId)"
-          >下载
-          </el-button>
-          <template v-else-if="scope.row.signType==2 && scope.row.status > 2 ">
-            <div >
+          <template v-if="scope.row.signType==2 && scope.row.offLineContractFile.length>0 && scope.row.status>2">
+            <el-button
+                v-if="scope.row.offLineContractFile[0].ext=='pdf' "
+                link
+                type="primary"
+                @click="downloadContract(scope.row)"
+            >下载
+            </el-button>
+            <template
+                v-else-if="scope.row.offLineContractFile[0].ext!='pdf'">
               <el-image
                   style="width: 50px; height: 50px"
                   :src="scope.row.offLineContractFile[0].attachUrl"
                   :zoom-rate="1.2"
-                  :preview-src-list="getOfflineUrlList(scope.row)"
-                  fit="cover"
+                  :preview-src-list="scope.row.offLineContractFile.map((m) =>m.attachUrl)" fit="cover"
                   preview-teleported
-              />
-            </div>
+                  @switch="setUrl"
+                  @close="urlIndex.value=0"
+              >
+                <template #viewer>
+                  <div class="downLoad-viewer" @click="picdownLoad(scope.row)">下载</div>
+                </template>
+              </el-image>
+            </template>
+            <span v-else>--</span>
           </template>
-          <span v-else>--</span>
+          <template v-else-if="scope.row.signType==1 && scope.row.status>2 && scope.row.essbasicSuccess">
+            <el-button
+                link
+                type="primary"
+                @click="downloadContract(scope.row,false)"
+            >下载
+            </el-button>
+          </template>
+          <template v-else><span>--</span></template>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="签约清单"
-        prop="list"
-        show-overflow-tooltip
+          align="center"
+          label="签约清单"
+          prop="list"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <el-link
-            v-if="scope.row.applyListAttachFile"
-            :href="scope.row.applyListAttachFile"
-            type="primary"
-            >查看
+              v-if="scope.row.applyListAttachFile"
+              :href="scope.row.applyListAttachFile"
+              type="primary"
+          >下载
           </el-link>
 
           <!--          <el-button link type="primary" @click="downLoadFile(scope.row.applyListAttachFile[0])" v-if="scope.row.applyListAttachFile && scope.row.applyListAttachFile.length>0">下载</el-button>-->
@@ -112,80 +127,80 @@
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="签约人"
-        prop="partyAUser"
-        show-overflow-tooltip
+          align="center"
+          label="签约人"
+          prop="partyAUser"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <span>{{ scope.row.partyAUser ? scope.row.partyAUser : "--" }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="签约日期"
-        min-width="150"
-        prop="signTime"
-        show-overflow-tooltip
+          align="center"
+          label="签约日期"
+          min-width="150"
+          prop="signTime"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <span>{{ scope.row.signTime ? scope.row.signTime : "--" }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="签约机构数量(家)"
-        prop="applyOrgNum"
-        show-overflow-tooltip
+          align="center"
+          label="签约机构数量(家)"
+          prop="applyOrgNum"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <span>{{
-            scope.row.applyOrgNum ? scope.row.applyOrgNum : "--"
-          }}</span>
+              scope.row.applyOrgNum ? scope.row.applyOrgNum : "--"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="应付金额(元)"
-        prop="amountPayable"
-        show-overflow-tooltip
+          align="center"
+          label="应付金额(元)"
+          prop="amountPayable"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <span>{{
-            scope.row.amountPayable ? scope.row.amountPayable : "--"
-          }}</span>
+              scope.row.amountPayable ? scope.row.amountPayable : "--"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="实付金额(元)"
-        show-overflow-tooltip
-        width="100"
+          align="center"
+          label="实付金额(元)"
+          show-overflow-tooltip
+          width="100"
       >
         <template #default="scope"
-          >{{
+        >{{
             scope.row.amountActuallyPaid ? scope.row.amountActuallyPaid : "--"
           }}
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="支付时间"
-        min-width="150"
-        show-overflow-tooltip
+          align="center"
+          label="支付时间"
+          min-width="150"
+          show-overflow-tooltip
       >
         <template #default="scope"
-          >{{ scope.row.payTime ? scope.row.payTime : "--" }}
+        >{{ scope.row.payTime ? scope.row.payTime : "--" }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="支付类型" show-overflow-tooltip>
         <template #default="scope"
-          >{{
+        >{{
             scope.row.payType
-              ? scope.row.payType == 1
-                ? "微信"
-                : "线下"
-              : "--"
+                ? scope.row.payType == 1
+                    ? "微信"
+                    : "线下"
+                : "--"
           }}
         </template>
       </el-table-column>
@@ -199,30 +214,30 @@
           <!--            >查看-->
           <!--          </el-link>-->
           <el-button
-            v-if="
+              v-if="
               scope.row.paymentVoucherAttachFile &&
               scope.row.paymentVoucherAttachFile.length > 0
             "
-            link
-            type="primary"
-            @click="showPaymentPictures(scope.row.paymentVoucherAttachFile)"
-            >查看
+              link
+              type="primary"
+              @click="showPaymentPictures(scope.row.paymentVoucherAttachFile)"
+          >查看
           </el-button>
           <span v-else>--</span>
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        label="进件申请"
-        prop="hippApplys"
-        show-overflow-tooltip
+          align="center"
+          label="进件申请"
+          prop="hippApplys"
+          show-overflow-tooltip
       >
         <template #default="scope">
           <el-link
-            v-if="scope.row.incomingPartListAttachFile"
-            :href="scope.row.incomingPartListAttachFile"
-            type="primary"
-            >查看
+              v-if="scope.row.incomingPartListAttachFile"
+              :href="scope.row.incomingPartListAttachFile"
+              type="primary"
+          >查看
           </el-link>
 
           <!--          <el-button type="primary" link @click="downLoadFile(scope.row.incomingPartListAttachFile[0])" v-if="scope.row.incomingPartListAttachFile && scope.row.incomingPartListAttachFile.length>0">查看</el-button>-->
@@ -230,28 +245,28 @@
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        fixed="right"
-        label="状态"
-        show-overflow-tooltip
-        width="180"
+          align="center"
+          fixed="right"
+          label="状态"
+          show-overflow-tooltip
+          width="180"
       >
         <template #default="scope">
           <div
-            v-if="
+              v-if="
               scope.row.status === 1 ||
               scope.row.status === 3 ||
               scope.row.status === 4
             "
-            class="item-wrapper-inbox"
+              class="item-wrapper-inbox"
           >
             <div class="dot wait"></div>
             <div>{{ scope.row.statusName }}</div>
           </div>
 
           <div
-            v-if="scope.row.status === 2 || scope.row.status === 10"
-            class="item-wrapper-inbox"
+              v-if="scope.row.status === 2 || scope.row.status === 10"
+              class="item-wrapper-inbox"
           >
             <div class="dot complete"></div>
             <div>{{ scope.row.statusName }}</div>
@@ -293,23 +308,23 @@
       <el-table-column align="center" fixed="right" label="操作" width="130">
         <template #default="scope">
           <el-tooltip
-            v-if="
+              v-if="
               scope.row.status > 4 &&
               scope.row.status &&
               scope.row.status != 11 &&
               scope.row.status != 10 &&
               scope.row.status != 12
             "
-            content="查看"
-            hide-after="0"
-            placement="top"
+              content="查看"
+              hide-after="0"
+              placement="top"
           >
             <!--            <el-button text type="primary" :icon="View" @click="handleClick('see', scope.row)" ></el-button>-->
             <el-button
-              :icon="View"
-              text
-              type="primary"
-              @click="handleClick('see', scope.row)"
+                :icon="View"
+                text
+                type="primary"
+                @click="handleClick('see', scope.row)"
             ></el-button>
           </el-tooltip>
           <!--          <el-tooltip content="归档" hide-after="0" placement="top">-->
@@ -327,11 +342,11 @@
     </el-table>
 
     <pagination
-      v-show="total > 0"
-      v-model:limit="queryParams.pageSize"
-      v-model:page="queryParams.pageNum"
-      :total="total"
-      @pagination="getPagination"
+        v-show="total > 0"
+        v-model:limit="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        :total="total"
+        @pagination="getPagination"
     />
     <!--    <div class="tab-list">-->
     <!--      <div class="tab-list-item">-->
@@ -383,12 +398,12 @@
 
       <div class="demo-image__lazy">
         <el-image
-          v-for="attachUrl in paymentVoucherList"
-          :key="attachUrl"
-          :src="attachUrl"
-          fit="contain"
-          lazy
-          preview-teleported
+            v-for="attachUrl in paymentVoucherList"
+            :key="attachUrl"
+            :src="attachUrl"
+            fit="contain"
+            lazy
+            preview-teleported
         />
       </div>
     </el-dialog>
@@ -396,13 +411,13 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { getCurrentInstance, onMounted, ref } from "vue";
-import { ArrowLeft, View } from "@element-plus/icons-vue";
-import { downloadContract, getHippList } from "@/api/insurance/insurance";
+import {useRouter} from "vue-router";
+import {getCurrentInstance, onMounted, ref} from "vue";
+import {ArrowLeft, View} from "@element-plus/icons-vue";
+import {downloadContract, downLoadFile, getHippList} from "@/api/insurance/insurance";
 
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 const info = ref({
   orgName: router.currentRoute.value.query.orgName,
   saleUserName: router.currentRoute.value.query.saleUserName || "暂无",
@@ -426,6 +441,7 @@ const defaultParams = ref({
 const showSearch = ref(true);
 const loading = ref(false);
 const total = ref(0);
+const urlIndex = ref(0)
 // const deptList = ref([]);
 //归档hippId
 const archiveId = ref("");
@@ -518,26 +534,26 @@ const handleClick = (type, row) => {
 
 // 返回
 const handleReturn = () => {
-  const obj = { path: "/insurance/handleBy" };
+  const obj = {path: "/insurance/handleBy"};
   proxy.$tab.closeOpenPage(obj);
 };
 const getDeptList = (params) => {
   getHippList(params)
-    .then((res) => {
-      if (res.code == 200) {
-        deptList.value = res.data.list;
-        total.value = Number(res.data.total);
-      }
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.code == 200) {
+          deptList.value = res.data.list;
+          total.value = Number(res.data.total);
+        }
+      })
+      .catch((err) => console.log(err));
 };
 
 // 修改分页条件
 const getPagination = (e) => {
-  let { limit, page } = e;
+  let {limit, page} = e;
   (queryParams.value.pageNum = page),
-    (queryParams.value.pageSize = limit),
-    getDeptList(queryParams.value);
+      (queryParams.value.pageSize = limit),
+      getDeptList(queryParams.value);
 };
 
 const dateChange = (date) => {
@@ -567,12 +583,21 @@ const showPaymentPictures = async (row) => {
   }
 };
 
-const getOfflineUrlList=({offLineContractFile})=>{
-  let arr=[];
-  offLineContractFile.map(i=>{
+const getOfflineUrlList = ({offLineContractFile}) => {
+  let arr = [];
+  offLineContractFile.map(i => {
     arr.push(i.attachUrl)
   })
   return arr
+}
+
+const setUrl = (num) => {
+  let num1 = num == 0 ? 0 : num;
+  urlIndex.value = num1;
+}
+
+const picdownLoad = ({offLineContractFile}) => {
+  downLoadFile(offLineContractFile[urlIndex.value], '合同照片')
 }
 
 onMounted(() => {
@@ -691,5 +716,23 @@ $base-black: #333;
 
 .demo-image__lazy .el-image:last-child {
   margin-bottom: 0;
+}
+
+.downLoad-viewer {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(160px);
+  width: 44px;
+  height: 44px;
+  background: #606266;
+  border-radius: 50%;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px !important;
+  cursor: pointer;
 }
 </style>

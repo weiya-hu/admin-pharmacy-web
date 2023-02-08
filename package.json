@@ -13,6 +13,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build:prod": "vite build",
+    "build:dev": "vite build --mode development",
     "build:stage": "vite build --mode staging",
     "preview": "vite preview"
   },

@@ -3,41 +3,41 @@
     <!--  筛选-->
     <el-form>
       <el-form
-        v-show="showSearch"
-        ref="queryRef"
-        :inline="true"
-        :model="queryParams"
+          v-show="showSearch"
+          ref="queryRef"
+          :inline="true"
+          :model="queryParams"
       >
         <el-form-item label="支付日期">
           <el-date-picker
-            v-model="queryTime"
-            end-placeholder="结束日期"
-            range-separator="至"
-            start-placeholder="开始日期"
-            type="daterange"
-            value-format="YYYY-MM-DD"
-            @change="dateChange"
+              v-model="queryTime"
+              end-placeholder="结束日期"
+              range-separator="至"
+              start-placeholder="开始日期"
+              type="daterange"
+              value-format="YYYY-MM-DD"
+              @change="dateChange"
           />
         </el-form-item>
         <el-form-item>
           <el-input
-            v-model="queryParams.queryContractCode"
-            placeholder="搜合同编号/企业名称/销售人员"
-            style="width: 250px"
-            @change="inputChange"
+              v-model="queryParams.queryContractCode"
+              placeholder="搜合同编号/企业名称/销售人员"
+              style="width: 250px"
+              @change="inputChange"
           />
         </el-form-item>
         <el-form-item>
           <el-button icon="Search" type="primary" @click="handleQuery"
-            >搜索
+          >搜索
           </el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10" class="mb8">
         <right-toolbar
-          v-model:showSearch="showSearch"
-          @queryTable="getList"
+            v-model:showSearch="showSearch"
+            @queryTable="getList"
         ></right-toolbar>
       </el-row>
     </el-form>
@@ -47,13 +47,13 @@
       <el-table-column align="center" label="合同编号">
         <template #default="scope">
           <span>{{
-            scope.row.contractCode ? scope.row.contractCode : "--"
-          }}</span>
+              scope.row.contractCode ? scope.row.contractCode : "--"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="签约方式">
         <template #default="scope">
-          {{scope.row.signType==2?'线下':'线上'}}
+          {{ scope.row.signType == 2 ? '线下' : '线上' }}
         </template>
       </el-table-column>
 
@@ -63,35 +63,50 @@
           prop="download"
       >
         <template #default="scope">
-          <el-button
-              v-if="scope.row.status > 2 && scope.row.signType!=2"
-              link
-              type="primary"
-              @click="downloadContract(scope.row.hippId)"
-          >下载
-          </el-button>
-          <template v-else-if="scope.row.signType==2 && scope.row.status > 2 ">
-            <div >
+          <template v-if="scope.row.signType==2 && scope.row.offLineContractFile.length>0 && scope.row.status>2">
+            <el-button
+                v-if="scope.row.offLineContractFile[0].ext=='pdf' "
+                link
+                type="primary"
+                @click="downloadContract(scope.row)"
+            >下载
+            </el-button>
+            <template
+                v-else-if="scope.row.offLineContractFile[0].ext!='pdf'">
               <el-image
                   style="width: 50px; height: 50px"
                   :src="scope.row.offLineContractFile[0].attachUrl"
                   :zoom-rate="1.2"
-                  :preview-src-list="getOfflineUrlList(scope.row)"
-                  fit="cover"
+                  :preview-src-list="scope.row.offLineContractFile.map((m) =>m.attachUrl)" fit="cover"
                   preview-teleported
-              />
-            </div>
+                  @switch="setUrl"
+                  @close="urlIndex.value=0"
+              >
+                <template #viewer>
+                  <div class="downLoad-viewer" @click="picdownLoad(scope.row)">下载</div>
+                </template>
+              </el-image>
+            </template>
+            <span v-else>--</span>
           </template>
-          <span v-else>--</span>
+          <template v-else-if="scope.row.signType==1 && scope.row.status>2 && scope.row.essbasicSuccess">
+            <el-button
+                link
+                type="primary"
+                @click="downloadContract(scope.row,false)"
+            >下载
+            </el-button>
+          </template>
+          <template v-else><span>--</span></template>
         </template>
       </el-table-column>
       <el-table-column align="center" label="签约清单">
         <template #default="scope">
           <el-link
-            v-if="scope.row.applyListAttachFile"
-            :href="scope.row.applyListAttachFile"
-            type="primary"
-            >查看
+              v-if="scope.row.applyListAttachFile"
+              :href="scope.row.applyListAttachFile"
+              type="primary"
+          >下载
           </el-link>
           <span v-else>--</span>
         </template>
@@ -99,55 +114,49 @@
       <el-table-column align="center" label="签约机构数量（家）">
         <template #default="scope">
           <span>{{
-            scope.row.applyOrgNum ? scope.row.applyOrgNum : "--"
-          }}</span>
+              scope.row.applyOrgNum ? scope.row.applyOrgNum : "--"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="应付金额（元）">
         <template #default="scope">
           <span>{{
-            scope.row.amountPayable ? scope.row.amountPayable : "--"
-          }}</span>
+              scope.row.amountPayable ? scope.row.amountPayable : "--"
+            }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="实付金额（元）">
         <template #default="scope">
           <span>{{
-            scope.row.amountActuallyPaid ? scope.row.amountActuallyPaid : "--"
-          }}</span>
+              scope.row.amountActuallyPaid ? scope.row.amountActuallyPaid : "--"
+            }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="支付时间" show-overflow-tooltip>
+      <el-table-column align="center" label="支付时间" show-overflow-tooltip width="170">
         <template #default="scope">
           {{ scope.row.payTime ? scope.row.payTime : "--" }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="支付凭证" show-overflow-tooltip>
         <template #default="scope">
-          <!--          <el-link-->
-          <!--            v-if="scope.row.paymentVoucherAttachFile.length"-->
-          <!--            :href="scope.row.paymentVoucherAttachFile[0].attachUrl"-->
-          <!--            target="_blank"-->
-          <!--            type="primary"-->
-          <!--            >查看-->
-          <!--          </el-link>-->
-          <!--          <el-button link type="primary" @click="downLoadFile(scope.row.paymentVoucherAttachFile[0])" v-if=" scope.row.paymentVoucherAttachFile && scope.row.paymentVoucherAttachFile.length>0">查看</el-button>-->
-          <el-button
-            v-if="
+          <div v-if="
               scope.row.paymentVoucherAttachFile &&
               scope.row.paymentVoucherAttachFile.length > 0
-            "
-            link
-            type="primary"
-            @click="showPaymentPictures(scope.row.paymentVoucherAttachFile)"
-            >查看
-          </el-button>
+            ">
+            <el-image
+                style="width: 50px; height: 50px"
+                :src="scope.row.paymentVoucherAttachFile[0].attachUrl"
+                :zoom-rate="1.2"
+                :preview-src-list="scope.row.paymentVoucherAttachFile.map((m) =>m.attachUrl)" fit="cover"
+                preview-teleported
+            />
+          </div>
 
           <span v-else>--</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="企业名称" show-overflow-tooltip>
+      <el-table-column align="center" label="企业名称" show-overflow-tooltip width="300">
         <template #default="scope">
           {{ scope.row.partyACorpName ? scope.row.partyACorpName : "--" }}
         </template>
@@ -165,8 +174,8 @@
       <el-table-column align="center" fixed="right" label="状态">
         <template #default="scope">
           <div
-            v-if="scope.row.status > 3 && scope.row.status < 11"
-            class="item-wrapper-inbox"
+              v-if="scope.row.status > 3 && scope.row.status < 11"
+              class="item-wrapper-inbox"
           >
             <div class="dot agree"></div>
             <div>凭证真实</div>
@@ -186,34 +195,34 @@
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
-        fixed="right"
-        label="操作"
-        min-width="180"
+          align="center"
+          fixed="right"
+          label="操作"
+          min-width="180"
       >
         <template #default="scope">
           <el-tooltip
-            v-if="scope.row.status == 11"
-            content="凭证真实"
-            placement="top"
+              v-if="scope.row.status == 11"
+              content="凭证真实"
+              placement="top"
           >
             <el-button
-              :icon="Finished"
-              text
-              type="primary"
-              @click="handleClick('agree', scope.row)"
+                :icon="Finished"
+                text
+                type="primary"
+                @click="handleClick('agree', scope.row)"
             ></el-button>
           </el-tooltip>
           <el-tooltip
-            v-if="scope.row.status == 11"
-            content="驳回凭证"
-            placement="top"
+              v-if="scope.row.status == 11"
+              content="驳回凭证"
+              placement="top"
           >
             <el-button
-              :icon="RemoveFilled"
-              text
-              type="warning"
-              @click="handleClick('reject', scope.row)"
+                :icon="RemoveFilled"
+                text
+                type="warning"
+                @click="handleClick('reject', scope.row)"
             ></el-button>
           </el-tooltip>
           <span v-if="scope.row.status != 11">--</span>
@@ -222,35 +231,35 @@
     </el-table>
 
     <pagination
-      v-show="total > 0"
-      v-model:limit="queryParams.pageSize"
-      v-model:page="queryParams.pageNum"
-      :total="total"
-      @pagination="getPagination"
+        v-show="total > 0"
+        v-model:limit="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        :total="total"
+        @pagination="getPagination"
     />
 
     <!--  驳回弹出层-->
     <el-dialog
-      v-model="rejectDialog"
-      append-to-body
-      center
-      width="60%"
-      z-index="3000"
+        v-model="rejectDialog"
+        append-to-body
+        center
+        width="60%"
+        z-index="1000"
     >
       <template #header>
         <div style="font-weight: bold">请填写驳回原因</div>
       </template>
 
       <el-input
-        v-model="rejectReason"
-        :rows="2"
-        placeholder="请输入驳回原因"
-        type="textarea"
+          v-model="rejectReason"
+          :rows="2"
+          placeholder="请输入驳回原因"
+          type="textarea"
       />
 
       <template #footer>
         <el-button type="warning" @click="goReject(2, rejectReason)"
-          >驳回
+        >驳回
         </el-button>
       </template>
     </el-dialog>
@@ -261,12 +270,12 @@
 
       <div class="demo-image__lazy">
         <el-image
-          v-for="attachUrl in paymentVoucherList"
-          :key="attachUrl"
-          :src="attachUrl"
-          fit="contain"
-          lazy
-          preview-teleported
+            v-for="attachUrl in paymentVoucherList"
+            :key="attachUrl"
+            :src="attachUrl"
+            fit="contain"
+            lazy
+            preview-teleported
         />
       </div>
     </el-dialog>
@@ -274,14 +283,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { Finished, RemoveFilled } from "@element-plus/icons-vue";
+import {onMounted, ref} from "vue";
+import {Finished, RemoveFilled} from "@element-plus/icons-vue";
 import {
   auditPayment,
-  downloadContract,
+  downloadContract, downLoadFile,
   getAuditHippList,
 } from "@/api/insurance/insurance";
-import { ElMessage, ElMessageBox } from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 const showSearch = ref(true);
 const deptList = ref([]);
@@ -306,6 +315,7 @@ const detailHippId = ref("");
 // 支付凭证变量
 const paymentVoucherDialog = ref(false);
 const paymentVoucherList = ref([]);
+const urlIndex = ref(0);
 
 //methods
 const dateChange = (date) => {
@@ -345,7 +355,8 @@ const resetQuery = () => {
   getDeptList(defaultParams.value);
 };
 
-const getList = () => {};
+const getList = () => {
+};
 
 const handleClick = async (type, row) => {
   detailHippId.value = row.hippId;
@@ -355,25 +366,26 @@ const handleClick = async (type, row) => {
       cancelButtonText: "再看看资料",
       type: "warning",
     })
-      .then(() => {
-        auditPayment(detailHippId.value, 1).then((res) => {
-          if (res.code == 200) {
-            ElMessage({
-              message: "确认凭证真实性成功",
-              type: "success",
-            });
-            let index = deptList.value.indexOf(row);
-            deptList.value[index].statusName = "凭证真实";
-            deptList.value[index].status = "4";
-          } else {
-            ElMessage({
-              message: "确认凭证真实性失败",
-              type: "error",
-            });
-          }
+        .then(() => {
+          auditPayment(detailHippId.value, 1).then((res) => {
+            if (res.code == 200) {
+              ElMessage({
+                message: "确认凭证真实性成功",
+                type: "success",
+              });
+              let index = deptList.value.indexOf(row);
+              deptList.value[index].statusName = "凭证真实";
+              deptList.value[index].status = "4";
+            } else {
+              ElMessage({
+                message: "确认凭证真实性失败",
+                type: "error",
+              });
+            }
+          });
+        })
+        .catch(() => {
         });
-      })
-      .catch(() => {});
   } else {
     rejectDialog.value = true;
   }
@@ -381,13 +393,13 @@ const handleClick = async (type, row) => {
 
 const getDeptList = (params) => {
   getAuditHippList(params)
-    .then((res) => {
-      if (res.code == 200) {
-        total.value = Number(res.data.total);
-        deptList.value = res.data.list;
-      }
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.code == 200) {
+          total.value = Number(res.data.total);
+          deptList.value = res.data.list;
+        }
+      })
+      .catch((err) => console.log(err));
 };
 
 const goReject = () => {
@@ -413,29 +425,30 @@ const goReject = () => {
 };
 
 const getPagination = (e) => {
-  let { limit, page } = e;
+  let {limit, page} = e;
   (queryParams.value.pageNum = page),
-    (queryParams.value.pageSize = limit),
-    getDeptList(queryParams.value);
+      (queryParams.value.pageSize = limit),
+      getDeptList(queryParams.value);
 };
 
-const showPaymentPictures = async (row) => {
-  if (Array.isArray(row)) {
-    paymentVoucherList.value.length = 0;
-    for (let i of row) {
-      paymentVoucherList.value.push(i.attachUrl);
-    }
-    paymentVoucherDialog.value = true;
-  }
-};
+// const showPaymentPictures = async (row) => {
+//   if (Array.isArray(row)) {
+//     paymentVoucherList.value.length = 0;
+//     for (let i of row) {
+//       paymentVoucherList.value.push(i.attachUrl);
+//     }
+//     paymentVoucherDialog.value = true;
+//   }
+// };
 
-const getOfflineUrlList=({offLineContractFile})=>{
-  let arr=[];
-  offLineContractFile.map(i=>{
-    arr.push(i.attachUrl)
-  })
-  // console.log(arr)
-  return arr
+
+const setUrl = (num) => {
+  let num1 = num == 0 ? 0 : num;
+  urlIndex.value = num1;
+}
+
+const picdownLoad = ({offLineContractFile}) => {
+  downLoadFile(offLineContractFile[urlIndex.value], '合同照片')
 }
 
 onMounted(() => {
@@ -503,4 +516,24 @@ $base-black: #333;
 .demo-image__lazy .el-image:last-child {
   margin-bottom: 0;
 }
+
+.downLoad-viewer {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(160px);
+  width: 44px;
+  height: 44px;
+  background: #606266;
+  border-radius: 50%;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px !important;
+  cursor: pointer;
+}
+
+
 </style>
