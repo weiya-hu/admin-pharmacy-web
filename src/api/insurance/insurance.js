@@ -131,3 +131,12 @@ export const auditPayment = (hippId, operation, errReason = null) => {
     },
   });
 };
+
+//获取电子签平台url
+export const getEssbasicOrg = () => {
+  return request({
+    url: "/hipp/hipp/applyinfo/initEssbasicOrg",
+    method: "get",
+  });
+};
+
