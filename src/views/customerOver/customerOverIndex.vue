@@ -66,7 +66,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="cancel">取消</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="confirm">确定</el-button>
       </template>
     </el-dialog>
@@ -88,6 +88,7 @@ const {proxy} = getCurrentInstance();
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
+  afterConfirm: false,
   userIds: []
 });
 const loading = ref(false);
@@ -95,7 +96,8 @@ const title = ref('');
 const dialogVisible = ref(false);
 const form = ref({
   username: '',
-  userName: ''
+  userName: '',
+  filterUserId: ''
 });
 const customerList = ref([]);
 const customerIds = ref([]);
@@ -143,7 +145,10 @@ function getSaleList() {
 }
 // 交替成员列表
 function getRelayList() {
-  getHippServiceAllAddCode(proxy.addDateRange(form.value)).then(res => {
+  if (saleTags.value.length !== 0) {
+    form.value.filterUserId = saleTags.value.map(item => item.userId).join(',')
+  }
+  getHippServiceAllAddCode(form.value).then(res => {
     if (res.code === 200) {
       relayList.value = res.data
     }
@@ -151,6 +156,10 @@ function getRelayList() {
 }
 // 点击事件
 function onClick(type) {
+  form.value = {
+    username: '',
+    userName: ''
+  }
   if (type === 'sale') {
     dialogVisible.value = true
     title.value = '销售人员'
@@ -197,25 +206,18 @@ function handleClick() {
       saveOrgRel(data).then(res => {
         if (res.code === 200) {
           ElMessage.success('操作成功')
+          queryParams.value.afterConfirm = true
           getList()
         }
       })
     }).catch(() => {})
   }
 }
-// 取消
-function cancel() {
-  form.value = {
-    username: '',
-    userName: ''
-  }
-  dialogVisible.value = false
-}
+
 // 确定
 function confirm() {
   if (title.value === '销售人员') {
     queryParams.value.userIds = sales.value
-    // saleTags.value = saleList.value.filter(item => sales.value.indexOf(item.userId) > -1)
     existsCustomerSalesUserList({}).then(res => {
       if (res.code === 200) {
         saleTags.value = res.data.filter(item => sales.value.indexOf(item.userId) > -1)
