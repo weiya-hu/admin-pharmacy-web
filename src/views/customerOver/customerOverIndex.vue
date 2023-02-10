@@ -158,7 +158,8 @@ function getRelayList() {
 function onClick(type) {
   form.value = {
     username: '',
-    userName: ''
+    userName: '',
+    filterUserId: ''
   }
   if (type === 'sale') {
     dialogVisible.value = true
@@ -205,9 +206,12 @@ function handleClick() {
     }).then(() => {
       saveOrgRel(data).then(res => {
         if (res.code === 200) {
-          ElMessage.success('操作成功')
+          relayTags.value = []
+          saleTags.value = []
           queryParams.value.afterConfirm = true
+          queryParams.value.userIds = []
           getList()
+          ElMessage.success('操作成功')
         }
       })
     }).catch(() => {})
