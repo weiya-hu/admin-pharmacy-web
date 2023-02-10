@@ -234,7 +234,7 @@
       >
         <template #default="scope">
           <el-link
-              v-if="scope.row.incomingPartListAttachFile"
+              v-if="scope.row.incomingPartListAttachFile && scope.row.status>4"
               :href="scope.row.incomingPartListAttachFile"
               type="primary"
           >查看
