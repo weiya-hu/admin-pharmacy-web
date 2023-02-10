@@ -111,7 +111,7 @@ export function downloadContract(file, offline = true) {
     Promise.all(arr)
       .then((values) => {
         for (let i = 0; i < values.length; i++) {
-          const blobUrl = window.URL.createObjectURL(new Blob([i]));
+          const blobUrl = window.URL.createObjectURL(new Blob([values[i]]));
           const a = document.createElement("a");
           const filename = `签约合同`;
           a.href = blobUrl;
@@ -205,3 +205,13 @@ export const getEssbasicOrg = () => {
   });
 };
 
+//撤销签约
+export const revokeAssignment = (hippId) => {
+  return request({
+    url: "/hipp/hipp/applyinfo/essbasicCancelSign",
+    method: "get",
+    params: {
+      hippId,
+    },
+  });
+};

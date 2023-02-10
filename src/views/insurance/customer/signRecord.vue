@@ -278,6 +278,15 @@
             <span v-if="!scope.row.status">--</span>
           </template>
         </el-table-column>
+
+        <el-table-column align="center" fixed="right" label="操作" width="80">
+          <template #default="scope">
+            <el-tooltip v-if="scope.row.status==1" content="撤销签约" placement="top-end">
+              <el-button :icon="Close" text type="danger" @click="revoke(scope.row)"></el-button>
+            </el-tooltip>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -351,9 +360,10 @@
 <script setup>
 import {useRouter} from "vue-router";
 import {computed, getCurrentInstance, onMounted, ref} from "vue";
-import {ArrowLeft} from "@element-plus/icons-vue";
-import {downloadContract, downLoadFile, getHippList} from "@/api/insurance/insurance";
+import {ArrowLeft, Close} from "@element-plus/icons-vue";
+import {downloadContract, downLoadFile, getHippList, revokeAssignment} from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
+import {ElMessage} from "element-plus";
 
 const queryTime = ref([]);
 const router = useRouter();
@@ -517,6 +527,18 @@ const setUrl = (num) => {
 
 const picdownLoad = ({offLineContractFile}) => {
   downLoadFile(offLineContractFile[urlIndex.value], '合同照片')
+}
+
+const revoke = ({hippId}) => {
+  revokeAssignment(hippId).then((res) => {
+    if (res.code == 200) {
+      // model.msgSuccess('撤销申请成功')
+      ElMessage({
+        message: '撤销申请成功',
+        type: "success"
+      })
+    }
+  })
 }
 
 onMounted(() => {
