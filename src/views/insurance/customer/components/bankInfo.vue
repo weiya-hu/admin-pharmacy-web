@@ -1,5 +1,9 @@
 <template>
-  <div>结算银行账户</div>
+  <div>
+    <el-card>
+      结算银行账户
+    </el-card>
+  </div>
 </template>
 
 <script setup>

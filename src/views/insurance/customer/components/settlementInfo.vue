@@ -1,5 +1,7 @@
 <template>
-  <div class="app-container"></div>
+  <div class="app-container">
+    <el-card>结算规则</el-card>
+  </div>
 </template>
 
 <script setup>

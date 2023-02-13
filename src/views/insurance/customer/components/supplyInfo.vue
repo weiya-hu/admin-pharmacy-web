@@ -1,5 +1,7 @@
 <template>
-  <div>补充材料</div>
+  <div>
+    <el-card>补充材料</el-card>
+  </div>
 </template>
 
 <script setup>
