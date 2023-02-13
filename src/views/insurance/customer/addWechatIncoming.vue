@@ -1,163 +1,151 @@
 <template>
-  <div class="wrapper">
-    <el-card class="box-card">
-      <template #header>
-        <div class="card-header">
-          <span>超级管理员信息</span>
-          <span class="desc"
-          >超级管理员需在开户后进行签约，并可接收日常重要管理信息和进行资金操作，请确定其为商户法定代表人或负责人。</span
-          >
-        </div>
-      </template>
-      <el-form model="form" :rules="rules">
-        <el-form-item label="超级管理员类型" prop="type">
-          <el-select
-              v-model="contact_info.contact_type"
-              placeholder="请选择超管类型"
-          >
-            <el-option label="经营者/法人" value="LEGAL"/>
-            <el-option label="经办人" value="SUPER"/>
-          </el-select>
+  <div class="app-container">
+    <div class="header">
+      <h1>超级管理员信息&nbsp;</h1>
+      <span>（超级管理员需在开户后进行签约，并可接收日常重要管理信息和进行资金操作，请确定其为商户法定代表人或负责人）</span>
+    </div>
+    <el-form model="form" :rules="rules" label-width="100px;">
+      <el-form-item label="超级管理员类型" prop="type">
+        <el-select
+            v-model="form.contact_type"
+            placeholder="请选择超管类型"
+        >
+          <el-option label="经营者/法人" value="LEGAL"/>
+          <el-option label="经办人" value="SUPER"/>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="超级管理员姓名" prop="name">
+        <el-input
+            v-model="form.contact_name"
+            placeholder="请输入超管姓名"
+            input-style="width:200px"
+        />
+      </el-form-item>
+
+      <el-form-item label="超管证件类型" prop="IDtype">
+        <el-select
+            v-model="form.contact_id_doc_type"
+            placeholder="请选择超管证件类型"
+        >
+          <el-option v-for='(item,index) in IDtypes' :label="item.label" :value="item.value" :key="index"/>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="超管身份证件号码" prop="IDnum">
+        <el-input
+            v-model="form.contact_id_number"
+            placeholder="请输入超管身份证件号码"
+            input-style="width:200px"
+        />
+      </el-form-item>
+
+      <el-form-item label="超管证件正面照片" style="align-items: center;font-weight: bold">
+        <el-upload
+            class="avatar-uploader"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+            auto-upload="false"
+            limit="1"
+        >
+          <img v-if="frontImg" :src="frontImg" class="avatar"/>
+          <el-icon v-else class="avatar-uploader-icon">
+            <Plus/>
+          </el-icon>
+        </el-upload>
+      </el-form-item>
+
+      <el-form-item label="超管证件反面照片" style="align-items: center;font-weight: bold">
+        <el-upload
+            class="avatar-uploader"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+            auto-upload="false"
+            limit="1"
+        >
+          <img v-if="rareImg" :src="rareImg" class="avatar"/>
+          <el-icon v-else class="avatar-uploader-icon">
+            <Plus/>
+          </el-icon>
+        </el-upload>
+      </el-form-item>
+
+      <el-form-item label="超管证件有效期开始时间" prop="IDbegin">
+        <el-date-picker
+            v-model="form.contact_period_begin"
+            type="date"
+            placeholder="选择开始时间"
+            style="width: 80%"
+        />
+      </el-form-item>
+
+      <el-form-item label="超管证件有效期结束时间" style="font-weight: bold">
+        <el-form-item label="长期有效">
+          <el-switch v-model="isLong"/>
         </el-form-item>
-
-        <el-form-item label="超管姓名" prop="name">
-          <el-input
-              v-model="contact_info.contact_name"
-              placeholder="请输入超管姓名"
-              input-style="width:200px"
-          />
-        </el-form-item>
-
-        <el-form-item label="超管证件类型" prop="IDtype">
-          <el-select
-              v-model="contact_info.contact_id_doc_type"
-              placeholder="请选择超管证件类型"
-          >
-            <el-option v-for='(item,index) in IDtypes' :label="item.label" :value="item.value" :key="index"/>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="超管身份证件号码" prop="IDnum">
-          <el-input
-              v-model="contact_info.contact_id_number"
-              placeholder="请输入超管身份证件号码"
-              input-style="width:200px"
-          />
-        </el-form-item>
-
-        <el-form-item label="超管证件正面照片" style="align-items: center;font-weight: bold">
-          <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
-          >
-            <img v-if="frontImg" :src="frontImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
-          </el-upload>
-        </el-form-item>
-
-        <el-form-item label="超管证件反面照片" style="align-items: center;font-weight: bold">
-          <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
-          >
-            <img v-if="rareImg" :src="rareImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
-          </el-upload>
-        </el-form-item>
-
-        <el-form-item label="超管证件有效期开始时间" prop="IDbegin">
-          <el-date-picker
-              v-model="contact_info.contact_period_begin"
-              type="date"
-              placeholder="选择开始时间"
-              style="width: 80%"
-          />
-        </el-form-item>
-
-        <el-form-item label="超管证件有效期结束时间" style="font-weight: bold">
-          <el-form-item label="长期有效">
-            <el-switch v-model="isLong"/>
-          </el-form-item>
-          <el-date-picker
-              v-if="!isLong"
-              v-model="contact_info.contact_period_end"
-              type="date"
-              placeholder="选择结束时间"
-              style="width: 80%"
-          />
-        </el-form-item>
+        <el-date-picker
+            v-if="!isLong"
+            v-model="form.contact_period_end"
+            type="date"
+            placeholder="选择结束时间"
+            style="width: 80%"
+        />
+      </el-form-item>
 
 
-        <el-form-item label="业务办理授权函" style="align-items: center;font-weight: bold">
-          <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
-          >
-            <img v-if="rareImg" :src="rareImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
-          </el-upload>
-        </el-form-item>
+      <el-form-item label="业务办理授权函" style="align-items: center;font-weight: bold">
+        <el-upload
+            class="avatar-uploader"
+            action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload"
+            auto-upload="false"
+            limit="1"
+        >
+          <img v-if="rareImg" :src="rareImg" class="avatar"/>
+          <el-icon v-else class="avatar-uploader-icon">
+            <Plus/>
+          </el-icon>
+        </el-upload>
+      </el-form-item>
 
 
-        <el-form-item label="超管微信OpenID (选填)" prop="openID">
-          <el-input
-              v-model="contact_info.openid"
-              placeholder="请输入超管身份证件号码"
-              input-style="width:200px"
-          />
-        </el-form-item>
+      <el-form-item label="超管微信OpenID (选填)" prop="openID">
+        <el-input
+            v-model="form.openid"
+            placeholder="请输入超管身份证件号码"
+            input-style="width:200px"
+        />
+      </el-form-item>
 
-        <el-form-item label="联系手机" prop="phone">
-          <el-input
-              v-model="contact_info.mobile_phone"
-              placeholder="请输入联系人手机"
-              input-style="width:200px"
-              type="tel"
-              maxlength="11"
-              clearable
-          />
-        </el-form-item>
+      <el-form-item label="联系手机" prop="phone">
+        <el-input
+            v-model="form.mobile_phone"
+            placeholder="请输入联系人手机"
+            input-style="width:200px"
+            type="tel"
+            maxlength="11"
+            clearable
+        />
+      </el-form-item>
 
-        <el-form-item label="联系邮箱" prop="email">
-          <el-input
-              v-model="contact_info.contact_email"
-              placeholder="请输入联系邮箱"
-              input-style="width:200px"
-              type="email"
-              clearable
-          />
-        </el-form-item>
+      <el-form-item label="联系邮箱" prop="email">
+        <el-input
+            v-model="form.contact_email"
+            placeholder="请输入联系邮箱"
+            input-style="width:200px"
+            type="email"
+            clearable
+        />
+      </el-form-item>
 
 
-      </el-form>
-    </el-card>
-
-    <el-card class="box-card">
-
-    </el-card>
-
-    <!--    <el-button @click="showValue">show</el-button>-->
+    </el-form>
   </div>
 </template>
 
@@ -166,10 +154,9 @@ import {reactive, ref} from "vue";
 import {Plus} from '@element-plus/icons-vue';
 import {ElMessage} from "element-plus";
 
-
 //超管信息
-const contact_info = ref({
-  contact_type: '',
+const form = ref({
+  contact_type: '', // 超级管理员类型
   contact_name: '',
   contact_contact_id_doc_type: '',
   contact_id_number: '',
@@ -179,7 +166,6 @@ const contact_info = ref({
   mobile_phone: '',
   contact_email: ''
 });
-
 
 //主体资料
 const subject_info = ref({
@@ -230,14 +216,12 @@ const subject_info = ref({
 
 })
 
-
 //经营资料
 const business_info = ref({})
 
-
-const form = reactive({
-  contact_info: contact_info.value
-});
+// const form = reactive({
+//   contact_info: contact_info.value
+// });
 
 // const contact_info = reactive({});
 
@@ -327,29 +311,10 @@ const handleAvatarSuccess = (rawFile) => {
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  display: flex;
-  justify-content: space-around;
-  padding: 30px;
-  margin: 30px;
-}
-
-.box-card {
-  //width: 8000px;
-
-  .card-header {
+.app-container {
+  .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-
-    .desc {
-      font-weight: normal;
-      font-size: 12px;
-      width: 350px;
-      margin-left: 40px;
-    }
   }
 }
 
