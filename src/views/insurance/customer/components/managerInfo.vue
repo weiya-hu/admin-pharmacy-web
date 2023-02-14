@@ -1,155 +1,211 @@
 <template>
-  <div class="wrapper">
+  <div class="app-container">
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>超级管理员信息</span>
+          <span style="white-space: nowrap;">超级管理员信息</span>
           <span class="desc"
           >超级管理员需在开户后进行签约，并可接收日常重要管理信息和进行资金操作，请确定其为商户法定代表人或负责人。</span
           >
         </div>
       </template>
-      <el-form model="form" :rules="rules">
-        <el-form-item label="超级管理员类型" prop="type">
+      <el-form ref="managerRef" model="form" :rules="rules" label-width="180px">
+        <el-form-item prop="contactType">
+          <template #label>
+            <labelExplain label="超级管理员类型">
+              <template #explain>
+                <div>主体为“个体工商户/企业/政府机关/事业单位/社会组织”，可选择：经营者/法人经办人 。（经办人：经商户授权办理微信支付业务的人员）。</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-select
-              v-model="contact_info.contact_type"
-              placeholder="请选择超管类型"
+              v-model="form.contactType"
+              placeholder="请选择超级管理员类型"
+              class="form-input"
           >
             <el-option label="经营者/法人" value="LEGAL"/>
             <el-option label="经办人" value="SUPER"/>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="超管姓名" prop="name">
+        <el-form-item label="超级管理员姓名" prop="contactName">
           <el-input
-              v-model="contact_info.contact_name"
-              placeholder="请输入超管姓名"
-              input-style="width:200px"
+              v-model="form.contactName"
+              placeholder="请输入超级管理员姓名"
+              class="form-input"
           />
         </el-form-item>
 
-        <el-form-item label="超管证件类型" prop="IDtype">
+<!--        v-if="form.contactType === 'SUPER'-->
+        <el-form-item label="超级管理员证件类型" prop="contactIdDocType">
           <el-select
-              v-model="contact_info.contact_id_doc_type"
+              v-model="form.contactIdDocType"
               placeholder="请选择超管证件类型"
+              class="form-input"
           >
-            <el-option v-for='(item,index) in IDtypes' :label="item.label" :value="item.value" :key="index"/>
+            <el-option v-for='item in IDtypes' :label="item.label" :value="item.value" :key="item.value"/>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="超管身份证件号码" prop="IDnum">
+        <el-form-item prop="contactIdNumber">
+          <template #label>
+            <labelExplain label="超级管理员身份证件号码">
+              <template #explain>
+                <div>超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-input
-              v-model="contact_info.contact_id_number"
+              v-model="form.contactIdNumber"
               placeholder="请输入超管身份证件号码"
-              input-style="width:200px"
+              class="form-input"
           />
         </el-form-item>
 
-        <el-form-item label="超管证件正面照片" style="align-items: center;font-weight: bold">
+        <el-form-item prop="contactIdDocCopy">
+          <template #label>
+            <labelExplain label="超级管理员证件正面照片">
+              <template #explain>
+                <div>请上传超级管理员证件的正面照片;若证件类型为身份证，请上传人像面照片;请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
+              v-model:file-list="zFileList"
+              :action="uploadData.uploadUrl"
+              :headers="{'Authorization':uploadData.token}"
+              method:="get"
+              accept="image/*"
+              :limit="1"
+              :show-file-list="true"
+              list-type="picture-card"
+              :on-success="zHandleAvatarSuccess"
+              :on-preview="zhandlePictureCardPreview"
+              :on-remove="zhandleRemove"
               :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
           >
-            <img v-if="frontImg" :src="frontImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
+            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
           </el-upload>
+          <el-dialog v-model="zDialogVisible" >
+            <img :src="zDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
+          </el-dialog>
         </el-form-item>
 
-        <el-form-item label="超管证件反面照片" style="align-items: center;font-weight: bold">
+        <el-form-item label="超级管理员证件反面照片" prop="contactIdDocCopyBack">
           <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
+              v-model:file-list="fFileList"
+              :action="uploadData.uploadUrl"
+              :headers="{'Authorization':uploadData.token}"
+              method:="get"
+              accept="image/*"
+              :limit="1"
+              :show-file-list="true"
+              list-type="picture-card"
+              :on-success="fHandleAvatarSuccess"
+              :on-preview="fhandlePictureCardPreview"
               :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
           >
-            <img v-if="rareImg" :src="rareImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
+<!--            <el-image v-if="form.contactIdDocCopyBack !== ''" :src="form.contactIdDocCopyBack" class="form-img"></el-image>-->
+            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
           </el-upload>
+          <el-dialog v-model="fDialogVisible" >
+            <img :src="fDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
+          </el-dialog>
         </el-form-item>
 
-        <el-form-item label="超管证件有效期开始时间" prop="IDbegin">
-          <el-date-picker
-              v-model="contact_info.contact_period_begin"
-              type="date"
-              placeholder="选择开始时间"
-              style="width: 80%"
-          />
+        <el-form-item label="超级管理员证件有效期时间" prop="contactPeriodBegin">
+          <el-date-picker v-model="form.contactPeriodBegin" type="date" placeholder="请选择有效期开始日期" value-format="YYYY-MM-DD"
+                          @change="getStartTime" style="width: 47%"/>
+          <span style="width: 6%;text-align: center">至</span>
+          <span v-if="formDateRadio == -1">长期有效</span>
+          <el-date-picker v-model="form.contactPeriodEnd" disabled type="date" placeholder="有效期结束日期" v-else style="width: 47%" />
+        </el-form-item>
+        <el-form-item>
+          <el-radio-group v-model.number="formDateRadio" @change="getStartTime">
+            <el-radio :label="5">5年</el-radio>
+            <el-radio :label="10">10年</el-radio>
+            <el-radio :label="20">20年</el-radio>
+            <el-radio :label="-1">长期有效</el-radio>
+          </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="超管证件有效期结束时间" style="font-weight: bold">
-          <el-form-item label="长期有效">
-            <el-switch v-model="isLong"/>
-          </el-form-item>
-          <el-date-picker
-              v-if="!isLong"
-              v-model="contact_info.contact_period_end"
-              type="date"
-              placeholder="选择结束时间"
-              style="width: 80%"
-          />
-        </el-form-item>
-
-
-        <el-form-item label="业务办理授权函" style="align-items: center;font-weight: bold">
+        <el-form-item prop="businessAuthorizationLetter">
+          <template #label>
+            <labelExplain label="业务办理授权函">
+              <template #explain>
+                <div>请参照<el-link type="primary" href="https://kf.qq.com/faq/220509Y3Yvym220509fQvYR7.html" target="_blank">示例图</el-link>打印业务办理授权函，全部信息需打印，不支持手写商户信息，并加盖公章</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-upload
-              class="avatar-uploader"
-              action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
+              :action="uploadData.uploadUrl"
+              :headers="{'Authorization':uploadData.token}"
+              method:="get"
+              accept="image/*"
+              :limit="1"
+              :show-file-list="true"
+              list-type="picture-card"
+              :on-success="bHandleAvatarSuccess"
+              :on-preview="bhandlePictureCardPreview"
               :before-upload="beforeAvatarUpload"
-              auto-upload="false"
-              limit="1"
           >
-            <img v-if="rareImg" :src="rareImg" class="avatar"/>
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus/>
-            </el-icon>
+            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
           </el-upload>
+          <el-dialog v-model="bDialogVisible">
+            <img :src="bDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
+          </el-dialog>
         </el-form-item>
 
-
-        <el-form-item label="超管微信OpenID (选填)" prop="openID">
+        <el-form-item prop="openid">
+          <template #label>
+            <labelExplain label="超级管理员微信OpenID">
+              <template #explain>
+                <div>若上传则超级管理员签约时，会校验微信号是否与该微信OpenID一致</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-input
-              v-model="contact_info.openid"
+              v-model="form.openid"
               placeholder="请输入超管身份证件号码"
-              input-style="width:200px"
+              class="form-input"
           />
         </el-form-item>
 
-        <el-form-item label="联系手机" prop="phone">
+        <el-form-item label="联系手机" prop="mobilePhone">
+          <template #label>
+            <labelExplain label="联系手机">
+              <template #explain>
+                <div>用于接收微信支付的重要管理信息及日常操作验证码</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-input
-              v-model="contact_info.mobile_phone"
+              v-model="form.mobilePhone"
               placeholder="请输入联系人手机"
-              input-style="width:200px"
               type="tel"
               maxlength="11"
-              clearable
+              class="form-input"
           />
         </el-form-item>
 
-        <el-form-item label="联系邮箱" prop="email">
+        <el-form-item prop="contactEmail">
+          <template #label>
+            <labelExplain label="联系邮箱">
+              <template #explain>
+                <div>用于接收微信支付的开户邮件及日常业务通知</div>
+              </template>
+            </labelExplain>
+          </template>
           <el-input
-              v-model="contact_info.contact_email"
+              v-model="form.contactEmail"
               placeholder="请输入联系邮箱"
-              input-style="width:200px"
               type="email"
-              clearable
+              class="form-input"
           />
         </el-form-item>
-
-
+        <el-form-item>
+<!--          <el-button @click="submitForm">保存</el-button>-->
+        </el-form-item>
       </el-form>
     </el-card>
   </div>
@@ -159,82 +215,36 @@
 import {reactive, ref} from "vue";
 import {Plus} from '@element-plus/icons-vue';
 import {ElMessage} from "element-plus";
-
+import {getToken} from '@/utils/auth';
+import LabelExplain from "@/views/insurance/customer/components/labelExplain";
+import {idCardOcr} from "@/api/insurance/managerInfo";
 
 //超管信息
-const contact_info = ref({
-  contact_type: '',
-  contact_name: '',
-  contact_contact_id_doc_type: '',
-  contact_id_number: '',
-  contact_period_begin: '',
-  contact_period_end: '',
-  openid: "",
-  mobile_phone: '',
-  contact_email: ''
+const form = ref({
+  contactType: '', //超级管理员类型
+  contactName: '', //超级管理员姓名
+  contactIdDocType: '', //超级管理员证件类型
+  contactIdNumber: '', //超级管理员身份证件号码
+  contactIdDocCopy: '', //超级管理员证件正面照片
+  contactIdDocCopyBack: '', //超级管理员证件反面照片
+  contactPeriodBegin: '', //超级管理员证件有效期开始时间
+  contactPeriodEnd: '', //超级管理员证件有效期结束时间
+  businessAuthorizationLetter: '', //业务办理授权函
+  openid: '', //超级管理员微信OpenID
+  mobilePhone: '', //联系手机
+  contactEmail: '' //联系邮箱
 });
+const formDateRadio = ref(5);
+const zDialogVisible = ref(false);
+const zDialogImageUrl = ref('');
+const zFileList = ref([])
+const fDialogVisible = ref(false);
+const fDialogImageUrl = ref('');
+const fFileList = ref([]);
+const bDialogVisible = ref(false);
+const bDialogImageUrl = ref('');
 
-
-//主体资料
-const subject_info = ref({
-  subject_type: '',
-  finance_institution: false,
-  business_license_info: {
-    license_number: '',
-    merchant_name: '',
-    legal_person: '',
-    license_address: '',
-    period_begin: '',
-    period_end: '',
-  },
-  certificate_info: {
-    cert_type: '',
-    cert_number: '',
-    merchant_name: '',
-    company_address: '',
-    legal_person: '',
-    period_begin: '',
-    period_end: '',
-
-
-  },
-  finance_institution_info: {
-    finance_type: '',
-    finance_license_pics: '',
-  },
-  identity_info: {
-    id_holder_type: '',
-    id_doc_type: '',
-  },
-  id_card_info: {
-    id_card_name: '',
-    id_card_number: '',
-    id_card_address: '',
-    card_period_begin: '',
-    card_period_end: '',
-  },
-  id_doc_info: {
-    id_doc_name: '',
-    id_doc_number: '',
-    id_doc_address: '',
-    doc_period_begin: '',
-    doc_period_end: '',
-  },
-  ubo_info_list: []
-
-})
-
-
-//经营资料
-const business_info = ref({})
-
-
-const form = reactive({
-  contact_info: contact_info.value
-});
-
-// const contact_info = reactive({});
-
+// 超级管理员证件类型
 const IDtypes = [
   {
     label: '中国大陆居民-身份证',
@@ -271,103 +281,211 @@ const IDtypes = [
   {
     label: '台湾居民证 ',
     value: "IDENTIFICATION_TYPE_TAIWAN_RESIDENT"
-  },
-
+  }
 ];
 
-const subjectTypes = [
-  {
-    label: '个体户',
-    value: "SUBJECT_TYPE_INDIVIDUAL"
-  },
-  {
-    label: '企业',
-    value: 'SUBJECT_TYPE_ENTERPRISE'
-  },
-  {
-    label: '政府机关',
-    value: 'SUBJECT_TYPE_GOVERNMENT'
-  },
-  {
-    label: '事业单位',
-    value: 'SUBJECT_TYPE_INSTITUTIONS0'
-  },
-  {
-    label: '社会组织',
-    value: 'SUBJECT_TYPE_OTHERS'
-  },
-]
+// 身份证号码验证
+const validNumber = (rule, value, callback) => {
+  let reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+  if (value === '' || value === undefined) {
+    callback(new Error('请输入超级管理员身份证件号码'))
+  } else if (!reg.test(value)) {
+    callback(new Error('请输入正确超级管理员身份证件号码'))
+  } else {
+    callback()
+  }
+}
+// 手机号码验证
+const validPhone = (rule, value, callback) => {
+  let reg = /^1([3-9][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/
+  if (value === '' || value === undefined) {
+    callback(new Error('请输入联系号码'))
+  } else if (!reg.test(value)) {
+    callback(new Error('请输入正确的手机号'))
+  } else {
+    callback()
+  }
+}
+// 邮箱验证
+const validEmail = (rule, value, callback) => {
+  console.log('value', value)
+  let reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/
+  if (value === '' || value === undefined) {
+    callback(new Error('请输入联系邮箱'))
+  } else if (!reg.test(value)) {
+    callback(new Error('请输入正确的邮箱'))
+  } else {
+    callback()
+  }
+}
+const rules = reactive({
+  contactType: [{ required: true, message: "请选择超级管理员类型", trigger: "change" }],
+  contactName: [{ required: true, message: "请输入超级管理员姓名", trigger: "blur" }],
+  contactIdDocType: [{ required: true, message: "请输入超级管理员证件类型", trigger: "change" }],
+  contactIdNumber: [{ required: true, validator: validNumber, trigger: "blur" }],
+  contactIdDocCopy: [{ required: true, message: "请上传超级管理员证件正面照片", trigger: "change" }],
+  contactIdDocCopyBack: [{ required: true, message: "请上传超级管理员证件反面照片", trigger: "change" }],
+  contactPeriodBegin: [{ required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change" }],
+  businessAuthorizationLetter: [{ required: true, message: "请上传业务办理授权函", trigger: "change" }],
+  mobilePhone: [{ required: true, validator: validPhone, trigger: "blur" }],
+  contactEmail: [{ required: true, validator: validEmail, trigger: "blur" }]
+})
 
-const frontImg = ref('');
-
-const rareImg = ref('');
-
-const isLong = ref(false)
-
-const rules = reactive({})
-
-const showValue = () => {
-  console.log(form.contact_info)
+const getStartTime = () => {
+  let startTime = form.value.contactPeriodBegin
+  let yearNum = Number(formDateRadio.value)
+  if (startTime && yearNum !== -1) {
+    let year = startTime.substring(0,4)
+    let monthDay = startTime.substring(4)
+    form.value.contactPeriodEnd =  Number(year) + yearNum + monthDay
+  } else if (yearNum === -1) {
+    form.value.contactPeriodEnd = '长期'
+  } else {
+    form.value.contactPeriodEnd = ''
+  }
 }
 
-const handleAvatarSuccess = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('仅支持图片格式')
+// 微信图片上传
+let uploadData = reactive({
+  uploadUrl: import.meta.env.VITE_APP_BASE_API + 'pay/media/wxPictureUpload',
+  token: getToken()
+})
+
+// 上传验证
+function beforeAvatarUpload(file) {
+  const isPicture = file.type === 'image/jpeg' || file.type === 'image/png'
+  const isLt2M = file.size / 1024 / 1024 < 2
+  if (!isPicture) {
+    ElMessage.error('请上传jepg,png,jpg格式的图片!')
+    return false
+  } else if (!isLt2M) {
+    ElMessage.error('上传图片不能超过2M!')
     return false
   }
   return true
 }
+// 身份证正面上传成功
+const zHandleAvatarSuccess = (res) => {
+  if (res.code === 200) {
+    idCardOcr({url: res.data.url}).then(res_id => {
+      if (res_id.code === 200) {
+        if (res_id.data.authority !== '' || res_id.data.validDate !== '') {
+          ElMessage.error('请上传超级管理员证件正面照片')
+          zFileList.value = []
+        } else {
+          form.value.contactIdDocCopy = res.data.url
+          form.value.contactIdNumber = res_id.data.idNum
+          form.value.contactName = res_id.data.name
+        }
+      } else {
+        zFileList.value = []
+      }
+    }).catch(err => {
+      zFileList.value = []
+    })
+  }
+}
+// 身份证正面删除
+const zhandleRemove = () => {
+  form.value.contactIdNumber = ''
+  form.value.contactName = ''
+}
+// 身份证反面上传成功
+const fHandleAvatarSuccess = (res) => {
+  if (res.code === 200) {
+    idCardOcr({url: res.data.url}).then(res_id => {
+      if (res_id.code === 200) {
+        if (res_id.data.authority === '' || res_id.data.validDate === '') {
+          ElMessage.error('请上传超级管理员证件反面照片')
+          fFileList.value = []
+        } else {
+          form.value.contactIdDocCopyBack = res.data.url
+        }
+      } else {
+        fFileList.value = []
+      }
+    }).catch(err => {
+      fFileList.value = []
+    })
+  }
+}
+// 业务办理授权函上传成功
+const bHandleAvatarSuccess = (res) => {
+  if (res.code === 200) {
+    form.value.businessAuthorizationLetter = res.data.url
+    ElMessage.success('上传成功')
+  }
+}
+// 正面
+const zhandlePictureCardPreview = (uploadFile) => {
+  zDialogImageUrl.value = uploadFile.url
+  zDialogVisible.value = true
+}
+//反面
+const fhandlePictureCardPreview = (uploadFile) => {
+  fDialogImageUrl.value = uploadFile.url
+  fDialogVisible.value = true
+}
+// 授权函
+const bhandlePictureCardPreview = (uploadFile) => {
+  bDialogImageUrl.value = uploadFile.url
+  bDialogVisible.value = true
+}
 
+const submitForm = () => {
+  console.log('form', form.value)
+}
+submitForm()
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
-  display: flex;
-  justify-content: space-around;
-  padding: 30px;
-  margin: 30px;
-}
+.app-container {
+  .box-card {
+    width: 650px;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
 
-.box-card {
-  //width: 8000px;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
+      .desc {
+        font-weight: normal;
+        font-size: 12px;
+        margin-left: 40px;
+      }
+    }
+  }
+  .form-input {
+    width: 100%;
+  }
+  .form-span {
+    color: #999999;
+    font-size: 12px;
+    margin-left: 15px;
+  }
+  .form-img {
+    width: 60px;
+    height: 60px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 6px;
+  }
+  .el-form-item {
     align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-
-    .desc {
-      font-weight: normal;
-      font-size: 12px;
-      width: 350px;
-      margin-left: 40px;
+    :deep(.el-form-item__label) {
+      font-weight: 700;
+    }
+    :deep(.el-upload--picture-card) {
+      --el-upload-picture-card-size: 60px;
+      border: 0;
+      i {
+        font-size: 18px;
+      }
+    }
+    :deep(.el-upload-list--picture-card) .el-upload-list__item {
+      width: 60px;
+      height: 60px;
     }
   }
 }
-
-.el-upload {
-  border: 1px solid var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-.el-upload:hover {
-  border-color: var(--el-color-primary);
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 22px;
-  color: #8c939d;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  border: 1px solid var(--el-border-color);
-  border-radius: 6px;
-}
-
 </style>
