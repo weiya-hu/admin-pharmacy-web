@@ -36,18 +36,17 @@
           />
         </el-form-item>
 
-<!--        v-if="form.contactType === 'SUPER'-->
-        <el-form-item label="超级管理员证件类型" prop="contactIdDocType">
+        <el-form-item label="超级管理员证件类型" prop="contactIdDocType" v-if="form.contactType === 'SUPER'">
           <el-select
               v-model="form.contactIdDocType"
-              placeholder="请选择超管证件类型"
+              placeholder="请选择超级管理员证件类型"
               class="form-input"
           >
             <el-option v-for='item in IDtypes' :label="item.label" :value="item.value" :key="item.value"/>
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="contactIdNumber">
+        <el-form-item prop="contactIdNumber" v-if="form.contactType === 'SUPER'">
           <template #label>
             <labelExplain label="超级管理员身份证件号码">
               <template #explain>
@@ -57,12 +56,12 @@
           </template>
           <el-input
               v-model="form.contactIdNumber"
-              placeholder="请输入超管身份证件号码"
+              placeholder="请输入超级管理员身份证件号码"
               class="form-input"
           />
         </el-form-item>
 
-        <el-form-item prop="contactIdDocCopy">
+        <el-form-item prop="contactIdDocCopy" v-if="form.contactType === 'SUPER'">
           <template #label>
             <labelExplain label="超级管理员证件正面照片">
               <template #explain>
@@ -91,7 +90,7 @@
           </el-dialog>
         </el-form-item>
 
-        <el-form-item label="超级管理员证件反面照片" prop="contactIdDocCopyBack">
+        <el-form-item label="超级管理员证件反面照片" prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER'">
           <el-upload
               v-model:file-list="fFileList"
               :action="uploadData.uploadUrl"
@@ -105,7 +104,6 @@
               :on-preview="fhandlePictureCardPreview"
               :before-upload="beforeAvatarUpload"
           >
-<!--            <el-image v-if="form.contactIdDocCopyBack !== ''" :src="form.contactIdDocCopyBack" class="form-img"></el-image>-->
             <el-icon class="form-img" color="#666666"><Plus /></el-icon>
           </el-upload>
           <el-dialog v-model="fDialogVisible" >
@@ -113,14 +111,15 @@
           </el-dialog>
         </el-form-item>
 
-        <el-form-item label="超级管理员证件有效期时间" prop="contactPeriodBegin">
+        <el-form-item label="超级管理员证件有效期时间" prop="contactPeriodBegin" v-if="form.contactType === 'SUPER'">
           <el-date-picker v-model="form.contactPeriodBegin" type="date" placeholder="请选择有效期开始日期" value-format="YYYY-MM-DD"
                           @change="getStartTime" style="width: 47%"/>
           <span style="width: 6%;text-align: center">至</span>
           <span v-if="formDateRadio == -1">长期有效</span>
           <el-date-picker v-model="form.contactPeriodEnd" disabled type="date" placeholder="有效期结束日期" v-else style="width: 47%" />
         </el-form-item>
-        <el-form-item>
+
+        <el-form-item v-if="form.contactType === 'SUPER'">
           <el-radio-group v-model.number="formDateRadio" @change="getStartTime">
             <el-radio :label="5">5年</el-radio>
             <el-radio :label="10">10年</el-radio>
@@ -129,7 +128,7 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item prop="businessAuthorizationLetter">
+        <el-form-item prop="businessAuthorizationLetter" v-if="form.contactType === 'SUPER'">
           <template #label>
             <labelExplain label="业务办理授权函">
               <template #explain>
@@ -166,7 +165,7 @@
           </template>
           <el-input
               v-model="form.openid"
-              placeholder="请输入超管身份证件号码"
+              placeholder="请输入超级管理员微信OpenID"
               class="form-input"
           />
         </el-form-item>
@@ -182,7 +181,6 @@
           <el-input
               v-model="form.mobilePhone"
               placeholder="请输入联系人手机"
-              type="tel"
               maxlength="11"
               class="form-input"
           />
@@ -217,7 +215,7 @@ import {Plus} from '@element-plus/icons-vue';
 import {ElMessage} from "element-plus";
 import {getToken} from '@/utils/auth';
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
-import {idCardOcr} from "@/api/insurance/managerInfo";
+import {idCardOcr} from "@/api/insurance/wechatIncoming";
 
 //超管信息
 const form = ref({
@@ -400,6 +398,15 @@ const fHandleAvatarSuccess = (res) => {
           fFileList.value = []
         } else {
           form.value.contactIdDocCopyBack = res.data.url
+          if (res_id.data.validDate.substring(11) === '长期'){
+            formDateRadio.value = -1
+          } else {
+            let startYear = res_id.data.validDate.substring(0,4)
+            let endYear = res_id.data.validDate.substring(11,15)
+            formDateRadio.value = Number(endYear - startYear)
+            form.value.contactPeriodBegin = res_id.data.validDate.substring(0,10).replaceAll('.', '-')
+            form.value.contactPeriodEnd = res_id.data.validDate.substring(11).replaceAll('.', '-')
+          }
         }
       } else {
         fFileList.value = []
