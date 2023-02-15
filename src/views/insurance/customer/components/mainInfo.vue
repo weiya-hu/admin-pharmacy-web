@@ -1749,7 +1749,6 @@ watch(() => form_Info.value.financeInstitution, () => {
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
-
   instance_Form.value.validate((isPass) => {
     // console.log(form_Info.value);
     // console.log(isPass);
@@ -1761,15 +1760,12 @@ const submit = async () => {
       emit("result", false);
     }
   });
-
 };
 defineExpose({
   submit
 });
 </script>
-
 <style lang="scss" scoped>
-
 .el-form-item {
   align-items: center;
 
@@ -1819,10 +1815,8 @@ defineExpose({
 }
 
 .mainInfo_outBox {
-  width: 650px;;
   display: flex;
   justify-content: space-around;
-  padding: 30px;
   margin: 30px;
 
   ::v-deep(.el-input) {
@@ -1833,6 +1827,9 @@ defineExpose({
     font-weight: normal !important;
   }
 
+  .box-card {
+    width: 650px !important;
+  }
 
   .collapseName {
     width: 180px;
