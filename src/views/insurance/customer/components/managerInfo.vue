@@ -474,6 +474,7 @@ const submit = () => {
       } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && form.value.openid == '')){
         ElMessage.error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”')
       } else {
+        console.log('超级管理员', form.value)
         emit('result', form.value)
       }
     } else {
