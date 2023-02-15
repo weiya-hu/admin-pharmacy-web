@@ -48,7 +48,7 @@
         </el-form-item>
         <el-form-item prop="businessAdditionMsg" class="flexl">
           <template #label>
-            <labelExplain label="补充说明">
+            <labelExplain label="补充说明" :explainShow='false'>
               <template #explain>
                 <div>512字以内</div>
               </template>

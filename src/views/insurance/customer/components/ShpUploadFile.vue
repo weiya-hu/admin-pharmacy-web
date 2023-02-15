@@ -71,7 +71,7 @@ const props = withDefaults(
   }
 )
 //文件名同步
-const emit = defineEmits(['update:modelValue', 'success'])
+const emit = defineEmits(['update:modelValue', 'success', 'remove'])
 let a=0
 const upload = ref() //上传组件ref
 const showFile = ref(true)
@@ -117,13 +117,13 @@ const handleExceed = (files: any) => {
 const upSuccess=(res: any, uploadFile: UploadFile, uploadFiles: UploadFile[])=>{
   if(res.code == 200){
     (!props.multiple) ? (()=>{
-      emit('update:modelValue', res.data[0].url)
-      emit('success',res.data.url)
+      emit('update:modelValue', res.data[0])
+      emit('success',res.data[0])
     })() :(()=>{
       let urls = []
       uploadFiles.forEach(m=>{
         if(m.response!.code == 200){
-          urls.push(m.response!.data[0].url)
+          urls.push(m.response!.data[0])
         }else{
           ElMessage.error(res.msg)
           upload.value.handleRemove(m)
@@ -148,14 +148,20 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[])=>{
   let urls = []
   uploadFiles.forEach(m=>{
     if(m.response!.code == 200){
-      urls.push(m.response!.data[0].url)
+      urls.push(m.response!.data[0])
     }else{
       ElMessage.error(res.msg)
       upload.value.handleRemove(m)
     }
   })
-  emit('update:modelValue', urls)
-  emit('success',urls)
+  if(props.multiple){
+    emit('update:modelValue', urls)
+    emit('remove',urls)
+  }else{
+    emit('update:modelValue', '')
+    emit('remove','')
+  }
+  
 }
 
 
