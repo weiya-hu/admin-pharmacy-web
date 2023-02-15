@@ -277,8 +277,7 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  .box-card {
+.box-card {
     width: 650px;
 
     .card-header {
@@ -295,6 +294,5 @@ defineExpose({
         margin-left: 40px;
       }
     }
-  }
 }
 </style>

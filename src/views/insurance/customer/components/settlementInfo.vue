@@ -204,8 +204,7 @@ getList()
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  .box-card {
+.box-card {
     width: 650px;
 
     .card-header {
@@ -222,26 +221,25 @@ getList()
         margin-left: 40px;
       }
     }
+}
+.form-img {
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 6px;
+}
+.el-form-item {
+  align-items: center;
+  :deep(.el-form-item__label) {
+    font-weight: 700;
   }
-  .form-img {
+  :deep(.el-upload--picture-card) {
+    --el-upload-picture-card-size: 60px;
+    border: 0;
+  }
+  :deep(.el-upload-list--picture-card) .el-upload-list__item {
     width: 60px;
     height: 60px;
-    border: 1px solid var(--el-border-color);
-    border-radius: 6px;
-  }
-  .el-form-item {
-    align-items: center;
-    :deep(.el-form-item__label) {
-      font-weight: 700;
-    }
-    :deep(.el-upload--picture-card) {
-      --el-upload-picture-card-size: 60px;
-      border: 0;
-    }
-    :deep(.el-upload-list--picture-card) .el-upload-list__item {
-      width: 60px;
-      height: 60px;
-    }
   }
 }
 </style>

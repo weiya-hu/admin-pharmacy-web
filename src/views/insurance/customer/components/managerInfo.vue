@@ -489,53 +489,51 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  .box-card {
-    width: 650px;
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 24px;
-      font-weight: bold;
+.box-card {
+  width: 650px;
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
 
-      .desc {
-        font-weight: normal;
-        font-size: 12px;
-        margin-left: 40px;
-      }
+    .desc {
+      font-weight: normal;
+      font-size: 12px;
+      margin-left: 40px;
     }
   }
-  .form-input {
-    width: 100%;
+}
+.form-input {
+  width: 100%;
+}
+.form-span {
+  color: #999999;
+  font-size: 12px;
+  margin-left: 15px;
+}
+.form-img {
+  width: 60px;
+  height: 60px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 6px;
+}
+.el-form-item {
+  align-items: center;
+  :deep(.el-form-item__label) {
+    font-weight: 700;
   }
-  .form-span {
-    color: #999999;
-    font-size: 12px;
-    margin-left: 15px;
+  :deep(.el-upload--picture-card) {
+    --el-upload-picture-card-size: 60px;
+    border: 0;
+    i {
+      font-size: 18px;
+    }
   }
-  .form-img {
+  :deep(.el-upload-list--picture-card) .el-upload-list__item {
     width: 60px;
     height: 60px;
-    border: 1px solid var(--el-border-color);
-    border-radius: 6px;
-  }
-  .el-form-item {
-    align-items: center;
-    :deep(.el-form-item__label) {
-      font-weight: 700;
-    }
-    :deep(.el-upload--picture-card) {
-      --el-upload-picture-card-size: 60px;
-      border: 0;
-      i {
-        font-size: 18px;
-      }
-    }
-    :deep(.el-upload-list--picture-card) .el-upload-list__item {
-      width: 60px;
-      height: 60px;
-    }
   }
 }
 </style>
