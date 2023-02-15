@@ -20,6 +20,7 @@ const scrollWrapper = computed(() => proxy.$refs.scrollContainer.$refs.wrap$);
 
 onMounted(() => {
   nextTick(()=>{
+    console.log(scrollWrapper.value)
     scrollWrapper.value.addEventListener('scroll', emitScroll, true)
   })
 })

@@ -71,3 +71,11 @@ export function listActivity() {
         method: "get"
     });
 }
+// 保存申请信息
+export function addWxpayApplyment_api(data) {
+    return request({
+        url: '/pay/wxpay_applyment/save',
+        method: 'post',
+        data: data
+    })
+}

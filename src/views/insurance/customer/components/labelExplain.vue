@@ -46,9 +46,10 @@ const props = withDefaults(
 
 <style lang="scss" scoped>
 .label-explain{
-  width: 180px;
+  width: 200px;
   &>div{
-    width: 160px;
+    width: 180px;
+    font-weight: 700;
   }
 }
 </style>

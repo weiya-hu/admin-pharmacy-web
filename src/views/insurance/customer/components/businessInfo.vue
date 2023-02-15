@@ -9,7 +9,7 @@
           >
         </div>
       </template>
-      <el-form :model="businessInfo" :rules="rules" ref="form">
+      <el-form :model="businessInfo" :rules="rules" ref="formRef">
         <el-form-item prop="merchantShortname">
           <template #label>
             <labelExplain label="商户简称">
@@ -80,20 +80,14 @@
         </el-form-item>
 
         <el-collapse
-            v-show="businessInfo.salesInfo.salesScenesType.length > 0"
             v-model="selectArr"
         >
           <!--线下-->
           <el-collapse-item
               :name="0"
               title="线下场景"
-              v-show="
-              businessInfo.salesInfo.salesScenesType.includes(
-                'SALES_SCENES_STORE'
-              )
-            "
           >
-            <el-form-item prop="salesInfo.bizStoreInfo.bizStoreName">
+            <el-form-item prop="bizStoreInfo.bizStoreName">
               <template #label>
                 <labelExplain label="门店名称">
                   <template #explain>
@@ -108,114 +102,10 @@
               <el-input
                   placeholder=" 请输入门店名称 "
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreName"
+                  v-model="businessInfo.bizStoreInfo.bizStoreName"
               ></el-input>
             </el-form-item>
-            <el-form-item prop="bizAddressCode">
-              <template #label>
-                <labelExplain label="线下场所省市编码">
-                  <template #explain>
-                    <div class="content-div">
-                      1、只能由数字组成 <br/>
-                      2、详细参见 (
-                      <el-link
-                          href="https://pay.weixin.qq.com/wiki/doc/apiv3/download/%E7%9C%81%E5%B8%82%E5%8C%BA%E7%BC%96%E5%8F%B7%E5%AF%B9%E7%85%A7%E8%A1%A8.xlsx"
-                          type="primary"
-                      >省市区编号对照表
-                      </el-link>
-                      )
-                      <br/>
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input
-                  placeholder=" 请输入线下场所省市编码 "
-                  style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizAddressCode"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="bizStoreAddress">
-              <template #label>
-                <labelExplain label="线下场所地址">
-                  <template #explain>
-                    <div class="content-div">
-                      请填写详细的经营场所信息，如有多个场所，选择一个主要场所填写即可。
-                      <br/>
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input
-                  placeholder=" 请输入线下场所地址 "
-                  style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreAddress"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="bizSubAppid">
-              <template #label>
-                <labelExplain label="对应的商家AppID">
-                  <template #explain>
-                    <div class="content-div">
-                      1、可填写与商家主体一致且已认证的公众号、小程序、APP的AppID，其中公众号AppID需是已认证的服务号、政府或媒体类型的订阅号；<br/>
-                      2、审核通过后，系统将额外为商家开通付款码支付、JSAPI支付的自有交易权限，并完成商家商户号与该AppID的绑定；
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input
-                  placeholder="(选填)"
-                  style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizSubAppid"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="storeEntrancePic">
-              <template #label>
-                <labelExplain
-                    style="font-weight: bold"
-                    label="
-                      线下场所门头照片
-                    "
-                >
-                  <template #explain>
-                    <div class="content-div">
-                      1、请上传门店照片（要求门店招牌清晰可见）。若为停车场、售卖机等无固定门头照片
-                      的经营场所，请提供真实的经营现场照片即可；
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <shp-upload-file
-                  limit="2"
-                  multiple
-                  @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.storeEntrancePic"
-              />
-            </el-form-item>
-            <el-form-item prop="indoorPic">
-              <template #label>
-                <labelExplain
-                    style="font-weight: bold"
-                    label="
-                      线下场所内部照片
-                    "
-                >
-                  <template #explain>
-                    <div class="content-div">
-                      1、请上传门店内部环境照片。若为停车场、售卖机等无固定门头照片的经营场所，请提
-                      供真实的经营现场照片即可
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-
-              <shp-upload-file
-                  limit="2"
-                  multiple
-                  @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.indoorPic"
-              />
-            </el-form-item>
+           
           </el-collapse-item>
 
           <!-- 公众号-->
@@ -568,6 +458,9 @@ import ShpUploadFile from "./ShpUploadFile.vue";
 const businessInfo = ref({
   merchantShortname: "",
   servicePhone: "",
+  bizStoreInfo: {
+    bizStoreName: "",
+  },
   salesInfo: {
     salesScenesType: [],
     bizStoreInfo: {
@@ -631,7 +524,7 @@ const salesInfos = [
     value: "SALES_SCENES_WEWORK",
   },
 ];
-const form = ref({});
+const formRef = ref();
 const t = ref({});
 const MP = ref(true);
 const Program = ref(true);
@@ -693,11 +586,11 @@ const rules = ref({
       required: true,
     },
   ],
-  "salesInfo.bizStoreInfo.bizStoreName": [
+  "bizStoreInfo.bizStoreName": [
     {
-      trigger: "blur",
       required: true,
       message: "值不能为空",
+      trigger: "blur",
     },
   ],
   bizAddressCode: [
@@ -717,11 +610,11 @@ const rules = ref({
   indoorPic: [
     {
       trigger: "change",
-      required: true,
+
       message: "必须上传图片",
       validator: (rule, val, cb) => {
-        console.log(val.length);
-        if (val.length == 0) cb(new Error("必须上传图片"));
+        // console.log(val.length);
+        if (val && val.length == 0) cb(new Error("必须上传图片"));
       },
     },
   ],
@@ -737,7 +630,17 @@ const rules = ref({
 
 const showValue = () => {
   // console.log(businessInfo.value)
-  form.value.validate(0)
+  console.log(456)
+  formRef.value.validate((valid, fields) => {
+    console.log(123,valid, fields)
+    if (valid) {
+    } else {
+    }
+  })
+  // form.value.validate(val=>{
+  //   console.log(val)
+  // })
+  // form.value.validateField("bizStoreInfo.bizStoreName")
 };
 </script>
 
