@@ -752,12 +752,11 @@
                                  :begin-time="form_Info.uboInfoList.uboPeriodBegin"></ShpTimeChoose>
                 </div>
               </div>
-
             </el-form-item>
           </el-collapse-item>
         </el-collapse>
       </el-form>
-      <!--      <el-button @click="submit">校验</el-button>-->
+      <el-button @click="submit">校验</el-button>
     </el-card>
   </div>
 </template>
@@ -1728,12 +1727,6 @@ watch(() => form_Info.value.financeInstitution, () => {
 }, {
   immediate: true
 });
-watch(() => form_Info.value, () => {
-  console.log(form_Info.value);
-}, {
-  deep: true,
-  immediate: true
-});
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
@@ -1741,6 +1734,7 @@ const submit = async () => {
   innerActiveNames.value = ["1", "2"];
   instance_Form.value.validate((isPass) => {
     if (isPass) {
+      // console.log(form_Info.value);
       emit("result", form_Info.value);
     } else {
       emit("result", false);
