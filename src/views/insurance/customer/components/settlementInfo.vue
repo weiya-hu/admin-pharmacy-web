@@ -81,9 +81,9 @@
           <ShpUploadFile v-model="form.activitiesAdditions" :limit="5" :multiple="true" flag="activitiesAdditions"></ShpUploadFile>
         </el-form-item>
 
-        <el-form-item>
-          <el-button @click="submit">保存</el-button>
-        </el-form-item>
+<!--        <el-form-item>-->
+<!--          <el-button @click="submit">保存</el-button>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <!-- 费率结算规则对照表 -->
