@@ -87,7 +87,7 @@
           <el-collapse-item
               :name="0"
               title="线下场景"
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_STORE'
               )
@@ -111,7 +111,7 @@
                   v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreName"
               ></el-input>
             </el-form-item>
-            <el-form-item prop="bizAddressCode">
+            <el-form-item prop="salesInfo.bizStoreInfo.bizAddressCode">
               <template #label>
                 <labelExplain label="线下场所省市编码">
                   <template #explain>
@@ -135,7 +135,7 @@
                   v-model="businessInfo.salesInfo.bizStoreInfo.bizAddressCode"
               ></el-input>
             </el-form-item>
-            <el-form-item prop="bizStoreAddress">
+            <el-form-item prop="salesInfo.bizStoreInfo.bizStoreAddress">
               <template #label>
                 <labelExplain label="线下场所地址">
                   <template #explain>
@@ -169,7 +169,7 @@
                   v-model="businessInfo.salesInfo.bizStoreInfo.bizSubAppid"
               ></el-input>
             </el-form-item>
-            <el-form-item prop="storeEntrancePic">
+            <el-form-item prop="salesInfo.bizStoreInfo.storeEntrancePic">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -192,7 +192,7 @@
                   v-model="businessInfo.salesInfo.bizStoreInfo.storeEntrancePic"
               />
             </el-form-item>
-            <el-form-item prop="indoorPic">
+            <el-form-item prop="salesInfo.bizStoreInfo.indoorPic">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -222,7 +222,7 @@
           <el-collapse-item
               :name="1"
               title="公众号"
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes('SALES_SCENES_MP')
             "
           >
@@ -230,11 +230,12 @@
               <el-radio :label="true" size="large">服务商公众号AppID</el-radio>
               <el-radio :label="false" size="large">商家公众号AppID</el-radio>
             </el-radio-group>
-            <el-form-item label=" 公众号AppID ">
+
+            <el-form-item v-if="MP" prop="salesInfo.mpInfo.mpAppid">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
-                    :label="MP == true ? '服务商公众号AppID' : '商家公众号AppID'"
+                    label="服务商公众号AppID"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -251,6 +252,23 @@
                   style="width: 250px"
                   v-model="businessInfo.salesInfo.mpInfo.mpAppid"
               ></el-input>
+            </el-form-item>
+            <el-form-item v-if="!MP" prop="salesInfo.mpInfo.mpSubAppid">
+              <template #label>
+                <labelExplain
+                    style="font-weight: bold"
+                    label="商家公众号AppID"
+                >
+                  <template #explain>
+                    <div class="content-div">
+                      1、服务商公众号APPID与商家公众号APPID，二选一必填。<br/>
+                      2、可填写当前服务商商户号已绑定的公众号APPID。 <br/>
+                      3、可填写与商家主体一致且已认证的公众号APPID，需是已认证的服务号、政府或媒体类型的订阅号。
+                    </div>
+                  </template>
+                </labelExplain>
+              </template>
+
               <el-input
                   v-show="!MP"
                   :placeholder="'请输入商家公众号AppID'"
@@ -258,7 +276,9 @@
                   v-model="businessInfo.salesInfo.mpInfo.mpSubAppid"
               ></el-input>
             </el-form-item>
-            <el-form-item>
+
+
+            <el-form-item prop="salesInfo.mpInfo.mpPics">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -284,7 +304,7 @@
 
           <!--小程序-->
           <el-collapse-item
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_MINI_PROGRAM'
               )
@@ -296,7 +316,8 @@
               <el-radio :label="true" size="large">服务商小程序AppID</el-radio>
               <el-radio :label="false" size="large">商家小程序AppID</el-radio>
             </el-radio-group>
-            <el-form-item>
+            <el-form-item
+                :prop="Program?'salesInfo.miniProgramInfo.miniProgramAppid':'salesInfo.miniProgramInfo.miniProgramSubAppid'">
               <template #label>
                 <labelExplain
                     :label="Program == true ? '服务商小程序AppID' : '商家小程序AppID'"
@@ -312,7 +333,7 @@
                 </labelExplain>
               </template>
               <el-input
-                  v-show="Program"
+                  v-if="Program"
                   :placeholder="'请输入服务商小程序AppID'"
                   style="width: 250px"
                   v-model="
@@ -320,7 +341,7 @@
                 "
               ></el-input>
               <el-input
-                  v-show="!Program"
+                  v-if="!Program"
                   :placeholder="'请输入商家小程序AppID'"
                   style="width: 250px"
                   v-model="
@@ -328,7 +349,7 @@
                 "
               ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="salesInfo.miniProgramInfo.miniProgramPics">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -358,14 +379,14 @@
 
               :name=4
               title="互联网网站"
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_WEB'
               )
             "
           >
 
-            <el-form-item label="互联网网站域名 " prop="domain">
+            <el-form-item label="互联网网站域名 " prop="salesInfo.webInfo.domain">
               <template #label>
                 <labelExplain label="互联网网站域名 ">
                   <template #explain>
@@ -384,7 +405,7 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label="网站对应的商家APPID" prop="webAppId">
+            <el-form-item label="网站对应的商家APPID" prop="salesInfo.webInfo.webAppId">
               <template #label>
                 <labelExplain label="网站对应的商家APPID">
                   <template #explain>
@@ -403,7 +424,7 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item>
+            <el-form-item prop="salesInfo.webInfo.webAuthorisation">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -438,7 +459,7 @@
           <el-collapse-item
               :name="3"
               title="App"
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_APP'
               )
@@ -449,7 +470,7 @@
               <el-radio :label="false" size="large">商家应用AppID</el-radio>
             </el-radio-group>
 
-            <el-form-item>
+            <el-form-item :prop="App?'salesInfo.appInfo.appAppid':'salesInfo.appInfo.appSubAppid'">
               <template #label>
                 <labelExplain
                     :label="App == true ? '服务商应用AppID' : '商家应用AppID'"
@@ -464,19 +485,19 @@
                 </labelExplain>
               </template>
               <el-input
-                  v-show="App"
+                  v-if="App"
                   :placeholder="'请输入服务商应用AppID'"
                   style="width: 250px"
                   v-model="businessInfo.salesInfo.appInfo.appAppid"
               ></el-input>
               <el-input
-                  v-show="!App"
+                  v-if="!App"
                   :placeholder="'请输入商家应用AppID'"
                   style="width: 250px"
                   v-model="businessInfo.salesInfo.appInfo.appSubAppid"
               ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="salesInfo.appInfo.appPics">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -505,7 +526,7 @@
           <el-collapse-item
               :name="5"
               title="企业微信"
-              v-show="
+              v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_WEWORK'
               )
@@ -528,7 +549,7 @@
                   v-model="businessInfo.salesInfo.weworkInfo.subCorpId"
               ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="salesInfo.weworkInfo.weworkPics">
               <template #label>
                 <labelExplain
                     style="font-weight: bold"
@@ -554,22 +575,24 @@
         </el-collapse>
       </el-form>
     </el-card>
-    <el-button @click="showValue">show Value</el-button>
+    <!--    <el-button @click="submit">show Value</el-button>-->
   </div>
 </template>
 
 <script setup>
-import {computed, nextTick, reactive, ref, watch} from "vue";
+import {computed, nextTick, onMounted, reactive, ref, watch} from "vue";
 import {getToken} from "@/utils/auth";
 import Modal from "@/plugins/modal";
 import ShpUploadFile from "./ShpUploadFile.vue";
+
+const emit = defineEmits(['result'])
 
 // el-form
 const businessInfo = ref({
   merchantShortname: "",
   servicePhone: "",
   salesInfo: {
-    salesScenesType: [],
+    salesScenesType: ref(['SALES_SCENES_STORE']),
     bizStoreInfo: {
       bizStoreName: "",
       bizAddressCode: "",
@@ -632,7 +655,6 @@ const salesInfos = [
   },
 ];
 const form = ref({});
-const t = ref({});
 const MP = ref(true);
 const Program = ref(true);
 const App = ref(true);
@@ -666,79 +688,170 @@ watch(App, (val, oldValue) => {
 const upLoadSuccess = (urls) => {
 };
 
-const validators = {
-  selected: (rule, val, cb) => {
-    if (val.length == 0) {
-      cb(new Error("至少选择一种场景"));
-    }
-  },
-  input: (rule, val, cb) => {
-    if (val == "" || val.length == 0) {
-      cb(new Error("输入不能为空"));
-    }
-  },
-};
 
 //校验规则
 const rules = ref({
-  merchantShortname: [
+  'merchantShortname': [
     {required: true, trigger: "blur", message: "值不能为空"},
     {max: 30, min: 2, message: "长度需为2至30个字符", trigger: "change"},
   ],
-  servicePhone: [{required: true, trigger: "blur", message: "值不能为空"}],
+  'servicePhone': [{required: true, trigger: "blur", message: "值不能为空"}],
   "salesInfo.salesScenesType": [
     {
       trigger: "change",
-      validator: validators.selected,
+      message: '至少选择一种',
       required: true,
     },
   ],
-  "salesInfo.bizStoreInfo.bizStoreName": [
+  'salesInfo.bizStoreInfo.bizStoreName': [
     {
       trigger: "blur",
       required: true,
       message: "值不能为空",
     },
   ],
-  bizAddressCode: [
+  'salesInfo.bizStoreInfo.bizAddressCode': [
     {
       trigger: "blur",
       required: true,
       message: "值不能为空",
     },
   ],
-  bizStoreAddress: [
+
+  'salesInfo.bizStoreInfo.bizStoreAddress': [
     {
-      trigger: "blur",
+      trigger: "change",
       required: true,
       message: "值不能为空",
     },
   ],
-  indoorPic: [
+  'salesInfo.bizStoreInfo.indoorPic': [
+    {
+      trigger: "blur",
+      required: true,
+      message: "必须上传图片",
+    },
+  ],
+  'salesInfo.bizStoreInfo.storeEntrancePic': [
     {
       trigger: "change",
       required: true,
       message: "必须上传图片",
-      validator: (rule, val, cb) => {
-        console.log(val.length);
-        if (val.length == 0) cb(new Error("必须上传图片"));
-      },
     },
   ],
-  storeEntrancePic: [
+
+  'salesInfo.mpInfo.mpPics': [
     {
       trigger: "change",
       required: true,
       message: "必须上传图片",
     },
-  ]
+  ],
+  'salesInfo.mpInfo.mpAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.mpInfo.mpSubAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.miniProgramInfo.miniProgramAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.miniProgramInfo.miniProgramSubAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+
+  'salesInfo.miniProgramInfo.miniProgramPics': [
+    {
+      trigger: "change",
+      required: true,
+      message: "必须上传图片",
+    },
+  ],
+  'salesInfo.appInfo.appSubAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.appInfo.appAppid': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.appInfo.appPics': [
+    {
+      trigger: "change",
+      required: true,
+      message: "必须上传图片",
+    },
+  ],
+  'salesInfo.webInfo.webAuthorisation': [
+    {
+      trigger: "change",
+      required: true,
+      message: "必须上传图片",
+    },
+  ],
+  'salesInfo.webInfo.webAppId': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.webInfo.domain': [
+    {
+      trigger: "change",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
+  'salesInfo.weworkInfo.weworkPics': [
+    {
+      trigger: "change",
+      required: true,
+      message: "必须上传图片",
+    },
+  ],
+
+
 });
 
 
-const showValue = () => {
-  // console.log(businessInfo.value)
-  form.value.validate(0)
+const submit = () => {
+  form.value.validate(val => {
+    if (val) {
+      emit('result', businessInfo.value)
+    } else {
+      emit('result', false)
+    }
+  })
 };
+
+defineExpose({
+  submit,
+})
+
+
 </script>
 
 <style lang="scss" scoped>
