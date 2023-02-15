@@ -50,7 +50,7 @@
           <template #label>
             <labelExplain label="单位证明函照片">
               <template #explain>
-                <div> 主体类型为政府机关、事业单位选传
+                <div> 主体类型为政府机关、事业单位选传，主体为个体户、企业、其他组织等，不需要上传
                 </div>
               </template>
             </labelExplain>
@@ -67,7 +67,8 @@
               <template #label>
                 <labelExplain label="营业执照照片">
                   <template #explain>
-                    <div> 可上传1张图片
+                    <div>
+                      可上传1张图片
                     </div>
                   </template>
                 </labelExplain>
@@ -79,7 +80,8 @@
               <template #label>
                 <labelExplain label="注册号/统一社会信用代码">
                   <template #explain>
-                    <div>请填写营业执照上的营业执照注册号，注册号格式须为18位数字|大写字母。
+                    <div>
+                      请填写营业执照上的营业执照注册号，注册号格式须为18位数字|大写字母。
                     </div>
                   </template>
                 </labelExplain>
@@ -182,7 +184,7 @@
                 <labelExplain label="登记证书类型">
                   <template #explain>
                     <div>
-                      当主体是金融机构时，必填。
+                      主体为“政府机关/事业单位/社会组织”时，请上传登记证书类型，主体为“个体工商户/企业”时，不填
                     </div>
                   </template>
                 </labelExplain>
@@ -341,7 +343,14 @@
                 <labelExplain label="法定代表人说明函">
                   <template #explain>
                     <div>
-                      当证件持有人类型为经办人时，必须上传。其他情况，无需上传。
+                      当证件持有人类型为经办人时，必须上传。其他情况，无需上传，
+                      若因特殊情况，无法提供法定代表人证件时，请参照
+                      <el-link type="primary" href="https://kf.qq.com/faq/220127aUzAju220127UfiuQr.html"
+                               target="_blank">
+                        示例图
+                      </el-link>
+                      打印法定代表人说明函，全部信息需打印，不支持手写商户信息，并加盖公章
+                      可上传1张图片
                     </div>
                   </template>
                 </labelExplain>
@@ -354,11 +363,8 @@
                 <labelExplain label="证件持有人类型">
                   <template #explain>
                     <div>
-                      金融机构类型需与营业执照/登记证书上一致，可参考选择
-                      <el-link type="primary" href="https://kf.qq.com/faq/220215IrMRZ3220215n6buiU.html"
-                               target="_blank">
-                        金融机构指引。
-                      </el-link>
+                      主体类型为政府机关、事业单位时选传
+                      主体类型为企业、个体户、社会组织时，默认为经营者/法人，不需要上传该字段
                     </div>
                   </template>
                 </labelExplain>
@@ -388,12 +394,8 @@
                 <labelExplain label="证件类型">
                   <template #explain>
                     <div>
-                      金融机构类型需与营业执照/登记证书上一致，可参考选择
-                      <el-link type="primary" href="https://kf.qq.com/faq/220215IrMRZ3220215n6buiU.html"
-                               target="_blank">
-                        金融机构指引
-                      </el-link>
-                      参考
+                      当证件持有人类型为法人时，填写。其他情况，无需上传
+                      个体户/企业/事业单位/社会组织：可选择任一证件类型，政府机关仅支持中国大陆居民-身份证类型
                     </div>
                   </template>
                 </labelExplain>
@@ -417,6 +419,8 @@
                       <template #explain>
                         <div>
                           请上传个体户经营者/法人的身份证人像面照片
+                          请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
+                          可上传1张图片
                         </div>
                       </template>
                     </labelExplain>
@@ -431,6 +435,7 @@
                       <template #explain>
                         <div>
                           请上传个体户经营者/法定代表人的身份证国徽面照片,可上传1张图片
+                          请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
                         </div>
                       </template>
                     </labelExplain>
@@ -458,6 +463,7 @@
                       <template #explain>
                         <div>
                           请填写个体户经营者/法定代表人对应身份证的号码,
+                          15位数字或17位数字+1位数字|X
                         </div>
                       </template>
                     </labelExplain>
@@ -470,6 +476,7 @@
                     <labelExplain label="身份证居住地址">
                       <template #explain>
                         <div>
+                          体类型为企业时，需要填写。其他主体类型，无需上传
                           按照身份证住址填写，如广东省深圳市南山区xx路xx号xx室
                         </div>
                       </template>
@@ -528,6 +535,8 @@
                     <labelExplain label="证件正面照片">
                       <template #explain>
                         <div>
+                          证件类型不为“身份证”"时，上传证件正面照片。
+                          请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
                           可上传1张图片
                         </div>
                       </template>
@@ -542,6 +551,8 @@
                     <labelExplain label="证件反面照片">
                       <template #explain>
                         <div>
+                          若证件类型为往来通行证、外国人居留证、港澳居住证、台湾居住证时，上传证件反面照片
+                          若证件类型为护照，无需上传反面照片
                           可上传1张图片
                         </div>
                       </template>
@@ -570,6 +581,7 @@
                       <template #explain>
                         <div>
                           请填写经营者/法定代表人的证件号码
+                          8-30位数字|字母|连字符
                         </div>
                       </template>
                     </labelExplain>
@@ -583,6 +595,7 @@
                       <template #explain>
                         <div>
                           主体类型为企业时，需要填写。其他主体类型，无需上传
+                          请按照证件上住址填写，若证件上无住址则按照实际住址填写，如广东省深圳市南山区xx路xx号xx室。
                         </div>
                       </template>
                     </labelExplain>
@@ -640,6 +653,7 @@
                   <template #explain>
                     <div>
                       请上传受益人证件的正面照片，若证件类型为身份证，请上传人像面照片
+                      请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
                     </div>
                   </template>
                 </labelExplain>
@@ -653,6 +667,7 @@
                   <template #explain>
                     <div>
                       请上传受益人证件的反面照片，若证件类型为身份证，请上传人像面照片
+                      请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
                     </div>
                   </template>
                 </labelExplain>
@@ -682,7 +697,7 @@
                 <labelExplain label="证件姓名">
                   <template #explain>
                     <div>
-                      请填写经营者/法定代表人的证件姓名，2~30个中文字符、英文字符、符号
+                      请填写证件姓名
                     </div>
                   </template>
                 </labelExplain>
@@ -695,7 +710,7 @@
                 <labelExplain label="证件号码">
                   <template #explain>
                     <div>
-                      请填写经营者/法定代表人的证件号码
+                      请填写证件号码
                     </div>
                   </template>
                 </labelExplain>
@@ -708,7 +723,8 @@
                 <labelExplain label="证件居住地址">
                   <template #explain>
                     <div>
-                      主体类型为企业时，需要填写。其他主体类型，无需上传
+                      请按照证件上住址填写，若证件上无住址则按照实际住址填写，如广东省深圳市南山区xx路xx号xx室
+
                     </div>
                   </template>
                 </labelExplain>
@@ -756,7 +772,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
-      <el-button @click="submit">校验</el-button>
+<!--      <el-button @click="submit">校验</el-button>-->
     </el-card>
   </div>
 </template>
@@ -1733,8 +1749,8 @@ const submit = async () => {
   activeNames.value = ["1", "2", "3", "4", "5"];
   innerActiveNames.value = ["1", "2"];
   instance_Form.value.validate((isPass) => {
+    // console.log(form_Info.value);
     if (isPass) {
-      // console.log(form_Info.value);
       emit("result", form_Info.value);
     } else {
       emit("result", false);
