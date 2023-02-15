@@ -21,7 +21,7 @@
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile v-model="formValue.legalPersonCommitment"></ShpUploadFile>
+          <ShpUploadFile v-model="formValue.legalPersonCommitment" ref="hh"></ShpUploadFile>
         </el-form-item>
         <el-form-item prop="legalPersonVideo" class="flexl">
           <template #label>
@@ -66,7 +66,8 @@
           >
           </el-input>
         </el-form-item>
-        <div @click="foem">fgdfg</div>
+        <!-- <div @click="foem">fgdfg</div>
+        <div @click="fm">1111111122</div> -->
       </el-form>
     </el-card>
   </div>
@@ -84,7 +85,13 @@ const formValue = ref({
   businessAdditionPics:[],
   businessAdditionMsg:''
 })
-
+const hh=ref()
+const foem =()=>{
+  hh.value.removeFile()
+}
+const fm =()=>{
+  console.log(formValue.value)
+}
 const downloadTemplete = ()=>{
   downloadGet('https://oss.cloud.shanhaiping.com/test/123333/22222/2023/02/10/18/63e617a82e80c92fb646ae39.pdf','开户承诺函.pdf')
 }

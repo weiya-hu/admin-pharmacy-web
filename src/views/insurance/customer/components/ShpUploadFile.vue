@@ -164,6 +164,17 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
 
 }
 
+//删除文件
+const removeFile =()=>{
+  upload.value.clearFiles()
+  emit('update:modelValue', '')
+  emit('remove', '')
+}
+
+defineExpose({
+  removeFile, // 清空文件
+})
+
 
 </script>
 <style scoped lang="scss">
