@@ -757,6 +757,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
+      <!--      <el-button @click="submit">校验</el-button>-->
     </el-card>
   </div>
 </template>
@@ -1340,8 +1341,8 @@ const form_Info = ref({
   }
 
 });
-let activeNames = ref(["1", "2", "3", "4", "5"]);
-let innerActiveNames = ref(["1", "2"]);
+let activeNames = ref([]);
+let innerActiveNames = ref([]);
 const isPermanentlyValid_businessLicenseInfo = ref(false);
 const isPermanentlyValid_certificateInfo = ref(false);
 const isPermanentlyValid_identityInfo_idCardInfo = ref(false);
@@ -1358,7 +1359,6 @@ let instance_Form = ref(null);
 
 /**折叠展开*/
 const ChangeCollapse = (activeNames) => {
-
   console.log(activeNames);
 };
 /**选择主体类型*/
