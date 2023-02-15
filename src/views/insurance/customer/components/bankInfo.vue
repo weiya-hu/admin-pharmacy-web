@@ -132,9 +132,9 @@
           <el-input v-model="form.accountNumber" placeholder="请输入银行账号" />
         </el-form-item>
 
-        <el-form-item>
-          <el-button @click="submit">保存</el-button>
-        </el-form-item>
+<!--        <el-form-item>-->
+<!--          <el-button @click="submit">保存</el-button>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <el-dialog v-model="dialogVisible" title="开户银行全称（含支行）对照表" draggable>
@@ -241,6 +241,7 @@ const handleChange = (val) => {
   })
 }
 
+const emit = defineEmits(["result"]);
 const submit = () => {
   proxy.$refs["bankRef"].validate(valid => {
     if (valid) {
@@ -248,6 +249,7 @@ const submit = () => {
         ElMessage.error('请输入开户银行联行号或开户银行全称（含支行）')
       } else {
         emit('result', form.value)
+        console.log('银行账户' ,form.value)
       }
     } else {
       emit('result', false)
