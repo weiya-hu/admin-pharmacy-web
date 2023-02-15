@@ -9,7 +9,7 @@
           >
         </div>
       </template>
-      <el-form model="formValue" :rules="rules">
+      <el-form model="formValue">
         <el-form-item prop="legalPersonCommitment" class="flexl">
           <template #label>
             <labelExplain label="法人开户承诺函">
@@ -21,7 +21,7 @@
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile v-model="formValue.legalPersonCommitment" @success="upSuccess"></ShpUploadFile>
+          <ShpUploadFile v-model="formValue.legalPersonCommitment" ref="hh"></ShpUploadFile>
         </el-form-item>
         <el-form-item prop="legalPersonVideo" class="flexl">
           <template #label>
@@ -44,7 +44,7 @@
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile v-model="formValue.businessAdditionPics" :limit="5" :multiple="true" flag="businessAdditionPics"></ShpUploadFile>
+          <ShpUploadFile v-model="formValue.businessAdditionPics" :limit="5" :multiple="true"></ShpUploadFile>
         </el-form-item>
         <el-form-item prop="businessAdditionMsg" class="flexl">
           <template #label>
@@ -54,9 +54,20 @@
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile  v-model="formValue.businessAdditionMsg"></ShpUploadFile>
+          <el-input
+            type="textarea"
+            placeholder="请输入补充说明"
+            maxlength="512"
+            show-word-limit
+            size="medium"
+	          resize="none"
+            autosize="true"
+            v-model="formValue.businessAdditionMsg"
+          >
+          </el-input>
         </el-form-item>
-        <div @click="foem">fgdfg</div>
+        <!-- <div @click="foem">fgdfg</div>
+        <div @click="fm">1111111122</div> -->
       </el-form>
     </el-card>
   </div>
@@ -64,32 +75,34 @@
 
 <script setup>
 import { ref } from 'vue';
-import { QuestionFilled, InfoFilled } from '@element-plus/icons-vue'
 import labelExplain from './labelExplain.vue'
 import ShpUploadFile from './ShpUploadFile.vue'
 import { downloadGet } from '../../../../utils/request'
-
+const emit = defineEmits(['result'])
 const formValue = ref({
   legalPersonCommitment:'',
   legalPersonVideo:'',
   businessAdditionPics:[],
   businessAdditionMsg:''
 })
-
-const rules = ref()
-
-const upSuccess = ()=>{
+const hh=ref()
+const foem =()=>{
+  hh.value.removeFile()
+}
+const fm =()=>{
   console.log(formValue.value)
 }
-
 const downloadTemplete = ()=>{
-  console.log(454646);
   downloadGet('https://oss.cloud.shanhaiping.com/test/123333/22222/2023/02/10/18/63e617a82e80c92fb646ae39.pdf','开户承诺函.pdf')
 }
 
-const foem =()=>{
-  console.log(formValue.value)
+const submit =()=>{
+  emit('result',formValue.value)
 }
+
+defineExpose({
+  submit, // 上传
+})
 </script>
 
 <style lang="scss" scoped>
@@ -120,6 +133,9 @@ const foem =()=>{
         text-decoration: underline;
         text-decoration-color: var(--el-button-hover-text-color);
       }
+    }
+    textarea {
+      height: 100px;
     }
 }
 

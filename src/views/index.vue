@@ -1,4 +1,4 @@
-<template>
+<!-- <template> -->
   <!--  <div class="app-container home">-->
   <!--    <el-row :gutter="20">-->
   <!--      <el-col :sm="24" :lg="24">-->
@@ -794,9 +794,14 @@
   <!--    </el-row>-->
   <!--  </div>-->
 
+  <!-- <div class="main"> -->
+    <!-- <div>山海平后台管理系统</div> -->
+    <!--    <div>Powered By 山海平信息技术</div>-->
+  <!-- </div>
+</template> -->
+<template>
   <div class="main">
     <div>山海平后台管理系统</div>
-    <!--    <div>Powered By 山海平信息技术</div>-->
   </div>
 </template>
 

@@ -1,25 +1,25 @@
 <template>
   <div>
     <el-upload
-        v-loading="loading"
-        ref="upload"
-        :action="hostUrl"
-        :accept="exnameList.join(',')"
-        :auto-upload="true"
-        :data="upData"
-        :limit="limit"
-        :on-change="upChange"
-        :headers="hreders"
-        :on-error="upError"
-        :on-exceed="handleExceed"
-        :on-success="upSuccess"
-        :on-preview="PictureCardPreview"
-        :on-remove="onRemove"
-        :show-file-list="showFileList && showFile"
-        class="my_upload flexl"
-        :class="`my_upload${flag}`"
-        :multiple="multiple"
-        list-type="picture-card"
+      v-loading="loading"
+      ref="upload"
+      :action="hostUrl"
+      :accept="exnameList.join(',')"
+      :auto-upload="true"
+      :data="upData"
+      :limit="limit"
+      :on-change="upChange"
+      :headers="headers"
+      :on-error="upError"
+      :on-exceed="handleExceed"
+      :on-success="upSuccess"
+      :on-preview="PictureCardPreview"
+      :on-remove="onRemove"
+      :show-file-list="showFileList && showFile"
+      class="my_upload flexl"
+      :class="`my_upload${flag}`"
+      :multiple="multiple"
+      list-type="picture-card"
     >
       <el-icon class="form-img">
         <Plus/>
@@ -34,7 +34,7 @@
 <script setup lang="ts">
 /**
  * @description 上传文件组件
- * @params modelValue?: string//文件名
+ * @params modelValue?: string//文件数据
  * @params exnameList?: string[] //支持的文件格式数组,不传默认图片格式['.jpg', '.png', '.BMP', ]
  * @params maxSize?: number //最大尺寸 单位M,不传默认5M
  * @params multiple?: boolean //是否支持多文件上传,不传默认不支持
@@ -49,7 +49,7 @@ import {
 } from 'element-plus'
 import {getToken} from "../../../../utils/auth";
 
-const hreders = ref({Authorization: "Bearer " + getToken()})
+const headers = ref({Authorization:"Bearer " + getToken()})
 const props = withDefaults(
     defineProps<{
       modelValue?: string //文件名
@@ -124,8 +124,8 @@ const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) 
       uploadFiles.forEach(m => {
         if (m.response!.code == 200) {
           urls.push(m.response!.data[0])
-        } else {
-          ElMessage.error(res.msg)
+        }else{
+          ElMessage.error(m.response!.msg)
           upload.value.handleRemove(m)
         }
       })
@@ -149,8 +149,8 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
   uploadFiles.forEach(m => {
     if (m.response!.code == 200) {
       urls.push(m.response!.data[0])
-    } else {
-      ElMessage.error(m.msg)
+    }else{
+      ElMessage.error(m.response!.msg)
       upload.value.handleRemove(m)
     }
   })
@@ -163,6 +163,17 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
   }
 
 }
+
+//删除文件
+const removeFile =()=>{
+  upload.value.clearFiles()
+  emit('update:modelValue', '')
+  emit('remove', '')
+}
+
+defineExpose({
+  removeFile, // 清空文件
+})
 
 
 </script>
