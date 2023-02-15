@@ -54,7 +54,9 @@
               </template>
             </labelExplain>
           </template>
-          <el-input maxlength="32" v-model="form.activitiesId" placeholder="请输入优惠费率活动ID" />
+          <el-select v-model="form.activitiesId" placeholder="请选择优惠费率活动ID" clearable style="width: 100%;">
+            <el-option v-for="item in activitiesList" :value="item.activitiesId" :label="item.activitiesId" :key="item.id" />
+          </el-select>
         </el-form-item>
 
         <el-form-item prop="activitiesRate">
@@ -79,9 +81,9 @@
           <ShpUploadFile v-model="form.activitiesAdditions" :limit="5" :multiple="true" flag="activitiesAdditions"></ShpUploadFile>
         </el-form-item>
 
-        <el-form-item>
-          <el-button @click="submit">保存</el-button>
-        </el-form-item>
+<!--        <el-form-item>-->
+<!--          <el-button @click="submit">保存</el-button>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <!-- 费率结算规则对照表 -->
@@ -145,6 +147,7 @@ const activitytableData = ref([])
 
 const typeList = ref([])
 const otherAsk = ref(0)
+const activitiesList = ref([])
 
 const onClick = (type) => {
   if (type === 'settlement') {
@@ -168,8 +171,7 @@ const rules = reactive({
   settlementId: [{ required: true, message: "请输入入驻结算规则ID", trigger: "blur" }],
   qualificationType: [{ required: true, message: "请输入所属行业", trigger: "blur" }],
   qualifications: [{ required: true, message: "请上传特殊资质图片", trigger: "change" }],
-  activitiesId: [{ required: true, message: "请输入优惠费率活动ID", trigger: "blur" }],
-  activitiesRate: [{ required: true, message: "请输入优惠费率活动值", trigger: "blur" }],
+  // activitiesId: [{ required: true, message: "请输入优惠费率活动ID", trigger: "blur" }]
 })
 
 const handleChange = (val) => {
@@ -201,6 +203,11 @@ const getList = () => {
   listSettlement().then(res => {
     if (res.code === 200) {
       typeList.value = res.data
+    }
+  })
+  listActivity().then(res => {
+    if (res.code === 200) {
+      activitiesList.value = res.data
     }
   })
 }

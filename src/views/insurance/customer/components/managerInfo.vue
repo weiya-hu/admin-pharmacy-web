@@ -84,6 +84,7 @@
               :limit="1"
               :show-file-list="true"
               list-type="picture-card"
+              :on-exceed="handleExceed"
               :on-success="zHandleAvatarSuccess"
               :on-preview="zhandlePictureCardPreview"
               :on-remove="zhandleRemove"
@@ -96,7 +97,7 @@
           </el-dialog>
         </el-form-item>
 
-        <el-form-item prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER'">
+        <el-form-item prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER' && form.contactIdDocType !== 'IDENTIFICATION_TYPE_OVERSEA_PASSPORT'">
           <template #label>
             <labelExplain label="超级管理员证件反面照片">
               <template #explain>
@@ -113,6 +114,7 @@
               :limit="1"
               :show-file-list="true"
               list-type="picture-card"
+              :on-exceed="handleExceed"
               :on-success="fHandleAvatarSuccess"
               :on-preview="fhandlePictureCardPreview"
               :on-remove="fhandleRemove"
@@ -155,24 +157,7 @@
               </template>
             </labelExplain>
           </template>
-          <el-upload
-              :action="uploadData.uploadUrl"
-              :headers="{'Authorization':uploadData.token}"
-              method:="get"
-              accept="image/*"
-              :limit="1"
-              :show-file-list="true"
-              list-type="picture-card"
-              :on-success="bHandleAvatarSuccess"
-              :on-preview="bhandlePictureCardPreview"
-              :on-remove="bhandleRemove"
-              :before-upload="beforeAvatarUpload"
-          >
-            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
-          </el-upload>
-          <el-dialog v-model="bDialogVisible">
-            <img :src="bDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
-          </el-dialog>
+          <ShpUploadFile v-model="form.businessAuthorizationLetter" :limit="1" :multiple="false" flag="businessAuthorizationLetter"></ShpUploadFile>
         </el-form-item>
 
         <el-form-item prop="openid">
@@ -237,6 +222,7 @@ import {ElMessage} from "element-plus";
 import {getToken} from '@/utils/auth';
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {idCardOcr} from "@/api/insurance/wechatIncoming";
+import ShpUploadFile from './ShpUploadFile.vue';
 
 const { proxy } = getCurrentInstance();
 const form = ref({
@@ -260,8 +246,6 @@ const zFileList = ref([])
 const fDialogVisible = ref(false);
 const fDialogImageUrl = ref('');
 const fFileList = ref([]);
-const bDialogVisible = ref(false);
-const bDialogImageUrl = ref('');
 const managerRef = ref()
 
 // 超级管理员证件类型
@@ -383,6 +367,10 @@ function beforeAvatarUpload(file) {
   }
   return true
 }
+const handleExceed = () => {
+  ElMessage.error(`最多上传1张图片`)
+}
+
 // 身份证正面上传、查看
 const zHandleAvatarSuccess = (res) => {
   if (res.code === 200) {
@@ -451,19 +439,6 @@ const fhandlePictureCardPreview = (uploadFile) => {
   fDialogImageUrl.value = uploadFile.url
   fDialogVisible.value = true
 }
-// 业务办理授权函上传、查看
-const bHandleAvatarSuccess = (res) => {
-  if (res.code === 200) {
-    form.value.businessAuthorizationLetter = res.data[0]
-  }
-}
-const bhandleRemove = () => {
-  form.value.businessAuthorizationLetter = ''
-}
-const bhandlePictureCardPreview = (uploadFile) => {
-  bDialogImageUrl.value = uploadFile.url
-  bDialogVisible.value = true
-}
 
 const emit = defineEmits(["result"]);
 const submit = () => {
@@ -474,6 +449,7 @@ const submit = () => {
       } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && form.value.openid == '')){
         ElMessage.error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”')
       } else {
+        console.log('超级管理员', form.value)
         emit('result', form.value)
       }
     } else {
