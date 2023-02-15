@@ -1,10 +1,104 @@
 <template>
   <div class="outbox">
-    <wechartIncommingTable :tableListConfig="wechartIncomingConfig" :tableListData="tableListData">
+    <WechartIncommingTable :tableListConfig="wechartIncomingConfig" :tableListData="tableListData">
       <template #businessCodeSlot="scope">
-        <el-button>啊啊啊</el-button>
+        {{ scope.row.businessCode }}
       </template>
-    </wechartIncommingTable>
+      <template #certTypeSlot="scope">
+        {{ scope.row.certType }}
+      </template>
+      <template #contactNameSlot="scope">
+        {{ scope.row.contactName }}
+      </template>
+      <template #contactTypeSlot="scope">
+        {{ scope.row.contactType }}
+      </template>
+      <template #docPeriodBeginSlot="scope">
+        {{ scope.row.docPeriodBegin }}
+      </template>
+      <template #docPeriodEndSlot="scope">
+        {{ scope.row.docPeriodEnd }}
+      </template>
+      <template #financeInstitutionSlot="scope">
+        {{ scope.row.financeInstitution == 0 ? '否' : '是' }}
+      </template>
+      <template #idDocAddressSlot="scope">
+        {{ scope.row.idDocAddress }}
+      </template>
+      <template #idDocNameSlot="scope">
+        {{ scope.row.idDocName }}
+      </template>
+      <template #idDocNumberSlot="scope">
+        {{ scope.row.idDocNumber }}
+      </template>
+
+      <template #idDocTypeSlot="scope">
+        {{ getIdType(scope.row.idDocType) }}
+      </template>
+
+      <template #idHolderTypeSlot="scope">
+        {{ scope.row.idHolderType == 'LEGAL' ? '法人' : '经办人' }}
+      </template>
+
+      <template #licenseAddressSlot="scope">
+        {{ scope.row.merchantShortname }}
+      </template>
+
+
+      <template #licenseMerchantNameSlot="scope">
+        {{ scope.row.licenseMerchantName }}
+      </template>
+
+      <template #merchantShortnameSlot="scope">
+        {{ scope.row.licenseAddress }}
+      </template>
+
+      <template #licenseNumberSlot="scope">
+        {{ scope.row.licenseNumber }}
+      </template>
+
+      <template #licensePeriodBeginSlot="scope">
+        {{ scope.row.licensePeriodBegin }}
+      </template>
+
+      <template #licensePeriodEndSlot="scope">
+        {{ scope.row.licensePeriodEnd }}
+      </template>
+
+      <template #ownerSlot="scope">
+        {{ scope.row.owner == 0 ? '否' : '是' }}
+      </template>
+
+      <template #salesScenesTypeNameSlot="scope">
+        {{ scope.row.salesScenesTypeName }}
+      </template>
+
+      <template #servicePhoneSlot="scope">
+        {{ scope.row.servicePhone }}
+      </template>
+
+      <template #signUrlSlot="scope">
+        <el-link :href="scope.row.signUrl" text type="primary">查看</el-link>
+      </template>
+
+      <template #statusMsgSlot="scope">
+        {{ scope.row.statusMsg }}
+      </template>
+
+      <template #subMchidSlot="scope">
+        {{ scope.row.subMchid }}
+      </template>
+
+      <template #subjectTypeSlot="scope">
+        {{ getsubjectTypes(scope.row.subjectType) }}
+      </template>
+
+      <template #wechatApplymentIdSlot="scope">
+        {{ getsubjectTypes(scope.row.wechatApplymentId) }}
+      </template>
+
+
+    </WechartIncommingTable>
   </div>
 </template>
 
@@ -12,6 +106,7 @@
 import {getApplymentList} from "@/api/insurance/wechatIncoming";
 import {onMounted, ref} from "vue";
 import wechartIncomingConfig from "./wechartIncomingConfig";
+import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
 
 const params = ref({});
 const loading = ref(false);
@@ -34,6 +129,14 @@ const financeTypes = {
   TRADE_AND_SETTLE: "交易及结算类金融机构",
   OTHER: "其他金融机构"
 };
+const subjectTypes = {
+  SUBJECT_TYPE_INDIVIDUAL: '个体户',
+  SUBJECT_TYPE_ENTERPRISE: '企业',
+  SUBJECT_TYPE_GOVERNMENT: '党政机关',
+  SUBJECT_TYPE_INSTITUTIONS: '事业单位',
+  SUBJECT_TYPE_OTHERS: '其他组织'
+}
+
 const getIdType = (val) => {
   for (let i in idTypes) {
     if (i == val) return idTypes[i];
@@ -44,6 +147,13 @@ const getFinanceType = (val) => {
     if (i == val) return financeTypes[i];
   }
 };
+
+const getsubjectTypes = (val) => {
+  for (let i in subjectTypes) {
+    if (i == val) return subjectTypes[i];
+  }
+};
+
 
 onMounted(() => {
   getApplymentList(params.value).then((res) => {

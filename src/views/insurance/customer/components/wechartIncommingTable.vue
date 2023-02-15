@@ -1,17 +1,20 @@
 <template>
-  <el-table stripe v-loading="loading" :data="list">
+  <el-table stripe v-loading="loading" :data="props.tableListData">
     <template v-for="(itemConfig,index) in props.tableListConfig">
-      <el-table-column align="center" :label="itemConfig.label" width="180">
+      <el-table-column align="center" :label="itemConfig.label" show-overflow-tooltip :prop="itemConfig.prop"
+                       :fixed="itemConfig.isFixed">
         <template v-if="itemConfig.slotName" #default="scope">
+
           <slot :row="scope.row" :name="itemConfig.slotName">
+
           </slot>
         </template>
       </el-table-column>
     </template>
     <el-table-column
-      align="center"
-      label="操作"
-      show-overflow-tooltip
+        align="center"
+        label="操作"
+        show-overflow-tooltip
     >
       <template #default="scope">
         <div>二维码</div>
@@ -22,17 +25,17 @@
 
 <script lang="ts" setup>
 const props = withDefaults(
-  defineProps<{
-    tableListConfig: [],
-    tableListData: []
-  }>(),
-  {}
+    defineProps<{
+      tableListConfig: [],
+      tableListData: []
+    }>(),
+    {}
 );
-import { onMounted, ref } from "vue";
+import {onMounted, ref} from "vue";
 
 const params = ref({});
 const loading = ref(false);
-const list = ref([]);
+// const list = ref([]);
 </script>
 
 <style lang="scss" scoped>
