@@ -1,12 +1,13 @@
 <template>
   <div class="flexr label-explain" > 
-    <span>{{props.label}}</span> 
+    <div class="flexr"><span>{{props.label}}</span></div>
     <el-popover
       placement="top-start"
-      title="字段释义"
+      title="字段说明"
       :width="300"
       trigger="hover"
       :content="props.explain"
+      effect="dark"
     >
       <template #default v-if="!props.explain">
         <slot name="explain"></slot>
@@ -42,5 +43,8 @@ const props = defineProps({
 <style lang="scss" scoped>
 .label-explain{
   width: 180px;
+  &>div{
+    width: 160px;
+  }
 }
 </style>

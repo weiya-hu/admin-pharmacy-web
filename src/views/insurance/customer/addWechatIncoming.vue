@@ -27,6 +27,15 @@ import SupplyInfo from './components/supplyInfo.vue'
 .wechart-coming{
   width: 1440px;
   margin: 0 auto;
+  &:deep(.el-form-item.is-required.asterisk-left>.el-form-item__label:before){
+      content: '';
+      margin-right:0;
+    }
+  &:deep(.el-form-item.is-required.asterisk-left>.el-form-item__label>.label-explain>div>span::before){
+    content: '*';
+    margin-right:4px;
+    color:var(--el-color-danger);
+  }
 }
 
 </style>
