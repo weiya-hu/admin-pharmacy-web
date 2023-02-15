@@ -785,7 +785,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
-      <el-button @click="submit">校验</el-button>
+<!--      <el-button @click="submit">校验</el-button>-->
     </el-card>
   </div>
 </template>
@@ -1817,7 +1817,6 @@ defineExpose({
 .mainInfo_outBox {
   display: flex;
   justify-content: space-around;
-  margin: 30px;
 
   ::v-deep(.el-input) {
     //width: 100% !important;
