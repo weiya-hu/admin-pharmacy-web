@@ -785,7 +785,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-form>
-<!--      <el-button @click="submit">校验</el-button>-->
+      <el-button @click="submit">校验</el-button>
     </el-card>
   </div>
 </template>
@@ -1108,10 +1108,10 @@ const validateUboInfoListUboIdDocCopyBack = (rule, value, callback) => {
   callback();
 };
 const form_Info_Rules = ref({
-  subjectType: [
+  "subjectType": [
     { required: true, message: "请选择主体类型", trigger: "change" }
   ],
-  certificateLetterCopy: [
+  "certificateLetterCopy": [
     { required: true, validator: validateCertificateLetterCopy, trigger: "blur" }
     // { required: true, message: "请上传单位函证明", trigger: "change" }
   ],
@@ -1489,8 +1489,6 @@ const chooseIdHolderType = (value) => {
     controlIdDocTypeRuler(false);
   }
 };
-
-
 //改变主体类型修改外层变量的方法
 const changeVariablesToOuterLayer = () => {
   // 单位证明函照片上传是否展示
@@ -1499,12 +1497,9 @@ const changeVariablesToOuterLayer = () => {
   } else {
     isShowCertificateLetterCopy.value = true;
   }
-
 };
 //改变主体类型修改营业执照变量的方法
 const changeVariablesToBusinessLicenseInfo = () => {
-
-
 };
 //改变主体类型修改登记证书变量的方法
 const changeVariablesToCertificateInfo = () => {
@@ -1549,8 +1544,6 @@ const changeVariablesToCertificateInfo = () => {
 };
 //修改金融机构许可证信息变量的方法
 const changeVariablesToFinanceInstitutionInfo = () => {
-
-
 };
 //改变主体类型修改经营者/法人身份证件信息变量的方法
 const changeVariablesToIdentityInfo = () => {
@@ -1756,14 +1749,15 @@ watch(() => form_Info.value.financeInstitution, () => {
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
-  activeNames.value = ["1", "2", "3", "4", "5"];
-  innerActiveNames.value = ["1", "2"];
+
   instance_Form.value.validate((isPass) => {
     // console.log(form_Info.value);
     // console.log(isPass);
     if (isPass) {
       emit("result", form_Info.value);
     } else {
+      activeNames.value = ["1", "2", "3", "4", "5"];
+      innerActiveNames.value = ["1", "2"];
       emit("result", false);
     }
   });
