@@ -55,7 +55,10 @@
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile v-model="form_Info.certificateLetterCopy" :limit="1" :multiple="false"
+          <ShpUploadFile
+            v-model="form_Info.certificateLetterCopy"
+            :limit="1"
+            :multiple="false"
           ></ShpUploadFile>
         </el-form-item>
         <el-collapse @change="ChangeCollapse" v-model="activeNames">
@@ -73,7 +76,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="businessLicenseInfo.licenseNumber">
@@ -176,7 +180,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.certificateInfo.certCopy" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.certificateInfo.certCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="certificateInfo.certType">
@@ -309,7 +314,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.financeInstitutionInfo.financeLicensePics" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.financeInstitutionInfo.financeLicensePics" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="financeInstitutionInfo.financeType">
@@ -355,7 +361,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.identityInfo.authorizeLetterCopy" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.identityInfo.authorizeLetterCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="identityInfo.idHolderType">
@@ -425,7 +432,8 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile v-model="form_Info.identityInfo.idCardInfo.idCardCopy" :limit="1" :multiple="false"
+                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                                 v-model="form_Info.identityInfo.idCardInfo.idCardCopy" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idCardInfo.idCardNational"
@@ -440,7 +448,8 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile v-model="form_Info.identityInfo.idCardInfo.idCardNational" :limit="1" :multiple="false"
+                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                                 v-model="form_Info.identityInfo.idCardInfo.idCardNational" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idCardInfo.idCardName" style="align-items: center;font-weight: bold"
@@ -542,7 +551,8 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile v-model="form_Info.identityInfo.idDocInfo.idDocCopy" :limit="1" :multiple="false"
+                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                                 v-model="form_Info.identityInfo.idDocInfo.idDocCopy" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idDocInfo.idDocCopyBack" style="align-items: center;font-weight: bold"
@@ -558,7 +568,8 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile v-model="form_Info.identityInfo.idDocInfo.idDocCopyBack" :limit="1" :multiple="false"
+                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                                 v-model="form_Info.identityInfo.idDocInfo.idDocCopyBack" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idDocInfo.idDocName" style="align-items: center;font-weight: bold"
@@ -658,7 +669,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.uboInfoList.uboIdDocCopy" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.uboInfoList.uboIdDocCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocCopyBack" style="align-items: center;font-weight: bold">
@@ -672,7 +684,8 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile v-model="form_Info.uboInfoList.uboIdDocCopyBack" :limit="1" :multiple="false"
+              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                             v-model="form_Info.uboInfoList.uboIdDocCopyBack" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocType">
@@ -1127,7 +1140,6 @@ const form_Info_Rules = ref({
   //登记证书
   "certificateInfo.certCopy": [
     { required: true, message: "请上传登记证书照片", trigger: "change" }
-    // { required: true, validator: validateCertCopy, trigger: "blur" }
   ],
   "certificateInfo.certType": [
     // { required: true, validator: validateCertType, trigger: "blur" },
@@ -1719,6 +1731,11 @@ const deadlinebySwitch = (tag) => {
       break;
   }
 };
+//上传图片成功后的回调
+const uploadImageSuccessCallback = () => {
+  instance_Form.value.validate();
+};
+
 //多条件监听身份证信息是否必传
 watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identityInfo.idDocType], () => {
   let { identityInfo: { idHolderType, idDocType } } = form_Info.value;
@@ -1750,6 +1767,7 @@ const submit = async () => {
   innerActiveNames.value = ["1", "2"];
   instance_Form.value.validate((isPass) => {
     // console.log(form_Info.value);
+    // console.log(isPass);
     if (isPass) {
       emit("result", form_Info.value);
     } else {
