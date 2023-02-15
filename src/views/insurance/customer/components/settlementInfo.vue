@@ -54,7 +54,7 @@
               </template>
             </labelExplain>
           </template>
-          <el-select v-model="form.activitiesId" placeholder="请选择优惠费率活动ID" style="width: 100%;">
+          <el-select v-model="form.activitiesId" placeholder="请选择优惠费率活动ID" clearable style="width: 100%;">
             <el-option v-for="item in activitiesList" :value="item.activitiesId" :label="item.activitiesId" :key="item.id" />
           </el-select>
         </el-form-item>
