@@ -9,9 +9,8 @@
 </template>
 
 <script setup>
-import { getApplymentList } from "@/api/insurance/wechatIncoming";
-import { onMounted, ref } from "vue";
-import wechartIncommingTable from "./components/wechartIncommingTable";
+import {getApplymentList} from "@/api/insurance/wechatIncoming";
+import {onMounted, ref} from "vue";
 import wechartIncomingConfig from "./wechartIncomingConfig";
 
 const params = ref({});
