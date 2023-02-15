@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="">
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
