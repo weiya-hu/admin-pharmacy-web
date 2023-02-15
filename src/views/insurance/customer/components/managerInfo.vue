@@ -97,7 +97,7 @@
           </el-dialog>
         </el-form-item>
 
-        <el-form-item prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER'">
+        <el-form-item prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER' && form.contactIdDocType !== 'IDENTIFICATION_TYPE_OVERSEA_PASSPORT'">
           <template #label>
             <labelExplain label="超级管理员证件反面照片">
               <template #explain>
