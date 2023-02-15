@@ -7,3 +7,57 @@ export function idCardOcr(data) {
         params: data,
     });
 }
+// 区域选择
+// 省
+export function listProvince() {
+    return request({
+        url: "system/region/listProvinceByPid",
+        method: "get"
+    })
+}
+// 市
+export function listCity(data) {
+    return request({
+        url: "system/region/listCityByPid",
+        method: "get",
+        params: data
+    })
+}
+// 获得区列表
+export function listArea(data) {
+    return request({
+        url: "system/region/listAreaByPid",
+        method: "get",
+        params: data
+    })
+}
+// 银行对照表
+export function bankType(dictType) {
+    return request({
+        url: "system/dict/data/type/"+ dictType,
+        method: "get"
+    });
+}
+// 查询银行信息
+export function bankInfo(data) {
+    return request({
+        url: "pay/bankInfo/query",
+        method: "get",
+        params: data
+    });
+}
+
+// 获取关系对照列表
+export function listSettlement() {
+    return request({
+        url: "pay/settlement/rule/list",
+        method: "get"
+    });
+}
+// 获取优惠活动
+export function listActivity() {
+    return request({
+        url: "pay/settlement/rule/activity",
+        method: "get"
+    });
+}
