@@ -498,27 +498,6 @@ const inputChange = () => {
   getDeptList(queryParams.value);
 };
 
-// const showPaymentPictures = async (row) => {
-//   if (Array.isArray(row)) {
-//     paymentVoucherList.value.length = 0;
-//     for (let i of row) {
-//       paymentVoucherList.value.push(i.attachUrl);
-//     }
-//     paymentVoucherDialog.value = true;
-//   }
-// };
-//
-// const getOfflineUrlList = ({offLineContractFile}) => {
-//   let arr = [];
-//   offLineContractFile.map(i => {
-//     arr.push(i.attachUrl)
-//   })
-//   return arr
-// }
-
-// const setFile=()=>{
-//   console.log(1)
-// }
 
 const setUrl = (num) => {
   let num1 = num == 0 ? 0 : num;
