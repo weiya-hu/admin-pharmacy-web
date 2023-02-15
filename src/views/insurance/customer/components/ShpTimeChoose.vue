@@ -3,7 +3,7 @@
     <el-date-picker @change="(time)=>{dataPicker(time)}"
                     v-model="chooseValue"
                     type="date"
-                    placeholder="开始时间"
+                    :placeholder="props.chooseTag=='begin'?'开始时间':'结束时间'"
                     value-format="YYYY-MM-DD"
     />
   </div>
