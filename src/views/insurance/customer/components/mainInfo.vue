@@ -805,30 +805,28 @@ const uploadData = ref({
 
 
 //主题类型选择选项
-const subjectTypeOption = ref(
-  [
-    {
-      label: "个体户",
-      value: "SUBJECT_TYPE_INDIVIDUAL"
-    },
-    {
-      label: "企业",
-      value: "SUBJECT_TYPE_ENTERPRISE"
-    },
-    {
-      label: "政府机关",
-      value: "SUBJECT_TYPE_GOVERNMENT"
-    },
-    {
-      label: "事业单位",
-      value: "SUBJECT_TYPE_INSTITUTIONS"
-    },
-    {
-      label: "社会组织",
-      value: "SUBJECT_TYPE_OTHERS"
-    }
-  ]
-);
+const subjectTypeOption = ref([
+  {
+    label: "个体户",
+    value: "SUBJECT_TYPE_INDIVIDUAL"
+  },
+  {
+    label: "企业",
+    value: "SUBJECT_TYPE_ENTERPRISE"
+  },
+  {
+    label: "政府机关",
+    value: "SUBJECT_TYPE_GOVERNMENT"
+  },
+  {
+    label: "事业单位",
+    value: "SUBJECT_TYPE_INSTITUTIONS"
+  },
+  {
+    label: "社会组织",
+    value: "SUBJECT_TYPE_OTHERS"
+  }
+]);
 //金融机构类型选择选项
 const financeTypeOption = ref([
   {
@@ -1012,8 +1010,6 @@ const validateCertificateLetterCopy = (rule, value, callback) => {
   } else {
     callback();
   }
-
-
 };
 //自定义营业执照照片校验
 const validateLicenseCopy = (rule, value, callback) => {
@@ -1050,7 +1046,6 @@ const validateIdCardInfoIdCardCopy = (rule, value, callback) => {
 const validateIdCardInfoIdCardNational = (rule, value, callback) => {
   callback();
 };
-
 //自定义身份证信息中身份证号码校验
 const validateIdCardInfoIdCardNumber = (rule, value, callback) => {
   let reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
@@ -1069,7 +1064,6 @@ const validateIdCardInfoIdCardAddress = (rule, value, callback) => {
   } else {
     callback();
   }
-
 };
 //自定义其他类型证件信息中证件反面照片的校验
 const validateIdDocInfoIdDocCopyBack = (rule, value, callback) => {
@@ -1099,7 +1093,6 @@ const validateIdDocInfoOwner = (rule, value, callback) => {
   } else {
     callback();
   }
-
 };
 
 //自定义最终受益人列表当中证件反面照片的校验
