@@ -11,25 +11,10 @@
     <keep-alive>
       <component :is="choose" :ref="`formInfoRef${active+1}`" @result="getValue" class="form-item"></component>
     </keep-alive>
-    
-    <!-- <div class="flex">
-      <div> -->
-        <!-- <ManagerInfo  ref="formInfoRef1" @result="getValue($event,'formInfoRef1')" class="form-item"/>
-        <MainInfo ref="formInfoRef2" @result="getValue($event,'formInfoRef2')" class="form-item"/>
-        <BankInfo ref="formInfoRef3" @result="getValue($event,'formInfoRef3')" class="form-item"/> -->
-      <!-- </div>
-      <div> -->
-        <!-- <SettlementInfo ref="formInfoRef4" @result="getValue($event,'formInfoRef4')" class="form-item"/>
-        <BusinessInfo ref="formInfoRef5" @result="getValue($event,'formInfoRef5')"  class="form-item"/>
-        <SupplyInfo ref="formInfoRef6" @result="getValue($event,'formInfoRef6')" class="form-item"/> -->
-      <!-- </div>
-    </div> -->
     <div class="flexr">
       <el-button  plain class="submit-button"  @click="reback">返回</el-button>
       <el-button type="primary" plain class="submit-button"  @click="next">{{active ==5 ? '提交' : '下一步' }}</el-button>
     </div>
-    
-    <!-- <el-button @click="submit"></el-button> -->
   </div>
 </template>
 
@@ -50,8 +35,6 @@ const formInfoRef3 = ref()
 const formInfoRef4 = ref()
 const formInfoRef5 = ref()
 const formInfoRef6 = ref()
-// let num =0
-// let arr = []
 
 const active = ref(0)
 const list = {
@@ -66,15 +49,6 @@ const choose = computed(()=>{
   return list[active.value].name
 })
 
-
-// const submit = ()=>{
-//   formInfoRef1.value.submit()
-//   formInfoRef2.value.submit()
-//   formInfoRef3.value.submit()
-//   formInfoRef4.value.submit()
-//   formInfoRef5.value.submit()
-//   formInfoRef6.value.submit()
-// }
 
 const getValue = async(val)=>{
   console.log(111,val)
@@ -94,31 +68,6 @@ const getValue = async(val)=>{
     return
   }
 
-
-  // console.log(111,val)
-  // if(val){
-  //   num=num +1
-  //   arr.push(val)
-  //   console.log(num)
-  //   if(num == 6){
-  //     console.log(arr)
-  //     let data = {}
-  //     arr.forEach(m=>{
-  //       Object.assign(data,m)
-  //     })
-  //     console.log(data)
-  //     const {code, msg} = await addWxpayApplyment_api(data)
-  //     num =0
-  //     arr = []
-  //     code == 200 && ElMessage.success(msg)
-  //     code !== 200 && ElMessage.error(msg)
-      
-  //   }
-  // }else{
-  //   console.log(false)
-  //   num =0
-  //   arr = []
-  // }
 }
 
 const reback = ()=>{

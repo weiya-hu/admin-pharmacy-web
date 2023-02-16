@@ -1596,6 +1596,10 @@ const form_Info = ref({
   }
 
 });
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).subjectInfo:null
+wechartDatas && (form_Info.value = wechartDatas)
+
 let activeNames = ref([]);
 let innerActiveNames = ref([]);
 const isPermanentlyValid_businessLicenseInfo = ref(false);
@@ -2193,7 +2197,7 @@ defineExpose({
   }
 
   .box-card {
-    // width: 650px !important;
+    width: 100% !important;
   }
 
   .collapseName {
