@@ -41,8 +41,8 @@
             </labelExplain>
           </template>
           <el-radio-group @change="chooseFinanceInstitution" v-model="form_Info.financeInstitution">
-            <el-radio :label="true" size="large">是</el-radio>
-            <el-radio :label="false" size="large">否</el-radio>
+            <el-radio disabled :label="true" size="large">是</el-radio>
+            <el-radio disabled :label="false" size="large">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="isShowCertificateLetterCopy" label="单位证明函照片"
@@ -161,8 +161,13 @@
               </template>
               <div class="content">
                 <div>
-                  <el-switch @change="()=>{deadlinebySwitch('businessLicenseInfoTime')}"
-                             v-model="isPermanentlyValid_businessLicenseInfo" />
+                  <el-switch
+                    active-text="长期有效"
+                    inactive-text="长期有效"
+                    inline-prompt
+                    @change="()=>{deadlinebySwitch('businessLicenseInfoTime')}"
+                    v-model="isPermanentlyValid_businessLicenseInfo">
+                  </el-switch>
                 </div>
                 <div v-if="!isPermanentlyValid_businessLicenseInfo" class="chooseEndDate">
                   <ShpTimeChoose
@@ -293,7 +298,9 @@
               </template>
               <div>
                 <div>
-                  <el-switch @change="()=>{deadlinebySwitch('certificateInfo')}"
+                  <el-switch active-text="长期有效"
+                             inactive-text="长期有效"
+                             inline-prompt @change="()=>{deadlinebySwitch('certificateInfo')}"
                              v-model="isPermanentlyValid_certificateInfo" />
                 </div>
                 <div v-if="!isPermanentlyValid_certificateInfo">
@@ -304,7 +311,7 @@
               </div>
             </el-form-item>
           </el-collapse-item>
-          <el-collapse-item name="3">
+          <el-collapse-item v-if="false" name="3">
             <template #title>
               <div class="collapseName">金融机构许可证信息:</div>
             </template>
@@ -537,7 +544,9 @@
                   </template>
                   <div class="content">
                     <div>
-                      <el-switch @change="()=>{deadlinebySwitch('identityInfoIdCardInfo')}"
+                      <el-switch active-text="长期有效"
+                                 inactive-text="长期有效"
+                                 inline-prompt @change="()=>{deadlinebySwitch('identityInfoIdCardInfo')}"
                                  v-model="isPermanentlyValid_identityInfo_idCardInfo" />
                     </div>
                     <div v-if="!isPermanentlyValid_identityInfo_idCardInfo" class="chooseEndDate">
@@ -657,7 +666,9 @@
                   </template>
                   <div class="content">
                     <div>
-                      <el-switch @change="()=>{deadlinebySwitch('identityInfoIdDocInfo')}"
+                      <el-switch active-text="长期有效"
+                                 inactive-text="长期有效"
+                                 inline-prompt @change="()=>{deadlinebySwitch('identityInfoIdDocInfo')}"
                                  v-model="isPermanentlyValid_identityInfo_idDocInfo" />
                     </div>
                     <div v-if="!isPermanentlyValid_identityInfo_idDocInfo" class="chooseEndDate">
@@ -673,137 +684,172 @@
             <template #title>
               <div class="collapseName">最终受益人信息列表(UBO):</div>
             </template>
-            <el-form-item prop="uboInfoList.uboIdDocCopy" style="align-items: center;font-weight: bold">
-              <template #label>
-                <labelExplain label="证件正面照片">
-                  <template #explain>
-                    <div>
-                      请上传受益人证件的正面照片，若证件类型为身份证，请上传人像面照片
-                      请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <ShpUploadFile
-                @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfo,'idCardOcr','positive','idDocInfoIdDocCopy')}"
-                v-model="form_Info.uboInfoList.uboIdDocCopy" :limit="1" :multiple="false"
-                flag="businessAdditionPics"></ShpUploadFile>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboIdDocCopyBack" style="align-items: center;font-weight: bold">
-              <template #label>
-                <labelExplain label="证件反面照片">
-                  <template #explain>
-                    <div>
-                      请上传受益人证件的反面照片，若证件类型为身份证，请上传人像面照片
-                      请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <ShpUploadFile
-                @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfo,'idCardOcr','opposite','idDocInfoIdDocCopyBack')}"
-                v-model="form_Info.uboInfoList.uboIdDocCopyBack" :limit="1" :multiple="false"
-                flag="businessAdditionPics"></ShpUploadFile>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboIdDocType">
-              <template #label>
-                <labelExplain label="证件类型">
-                  <template #explain>
-                    <div>
-                      请填写受益人的证件类型
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-select @change="changeUboIdDocType" style="width: 100%;" v-model="form_Info.uboInfoList.uboIdDocType">
-                <el-option :label="item.label" v-for="item in uboIdDocTypeOption" :value="item.value" :key="item.value">
-                  {{ item.label }}
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboIdDocName" style="align-items: center;font-weight: bold"
-                          label="证件姓名">
-              <template #label>
-                <labelExplain label="证件姓名">
-                  <template #explain>
-                    <div>
-                      请填写证件姓名
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input v-model="form_Info.uboInfoList.uboIdDocName"></el-input>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboIdDocNumber" style="align-items: center;font-weight: bold"
-                          label="证件号码">
-              <template #label>
-                <labelExplain label="证件号码">
-                  <template #explain>
-                    <div>
-                      请填写证件号码
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input v-model="form_Info.uboInfoList.uboIdDocNumber"></el-input>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboIdDocAddress" style="align-items: center;font-weight: bold"
-                          label="证件居住地址">
-              <template #label>
-                <labelExplain label="证件居住地址">
-                  <template #explain>
-                    <div>
-                      请按照证件上住址填写，若证件上无住址则按照实际住址填写，如广东省深圳市南山区xx路xx号xx室
-
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-input v-model="form_Info.uboInfoList.uboIdDocAddress"></el-input>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboPeriodBegin" style="align-items: center;font-weight: bold"
-                          label="证件有效期开始时间">
-              <template #label>
-                <labelExplain label="证件有效期开始时间">
-                  <template #explain>
-                    <div>
-                      结束时间大于开始时间,
-                      示例值：2026-06-06
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <ShpTimeChoose
-                :default-time="form_Info.uboInfoList.uboPeriodBegin"
-                :chooseTag="'begin'" v-model="form_Info.uboInfoList.uboPeriodBegin"
-                :end-time="form_Info.uboInfoList.uboPeriodEnd"></ShpTimeChoose>
-            </el-form-item>
-            <el-form-item prop="uboInfoList.uboPeriodEnd" style="align-items: center;font-weight: bold"
-                          label="证件有效期结束时间">
-              <template #label>
-                <labelExplain label="证件有效期结束时间">
-                  <template #explain>
-                    <div>
-                      结束时间大于开始时间,
-                      示例值：2026-06-06
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <div class="content">
-                <div>
-                  <el-switch @change="()=>{deadlinebySwitch('uboInfoList')}"
-                             v-model="isPermanentlyValid_uboInfoList" />
-                </div>
-                <div v-if="!isPermanentlyValid_uboInfoList" class="chooseEndDate">
-                  <ShpTimeChoose
-                    :default-time="form_Info.uboInfoList.uboPeriodEnd"
-                    :chooseTag="'end'" v-model="form_Info.uboInfoList.uboPeriodEnd"
-                    :begin-time="form_Info.uboInfoList.uboPeriodBegin"></ShpTimeChoose>
-                </div>
+            <!--     循环遍历生成       -->
+            <div class="templateUboinfo" v-for="(item,index)  in form_Info.uboInfoList" :key="index">
+              <div v-if="index!==0" style="display: flex;justify-content: flex-end"
+                   @click="()=>deleteUboInfoPersion(index)">
+                <el-icon size="20px" style="color: red">
+                  <Close />
+                </el-icon>
               </div>
-            </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocType`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocType']">
+                <template #label>
+                  <labelExplain label="证件类型">
+                    <template #explain>
+                      <div>
+                        请填写受益人的证件类型
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <el-select @change="(value)=>{changeUboIdDocType(value,index)}" style="width: 100%;"
+                           v-model="item.uboIdDocType">
+                  <el-option :label="item.label" v-for="item in uboIdDocTypeOption" :value="item.value"
+                             :key="item.value">
+                    {{ item.label }}
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocCopy`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocCopy']"
+                            style="align-items: center;font-weight: bold">
+                <template #label>
+                  <labelExplain label="证件正面照片">
+                    <template #explain>
+                      <div>
+                        请上传受益人证件的正面照片，若证件类型为身份证，请上传人像面照片
+                        请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <ShpUploadFile
+                  :ref="'positiveRef_'+index"
+                  @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfoArray[index],'idCardOcr','positive','uboInfoListPositive',index)}"
+                  v-model="item.uboIdDocCopy" :limit="1" :multiple="false"
+                ></ShpUploadFile>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocCopyBack`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocCopyBack']"
+                            style="align-items: center;font-weight: bold">
+                <template #label>
+                  <labelExplain label="证件反面照片">
+                    <template #explain>
+                      <div>
+                        请上传受益人证件的反面照片，若证件类型为身份证，请上传人像面照片
+                        请上传彩色照片or彩色扫描件or复印件（需加盖公章鲜章），可添加“微信支付”相关水印（如微信支付认证）
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <ShpUploadFile
+                  :ref="'oppositeRef_'+index"
+                  @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfoArray[index],'idCardOcr','opposite','uboInfoListOpposite',index)}"
+                  v-model="item.uboIdDocCopyBack" :limit="1" :multiple="false"
+                  flag="businessAdditionPics"></ShpUploadFile>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocName`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocName']"
+                            style="align-items: center;font-weight: bold"
+                            label="证件姓名">
+                <template #label>
+                  <labelExplain label="证件姓名">
+                    <template #explain>
+                      <div>
+                        请填写证件姓名
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <el-input v-model="item.uboIdDocName"></el-input>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocNumber`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocNumber']"
+                            style="align-items: center;font-weight: bold"
+                            label="证件号码">
+                <template #label>
+                  <labelExplain label="证件号码">
+                    <template #explain>
+                      <div>
+                        请填写证件号码
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <el-input v-model="item.uboIdDocNumber"></el-input>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboIdDocAddress`"
+                            :rules="form_Info_Rules['uboInfoList.uboIdDocAddress']"
+                            style="align-items: center;font-weight: bold"
+                            label="证件居住地址">
+                <template #label>
+                  <labelExplain label="证件居住地址">
+                    <template #explain>
+                      <div>
+                        请按照证件上住址填写，若证件上无住址则按照实际住址填写，如广东省深圳市南山区xx路xx号xx室
+
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <el-input v-model="item.uboIdDocAddress"></el-input>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboPeriodBegin`"
+                            :rules="form_Info_Rules['uboInfoList.uboPeriodBegin']"
+                            style="align-items: center;font-weight: bold"
+                            label="证件有效期开始时间">
+                <template #label>
+                  <labelExplain label="证件有效期开始时间">
+                    <template #explain>
+                      <div>
+                        结束时间大于开始时间,
+                        示例值：2026-06-06
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <ShpTimeChoose
+                  :default-time="item.uboPeriodBegin"
+                  :chooseTag="'begin'" v-model="item.uboPeriodBegin"
+                  :end-time="item.uboPeriodEnd"></ShpTimeChoose>
+              </el-form-item>
+              <el-form-item :prop="`uboInfoList.${index}.uboPeriodEnd`"
+                            :rules="form_Info_Rules['uboInfoList.uboPeriodEnd']"
+                            style="align-items: center;font-weight: bold"
+                            label="证件有效期结束时间">
+                <template #label>
+                  <labelExplain label="证件有效期结束时间">
+                    <template #explain>
+                      <div>
+                        结束时间大于开始时间,
+                        示例值：2026-06-06
+                      </div>
+                    </template>
+                  </labelExplain>
+                </template>
+                <div class="content">
+                  <div>
+                    <el-switch active-text="长期有效"
+                               inactive-text="长期有效"
+                               inline-prompt @change="()=>{deadlinebySwitch('uboInfoList')}"
+                               v-model="isPermanentlyValid_uboInfoList" />
+                  </div>
+                  <div v-if="!isPermanentlyValid_uboInfoList" class="chooseEndDate">
+                    <ShpTimeChoose
+                      :default-time="item.uboPeriodEnd"
+                      :chooseTag="'end'" v-model="item.uboPeriodEnd"
+                      :begin-time="item.uboPeriodBegin"></ShpTimeChoose>
+                  </div>
+                </div>
+              </el-form-item>
+            </div>
+            <div style="text-align: center;margin-top: 10px">
+              <el-button size="small" type="primary" @click="addUboInfoPersion">添加受益人</el-button>
+            </div>
           </el-collapse-item>
+
         </el-collapse>
       </el-form>
       <!--      <el-button @click="submit">校验</el-button>-->
@@ -812,13 +858,14 @@
 </template>
 <script setup>
 //主体资料
-import { nextTick, reactive, ref, watch } from "vue";
+import { getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import labelExplain from "./labelExplain.vue";
 import { getToken } from "@/utils/auth";
 import ShpUploadFile from "./ShpUploadFile.vue";
 import ShpTimeChoose from "@/views/insurance/customer/components/ShpTimeChoose";
 import { bizLicenseOcr, enterpriseLicenseOCR, idCardOcr } from "@/api/insurance/wechatIncoming";
+import { Close } from "@element-plus/icons-vue";
 //token信息
 const uploadData = ref({
   uploadUrl: import.meta.env.VITE_APP_BASE_API + "pay/media/wxPictureUpload",
@@ -828,19 +875,13 @@ const uploadData = ref({
 const licenseCopy_Instance = ref(null);
 const idCardInfoIdCardCopy_Instance = ref(null);
 const idCardInfoIdCardNational_Instance = ref(null);
-const idDocInfoIdDocCopy_Instance = ref(null);
-const idDocInfoIdDocCopyBack_Instance = ref(null);
+const uboInfoListUboIdDocCopy_Instance = ref(null);
+const uboInfoListUboIdDocCopyBack_Instance = ref(null);
 const certificateInfoCertCopy_Instance = ref(null);
 //最终受益人的证件是否需要ocr校验
 const isVailidateOcrToUboInfo = ref(false);
+const proxy = getCurrentInstance();
 
-
-const nameMap = {
-  "certType": "登记证书类型",
-  "certNumber": "统一社会信用代码",
-  "legalPerson": "法定代表人"
-
-};
 
 //上传组件的清除方法
 const uploadInstances = ref({
@@ -853,11 +894,11 @@ const uploadInstances = ref({
   idCardInfoIdCardNationalInstance: () => {
     idCardInfoIdCardNational_Instance.value.removeFile();
   },
-  idDocInfoIdDocCopyInstance: () => {
-    idDocInfoIdDocCopy_Instance.value.removeFile();
+  uboInfoListUboIdDocCopyInstance: () => {
+    uboInfoListUboIdDocCopy_Instance.value.removeFile();
   },
-  idDocInfoIdDocCopyBackInstance: () => {
-    idDocInfoIdDocCopyBack_Instance.value.removeFile();
+  uboInfoListUboIdDocCopyBackInstance: () => {
+    uboInfoListUboIdDocCopyBack_Instance.value.removeFile();
   },
   certificateInfoCertCopyInstance: () => {
     certificateInfoCertCopy_Instance.value.removeFile();
@@ -869,10 +910,65 @@ const specialChecksData = ref({
   licenseCopyData: {},//营业执照校验信息
   idCardInfoIdCardCopyData: {},//身份证人像面照片信息
   idCardInfoIdCardNationalData: {},//身份证反向面照片信息
-  idDocInfoIdDocCopyData: {},//其他证件正向面信息
-  idDocInfoIdDocCopyBackData: {},//其他证件反向面信息
-  certificateInfoCertCopyData: {}//登记证书照片信息
+  uboInfoListUboIdDocCopyData: {},//最终受益人证件正向面信息
+  uboInfoListUboIdDocCopyBackData: {},//最终受益人证件反向面信息
+  certificateInfoCertCopyData: {},//登记证书照片信息
+  uboInfoListPositiveData: [],  //存放最终受益人正面信息
+  uboInfoListOppositeData: []//存放最终受益人反面信息
 });
+//最终受益人当中是否需要进行身份校验
+const isVailidateOcrToUboInfoArray = ref([]);
+//选择最终受益人的证件类型
+const changeUboIdDocType = (value, index) => {
+  if (value == "IDENTIFICATION_TYPE_IDCARD") {
+    isVailidateOcrToUboInfoArray.value[index] = true;
+  } else {
+    isVailidateOcrToUboInfoArray.value[index] = false;
+  }
+};
+
+//添加受益人
+const addUboInfoPersion = () => {
+    let itemObj = {
+      //证件类型
+      uboIdDocType: null,
+      //证件正面照片
+      uboIdDocCopy: null,
+      //证件反面照片
+      uboIdDocCopyBack: null,
+      //证件姓名
+      uboIdDocName: null,
+      // 证件号码
+      uboIdDocNumber: null,
+      // 证件居住地址
+      uboIdDocAddress: null,
+      //证件有效期开始时间
+      uboPeriodBegin: null,
+      // 证件有效期结束时间
+      uboPeriodEnd: null
+    };
+    let { owner } = form_Info.value.identityInfo;
+    if (owner) {
+      if (form_Info.value.uboInfoList.length > 3) {
+        ElMessage.error("最多存在4个受益人");
+      } else {
+        form_Info.value.uboInfoList.push(itemObj);
+
+      }
+    } else {
+      if (form_Info.value.uboInfoList.length > 2) {
+        ElMessage.error("最多存在3个受益人");
+      } else {
+        form_Info.value.uboInfoList.push(itemObj);
+      }
+    }
+  }
+;
+//删除受益人
+const deleteUboInfoPersion = (index) => {
+  form_Info.value.uboInfoList.splice(index, 1);
+
+};
 
 watch(() => specialChecksData.value, () => {
   // 遍历当前对象将对应的值添加到指定的form_info对象当中
@@ -909,18 +1005,33 @@ watch(() => specialChecksData.value, () => {
           form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
           break;
         }
-        case "idDocInfoIdDocCopyData": {
+        case "uboInfoListUboIdDocCopyData": {
           let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
           form_Info.value.uboInfoList.uboIdDocName = name;
           form_Info.value.uboInfoList.uboIdDocNumber = idNum;
           form_Info.value.uboInfoList.uboIdDocAddress = address;
           break;
         }
-        case "idDocInfoIdDocCopyBackData": {
-          let { beginTime, endTime } = specialChecksData.value[key];
-          form_Info.value.uboInfoList.uboPeriodBegin = beginTime;
-          form_Info.value.uboInfoList.uboPeriodEnd = endTime;
-          console.log(form_Info.value.uboInfoList);
+        case "uboInfoListUboIdDocCopyBackData": {
+
+          break;
+        }
+        case "uboInfoListPositiveData": {
+          //遍历数组对应赋值
+          specialChecksData.value[key].forEach((item, index) => {
+            let { address = "", idNum = "", name = "" } = item;
+            form_Info.value.uboInfoList[index].uboIdDocName = name;
+            form_Info.value.uboInfoList[index].uboIdDocNumber = idNum;
+            form_Info.value.uboInfoList[index].uboIdDocAddress = address;
+          });
+          break;
+        }
+        case "uboInfoListOppositeData": {
+          specialChecksData.value[key].forEach((item, index) => {
+            let { beginTime, endTime } = item;
+            form_Info.value.uboInfoList[index].uboPeriodBegin = beginTime;
+            form_Info.value.uboInfoList[index].uboPeriodEnd = endTime;
+          });
           break;
         }
       }
@@ -1232,15 +1343,16 @@ const validateIdDocInfoOwner = (rule, value, callback) => {
 
 //自定义最终受益人列表当中证件反面照片的校验
 const validateUboInfoListUboIdDocCopyBack = (rule, value, callback) => {
-  let { uboIdDocType } = form_Info.value.uboInfoList;
+  let index = Number(rule.field.split(".")[1]);
+  let { uboIdDocType } = form_Info.value.uboInfoList[index];
   //若为护照无需上传
-  if (value == "" && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
+  if (value == null && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
     callback();
   } else if (value == "" && uboIdDocType !== "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
     callback("请上传证件反面照片");
   } else {
+    callback();
   }
-  callback();
 };
 const form_Info_Rules = ref({
   "subjectType": [
@@ -1361,7 +1473,7 @@ const form_Info_Rules = ref({
   ],
 //最终受益人信息列表
   "uboInfoList.uboIdDocType": [
-    { required: true, message: "请选择证件类型", trigger: "blur" }
+    { required: true, message: "请选择证件类型", trigger: "change" }
   ],
   "uboInfoList.uboIdDocCopy": [
     { required: true, message: "请上传证件正面照片", trigger: "change" }
@@ -1387,24 +1499,24 @@ const form_Info_Rules = ref({
 });
 //重置最终受益人信息列表
 const resetUboInfoList = () => {
-  form_Info.value.uboInfoList = {
+  form_Info.value.uboInfoList = [{
     //证件类型
-    uboIdDocType: "",
+    uboIdDocType: null,
     //证件正面照片
     uboIdDocCopy: null,
     //证件反面照片
     uboIdDocCopyBack: null,
     //证件姓名
-    uboIdDocName: "",
+    uboIdDocName: null,
     // 证件号码
-    uboIdDocNumber: "",
+    uboIdDocNumber: null,
     // 证件居住地址
-    uboIdDocAddress: "",
+    uboIdDocAddress: null,
     //证件有效期开始时间
-    uboPeriodBegin: "",
+    uboPeriodBegin: null,
     // 证件有效期结束时间
-    uboPeriodEnd: ""
-  };
+    uboPeriodEnd: null
+  }];
 
 };
 
@@ -1414,17 +1526,17 @@ const resetBusinessLicenseInfo = () => {
     //营业执照照片
     licenseCopy: null,
     //注册号/统一社会信用代码
-    licenseNumber: "",
+    licenseNumber: null,
     //商户名称
-    merchantName: "",
+    merchantName: null,
     //个体户经营者/法人姓名
-    legalPerson: "",
+    legalPerson: null,
     //注册地址
-    licenseAddress: "",
+    licenseAddress: null,
     //开始时间
-    periodBegin: "",
+    periodBegin: null,
     //结束时间
-    periodEnd: ""
+    periodEnd: null
   };
 };
 //重置登记证书数据
@@ -1433,19 +1545,19 @@ const resetCertificateInfo = () => {
     //登记证书照片
     certCopy: null,
     // 登记证书类型
-    certType: "",
+    certType: null,
     //证书号
-    certNumber: "",
+    certNumber: null,
     //商户名称
-    merchantName: "",
+    merchantName: null,
     //注册地址
-    companyAddress: "",
+    companyAddress: null,
     //法定代表
-    legalPerson: "",
+    legalPerson: null,
     //有效期限开始日期
-    periodBegin: "",
+    periodBegin: null,
     //有效期限结束日期
-    periodEnd: ""
+    periodEnd: null
   };
 };
 
@@ -1457,13 +1569,13 @@ const resetIdCardInfo = () => {
     //身份证国徽面照片
     idCardNational: null,
     //身份证姓名
-    idCardName: "",
+    idCardName: null,
     //身份证号码
-    idCardNumber: "",
+    idCardNumber: null,
     //身份证居住地址
-    idCardAddress: "",
-    cardPeriodBegin: "",
-    cardPeriodEnd: ""
+    idCardAddress: null,
+    cardPeriodBegin: null,
+    cardPeriodEnd: null
   };
 };
 //重置其他证件信息数据
@@ -1474,19 +1586,19 @@ const resetIdDocInfo = () => {
     //证件反面照片
     idDocCopyBack: null,
     //证件姓名
-    idDocName: "",
+    idDocName: null,
     //证件号码
-    idDocNumber: "",
+    idDocNumber: null,
     //证件居住地址
-    idDocAddress: "",
+    idDocAddress: null,
     //开始日期
-    docPeriodBegin: "",
+    docPeriodBegin: null,
     // 结束日期
-    docPeriodEnd: ""
+    docPeriodEnd: null
   };
 };
 const form_Info = ref({
-  subjectType: "", //主体类型
+  subjectType: null, //主体类型
   financeInstitution: false,//是否是金融机构
   certificateLetterCopy: null,//单位证明函照片
   //-营业执照
@@ -1494,41 +1606,41 @@ const form_Info = ref({
     //营业执照照片
     licenseCopy: null,
     //注册号/统一社会信用代码
-    licenseNumber: "",
+    licenseNumber: null,
     //商户名称
-    merchantName: "",
+    merchantName: null,
     //个体户经营者/法人姓名
-    legalPerson: "",
+    legalPerson: null,
     //注册地址
-    licenseAddress: "",
+    licenseAddress: null,
     //开始时间
-    periodBegin: "",
+    periodBegin: null,
     //结束时间
-    periodEnd: ""
+    periodEnd: null
   },
   //登记证书
   certificateInfo: {
     //登记证书照片
     certCopy: null,
     // 登记证书类型
-    certType: "",
+    certType: null,
     //证书号
-    certNumber: "",
+    certNumber: null,
     //商户名称
-    merchantName: "",
+    merchantName: null,
     //注册地址
-    companyAddress: "",
+    companyAddress: null,
     //法定代表
-    legalPerson: "",
+    legalPerson: null,
     //有效期限开始日期
-    periodBegin: "",
+    periodBegin: null,
     //有效期限结束日期
-    periodEnd: ""
+    periodEnd: null
   },
   //金融机构许可证信息
   financeInstitutionInfo: {
     //金融机构类型
-    financeType: "",
+    financeType: null,
     //金融机构许可证图片
     financeLicensePics: null
   },
@@ -1537,9 +1649,9 @@ const form_Info = ref({
     //证件持有人类型
     idHolderType: "LEGAL",
     // 证件类型
-    idDocType: "",
+    idDocType: null,
     //法定代表人说明函
-    authorizeLetterCopy: "",
+    authorizeLetterCopy: null,
     //经营者/法人是否为受益人
     owner: false,
     // 身份证信息
@@ -1549,13 +1661,13 @@ const form_Info = ref({
       //身份证国徽面照片
       idCardNational: null,
       //身份证姓名
-      idCardName: "",
+      idCardName: null,
       //身份证号码
-      idCardNumber: "",
+      idCardNumber: null,
       //身份证居住地址
-      idCardAddress: "",
-      cardPeriodBegin: "",
-      cardPeriodEnd: ""
+      idCardAddress: null,
+      cardPeriodBegin: null,
+      cardPeriodEnd: null
     },
     //其他类型证件信息
     idDocInfo: {
@@ -1564,36 +1676,38 @@ const form_Info = ref({
       //证件反面照片
       idDocCopyBack: null,
       //证件姓名
-      idDocName: "",
+      idDocName: null,
       //证件号码
-      idDocNumber: "",
+      idDocNumber: null,
       //证件居住地址
-      idDocAddress: "",
+      idDocAddress: null,
       //开始日期
-      docPeriodBegin: "",
+      docPeriodBegin: null,
       // 结束日期
-      docPeriodEnd: ""
+      docPeriodEnd: null
     }
   },
   //最终受益人信息列表
-  uboInfoList: {
-    //证件类型
-    uboIdDocType: null,
-    //证件正面照片
-    uboIdDocCopy: null,
-    //证件反面照片
-    uboIdDocCopyBack: "",
-    //证件姓名
-    uboIdDocName: "",
-    // 证件号码
-    uboIdDocNumber: "",
-    // 证件居住地址
-    uboIdDocAddress: "",
-    //证件有效期开始时间
-    uboPeriodBegin: "",
-    // 证件有效期结束时间
-    uboPeriodEnd: ""
-  }
+  uboInfoList: [
+    {
+      //证件类型
+      uboIdDocType: null,
+      //证件正面照片
+      uboIdDocCopy: null,
+      //证件反面照片
+      uboIdDocCopyBack: null,
+      //证件姓名
+      uboIdDocName: null,
+      // 证件号码
+      uboIdDocNumber: null,
+      // 证件居住地址
+      uboIdDocAddress: null,
+      //证件有效期开始时间
+      uboPeriodBegin: null,
+      // 证件有效期结束时间
+      uboPeriodEnd: null
+    }
+  ]
 
 });
 let wechartData = sessionStorage.getItem('wechartFormData')
@@ -1963,54 +2077,102 @@ const deadlinebySwitch = (tag) => {
   }
 };
 //上传图片成功后的回调
-const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite, saveName) => {
+const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite, saveName, index = null) => {
 //  判断是否校验
   if (tag) {
     //判断校验类型
     switch (instanceName) {
       case "idCardOcr":
         //人员校验
-        idCardOcr({ url: data.url }).then(res_id => {
-          if (res_id.code == 200) {
-            //  判断校验正面还是反面
-            if (positiveOrOpposite == "positive") {
-              if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
-                ElMessage.error("请上传证件正面照片");
-                let name = saveName + "Instance";
-                uploadInstances.value[name]();
-              } else {
-                let { address, idNum, name } = res_id.data;
-                let validateResultData = {
-                  address,
-                  idNum,
-                  name
-                };
-                let variableName = saveName + "Data";
-                specialChecksData.value[variableName] = validateResultData;
-              }
-            } else if (positiveOrOpposite == "opposite") {
-              if (res_id.data.authority === "" || res_id.data.validDate === "") {
-                ElMessage.error("请上传证件反面照片");
-                //  清除对应上传选项
-                let name = saveName + "Instance";
-                uploadInstances.value[name]();
-              } else {
-                let { validDate } = res_id.data;
-                let handleValidDate = validDate.split("-");
-                let validateResultData = {
-                  beginTime: handleValidDate[0].replaceAll(".", "-"),
-                  endTime: handleValidDate[1].replaceAll(".", "-")
-                };
-                let variableName = saveName + "Data";
-                specialChecksData.value[variableName] = validateResultData;
+        if (index == null) {
+          idCardOcr({ url: data.url }).then(res_id => {
+            if (res_id.code == 200) {
+              //  判断校验正面还是反面
+              if (positiveOrOpposite == "positive") {
+                if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
+                  ElMessage.error("请上传证件正面照片");
+                  let name = saveName + "Instance";
+                  uploadInstances.value[name]();
+                } else {
+                  let { address, idNum, name } = res_id.data;
+                  let validateResultData = {
+                    address,
+                    idNum,
+                    name
+                  };
+                  let variableName = saveName + "Data";
+                  specialChecksData.value[variableName] = validateResultData;
+                }
+              } else if (positiveOrOpposite == "opposite") {
+                if (res_id.data.authority === "" || res_id.data.validDate === "") {
+                  ElMessage.error("请上传证件反面照片");
+                  //  清除对应上传选项
+                  let name = saveName + "Instance";
+                  uploadInstances.value[name]();
+                } else {
+                  let { validDate } = res_id.data;
+                  let handleValidDate = validDate.split("-");
+                  let validateResultData = {
+                    beginTime: handleValidDate[0].replaceAll(".", "-"),
+                    endTime: handleValidDate[1].replaceAll(".", "-")
+                  };
+                  let variableName = saveName + "Data";
+                  specialChecksData.value[variableName] = validateResultData;
+                }
               }
             }
-          }
 
-        }).catch(() => {
-          let name = saveName + "Instance";
-          uploadInstances.value[name]();
-        });
+          }).catch(() => {
+            let name = saveName + "Instance";
+            uploadInstances.value[name]();
+          });
+        } else {
+
+          idCardOcr({ url: data.url }).then(res_id => {
+            if (res_id.code == 200) {
+              //  判断校验正面还是反面
+              if (positiveOrOpposite == "positive") {
+                if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
+                  ElMessage.error("请上传证件正面照片");
+                  let clearName = `${positiveOrOpposite}Ref_${index}`;
+                  console.log(clearName, proxy.refs[clearName]);
+                  proxy.refs[clearName][0].removeFile();
+                  instance_Form.value.validate();
+                } else {
+                  let { address, idNum, name } = res_id.data;
+                  let validateResultData = {
+                    address,
+                    idNum,
+                    name
+                  };
+                  let variableName = saveName + "Data";
+                  specialChecksData.value[variableName][index] = validateResultData;
+                }
+              } else if (positiveOrOpposite == "opposite") {
+                if (res_id.data.authority === "" || res_id.data.validDate === "") {
+                  ElMessage.error("请上传证件反面照片");
+                  //  清除对应上传选项
+                  let clearName = `${positiveOrOpposite}Ref_${index}`;
+                  proxy.refs[clearName].removeFile();
+                  instance_Form.value.validate();
+                } else {
+                  let { validDate } = res_id.data;
+                  let handleValidDate = validDate.split("-");
+                  let validateResultData = {
+                    beginTime: handleValidDate[0].replaceAll(".", "-"),
+                    endTime: handleValidDate[1].replaceAll(".", "-")
+                  };
+                  let variableName = saveName + "Data";
+                  specialChecksData.value[variableName][index] = validateResultData;
+                }
+              }
+            }
+          }).catch(() => {
+            let clearName = `${positiveOrOpposite}Ref_${index}`;
+            proxy.refs[clearName].removeFile();
+          });
+
+        }
         break;
       case "bizLicenseOcr":
         // 营业执照校验
@@ -2058,14 +2220,7 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
     instance_Form.value.validate();
   }
 };
-//选择最终受益人的证件类型
-const changeUboIdDocType = (value) => {
-  if (value == "IDENTIFICATION_TYPE_IDCARD") {
-    isVailidateOcrToUboInfo.value = true;
-  } else {
-    isVailidateOcrToUboInfo.value = false;
-  }
-};
+
 
 //多条件监听身份证信息是否必传
 watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identityInfo.idDocType], () => {
@@ -2116,6 +2271,14 @@ watch(() => form_Info.value.businessLicenseInfo.periodEnd, () => {
     isPermanentlyValid_businessLicenseInfo.value = false;
   }
 
+});
+watch(() => form_Info.value.uboInfoList, () => {
+  form_Info.value.uboInfoList.forEach(item => {
+    isVailidateOcrToUboInfoArray.value.push(false);
+  });
+}, {
+  immediate: true,
+  deep: true
 });
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
@@ -2198,6 +2361,13 @@ defineExpose({
 
   .box-card {
     width: 100% !important;
+  }
+
+  .templateUboinfo {
+    margin-top: 10px;
+    border: 1px solid #d7dae0;
+    border-radius: 10px;
+    padding: 20px;
   }
 
   .collapseName {
