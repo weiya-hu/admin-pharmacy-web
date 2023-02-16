@@ -28,23 +28,23 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item>
-          <template #label>
-            <labelExplain label="是否金融机构">
-              <template #explain>
-                <div> 选填，请根据申请主体的实际情况填写，可参考选择
-                  <el-link type="primary" href="https://kf.qq.com/faq/220215IrMRZ3220215n6buiU.html" target="_blank">
-                    金融机构指引
-                  </el-link>
-                </div>
-              </template>
-            </labelExplain>
-          </template>
-          <el-radio-group @change="chooseFinanceInstitution" v-model="form_Info.financeInstitution">
-            <el-radio disabled :label="true" size="large">是</el-radio>
-            <el-radio disabled :label="false" size="large">否</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <!--        <el-form-item>-->
+        <!--          <template #label>-->
+        <!--            <labelExplain label="是否金融机构">-->
+        <!--              <template #explain>-->
+        <!--                <div> 选填，请根据申请主体的实际情况填写，可参考选择-->
+        <!--                  <el-link type="primary" href="https://kf.qq.com/faq/220215IrMRZ3220215n6buiU.html" target="_blank">-->
+        <!--                    金融机构指引-->
+        <!--                  </el-link>-->
+        <!--                </div>-->
+        <!--              </template>-->
+        <!--            </labelExplain>-->
+        <!--          </template>-->
+        <!--          <el-radio-group @change="chooseFinanceInstitution" v-model="form_Info.financeInstitution">-->
+        <!--            <el-radio disabled :label="true" size="large">是</el-radio>-->
+        <!--            <el-radio disabled :label="false" size="large">否</el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
         <el-form-item v-if="isShowCertificateLetterCopy" label="单位证明函照片"
                       style="align-items: center;font-weight: bold">
           <template #label>
@@ -1345,10 +1345,11 @@ const validateIdDocInfoOwner = (rule, value, callback) => {
 const validateUboInfoListUboIdDocCopyBack = (rule, value, callback) => {
   let index = Number(rule.field.split(".")[1]);
   let { uboIdDocType } = form_Info.value.uboInfoList[index];
+  console.log(uboIdDocType);
   //若为护照无需上传
   if (value == null && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
     callback();
-  } else if (value == "" && uboIdDocType !== "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
+  } else if (value == null && uboIdDocType !== "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
     callback("请上传证件反面照片");
   } else {
     callback();
@@ -1710,8 +1711,8 @@ const form_Info = ref({
   ]
 
 });
-let wechartData = sessionStorage.getItem('wechartFormData')
-let wechartDatas = wechartData?JSON.parse(wechartData).subjectInfo:null
+let wechartData = sessionStorage.getItem("wechartFormData");
+let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null;
 // wechartDatas && (form_Info.value = wechartDatas)
 
 let activeNames = ref([]);
@@ -2134,8 +2135,8 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
               if (positiveOrOpposite == "positive") {
                 if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
                   ElMessage.error("请上传证件正面照片");
+                  alert(111);
                   let clearName = `${positiveOrOpposite}Ref_${index}`;
-                  console.log(clearName, proxy.refs[clearName]);
                   proxy.refs[clearName][0].removeFile();
                   instance_Form.value.validate();
                 } else {
@@ -2153,7 +2154,7 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
                   ElMessage.error("请上传证件反面照片");
                   //  清除对应上传选项
                   let clearName = `${positiveOrOpposite}Ref_${index}`;
-                  proxy.refs[clearName].removeFile();
+                  proxy.refs[clearName][0].removeFile();
                   instance_Form.value.validate();
                 } else {
                   let { validDate } = res_id.data;
@@ -2169,7 +2170,8 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
             }
           }).catch(() => {
             let clearName = `${positiveOrOpposite}Ref_${index}`;
-            proxy.refs[clearName].removeFile();
+            proxy.refs[clearName][0].removeFile();
+            instance_Form.value.validate();
           });
 
         }
