@@ -171,7 +171,7 @@ const form = ref({
 
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).bankAccountInfo:null
-wechartDatas && (form.value = wechartDatas)
+// wechartDatas && (form.value = wechartDatas)
 
 const accountBankList = ref([])
 const state = ref({

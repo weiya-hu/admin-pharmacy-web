@@ -654,7 +654,7 @@ const businessInfo = ref({
 });
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).businessInfo:null
-wechartDatas && (businessInfo.value = wechartDatas)
+// wechartDatas && (businessInfo.value = wechartDatas)
 
 //经营场景类型
 const salesInfos = [

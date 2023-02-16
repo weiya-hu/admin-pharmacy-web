@@ -1598,7 +1598,7 @@ const form_Info = ref({
 });
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).subjectInfo:null
-wechartDatas && (form_Info.value = wechartDatas)
+// wechartDatas && (form_Info.value = wechartDatas)
 
 let activeNames = ref([]);
 let innerActiveNames = ref([]);
