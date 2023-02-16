@@ -141,10 +141,12 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpTimeChoose
-                :default-time="form_Info.businessLicenseInfo.periodBegin"
-                :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
-                :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
+              <div style="display: flex">
+                <ShpTimeChoose
+                  :default-time="form_Info.businessLicenseInfo.periodBegin"
+                  :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
+                  :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
+              </div>
             </el-form-item>
             <el-form-item style="font-weight: bold">
               <template #label>
@@ -186,9 +188,11 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
-                             v-model="form_Info.certificateInfo.certCopy" :limit="1" :multiple="false"
-                             flag="businessAdditionPics"></ShpUploadFile>
+              <ShpUploadFile
+                ref="certificateInfoCertCopy_Instance"
+                @success="(data)=>{uploadImageSuccessCallback(data,true,'enterpriseLicenseOCR','','certificateInfoCertCopy')}"
+                v-model="form_Info.certificateInfo.certCopy" :limit="1" :multiple="false"
+                flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="certificateInfo.certType">
               <template #label>
@@ -826,8 +830,18 @@ const idCardInfoIdCardCopy_Instance = ref(null);
 const idCardInfoIdCardNational_Instance = ref(null);
 const idDocInfoIdDocCopy_Instance = ref(null);
 const idDocInfoIdDocCopyBack_Instance = ref(null);
+const certificateInfoCertCopy_Instance = ref(null);
 //最终受益人的证件是否需要ocr校验
 const isVailidateOcrToUboInfo = ref(false);
+
+
+const nameMap = {
+  "certType": "登记证书类型",
+  "certNumber": "统一社会信用代码",
+  "legalPerson": "法定代表人"
+
+};
+
 //上传组件的清除方法
 const uploadInstances = ref({
   licenseCopyInstance: () => {
@@ -844,6 +858,9 @@ const uploadInstances = ref({
   },
   idDocInfoIdDocCopyBackInstance: () => {
     idDocInfoIdDocCopyBack_Instance.value.removeFile();
+  },
+  certificateInfoCertCopyInstance: () => {
+    certificateInfoCertCopy_Instance.value.removeFile();
   }
 });
 
@@ -853,7 +870,8 @@ const specialChecksData = ref({
   idCardInfoIdCardCopyData: {},//身份证人像面照片信息
   idCardInfoIdCardNationalData: {},//身份证反向面照片信息
   idDocInfoIdDocCopyData: {},//其他证件正向面信息
-  idDocInfoIdDocCopyBackData: {}//其他证件反向面信息
+  idDocInfoIdDocCopyBackData: {},//其他证件反向面信息
+  certificateInfoCertCopyData: {}//登记证书照片信息
 });
 
 watch(() => specialChecksData.value, () => {
@@ -918,6 +936,7 @@ watch(() => specialChecksData.value, () => {
   immediate: false,
   deep: true
 });
+
 
 //主题类型选择选项
 const subjectTypeOption = ref([
@@ -1372,9 +1391,9 @@ const resetUboInfoList = () => {
     //证件类型
     uboIdDocType: "",
     //证件正面照片
-    uboIdDocCopy: "",
+    uboIdDocCopy: null,
     //证件反面照片
-    uboIdDocCopyBack: "",
+    uboIdDocCopyBack: null,
     //证件姓名
     uboIdDocName: "",
     // 证件号码
@@ -1393,7 +1412,7 @@ const resetUboInfoList = () => {
 const resetBusinessLicenseInfo = () => {
   form_Info.value.businessLicenseInfo = {
     //营业执照照片
-    licenseCopy: "",
+    licenseCopy: null,
     //注册号/统一社会信用代码
     licenseNumber: "",
     //商户名称
@@ -1412,7 +1431,7 @@ const resetBusinessLicenseInfo = () => {
 const resetCertificateInfo = () => {
   form_Info.value.certificateInfo = {
     //登记证书照片
-    certCopy: "",
+    certCopy: null,
     // 登记证书类型
     certType: "",
     //证书号
@@ -1434,9 +1453,9 @@ const resetCertificateInfo = () => {
 const resetIdCardInfo = () => {
   form_Info.value.identityInfo.idCardInfo = {
     //身份证人像面照片
-    idCardCopy: "",
+    idCardCopy: null,
     //身份证国徽面照片
-    idCardNational: "",
+    idCardNational: null,
     //身份证姓名
     idCardName: "",
     //身份证号码
@@ -1451,9 +1470,9 @@ const resetIdCardInfo = () => {
 const resetIdDocInfo = () => {
   form_Info.value.identityInfo.idDocInfo = {
     //证件正面照片
-    idDocCopy: "",
+    idDocCopy: null,
     //证件反面照片
-    idDocCopyBack: "",
+    idDocCopyBack: null,
     //证件姓名
     idDocName: "",
     //证件号码
@@ -1469,11 +1488,11 @@ const resetIdDocInfo = () => {
 const form_Info = ref({
   subjectType: "", //主体类型
   financeInstitution: false,//是否是金融机构
-  certificateLetterCopy: "",//单位证明函照片
+  certificateLetterCopy: null,//单位证明函照片
   //-营业执照
   businessLicenseInfo: {
     //营业执照照片
-    licenseCopy: "",
+    licenseCopy: null,
     //注册号/统一社会信用代码
     licenseNumber: "",
     //商户名称
@@ -1490,7 +1509,7 @@ const form_Info = ref({
   //登记证书
   certificateInfo: {
     //登记证书照片
-    certCopy: "",
+    certCopy: null,
     // 登记证书类型
     certType: "",
     //证书号
@@ -1511,7 +1530,7 @@ const form_Info = ref({
     //金融机构类型
     financeType: "",
     //金融机构许可证图片
-    financeLicensePics: ""
+    financeLicensePics: null
   },
   // 经营者/法人身份证件
   identityInfo: {
@@ -1526,9 +1545,9 @@ const form_Info = ref({
     // 身份证信息
     idCardInfo: {
       //身份证人像面照片
-      idCardCopy: "",
+      idCardCopy: null,
       //身份证国徽面照片
-      idCardNational: "",
+      idCardNational: null,
       //身份证姓名
       idCardName: "",
       //身份证号码
@@ -1541,9 +1560,9 @@ const form_Info = ref({
     //其他类型证件信息
     idDocInfo: {
       //证件正面照片
-      idDocCopy: "",
+      idDocCopy: null,
       //证件反面照片
-      idDocCopyBack: "",
+      idDocCopyBack: null,
       //证件姓名
       idDocName: "",
       //证件号码
@@ -1559,9 +1578,9 @@ const form_Info = ref({
   //最终受益人信息列表
   uboInfoList: {
     //证件类型
-    uboIdDocType: "",
+    uboIdDocType: null,
     //证件正面照片
-    uboIdDocCopy: "",
+    uboIdDocCopy: null,
     //证件反面照片
     uboIdDocCopyBack: "",
     //证件姓名
@@ -2024,7 +2043,11 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
         //企业证照识别
         enterpriseLicenseOCR({ url: data.url }).then(res_id => {
           if (res_id.code === 200) {
+            // 法人证书可用
           }
+        }).catch(() => {
+          let name = saveName + "Instance";
+          uploadInstances.value[name]();
         });
     }
   } else {
@@ -2094,13 +2117,12 @@ const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
   instance_Form.value.validate((isPass) => {
-    // console.log(form_Info.value);
-    // console.log(isPass);
     if (isPass) {
       emit("result", { subjectInfo: form_Info.value });
     } else {
       activeNames.value = ["1", "2", "3", "4", "5"];
       innerActiveNames.value = ["1", "2"];
+      console.log(form_Info.value, "???");
       emit("result", false);
     }
   });
