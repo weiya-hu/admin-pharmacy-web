@@ -17,7 +17,7 @@
       <el-table-column align="center" label="操作" show-overflow-tooltip fixed="right">
         <template #default="scope">
           <div style="display: flex;justify-content: center">
-            <el-button text type="primary" @click="showQrCode(scope.row)">授权码</el-button>
+            <el-button text type="primary" @click="showQrCode(scope.row)">查看授权码</el-button>
           </div>
         </template>
       </el-table-column>
