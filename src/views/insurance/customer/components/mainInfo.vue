@@ -1208,7 +1208,7 @@ const validateIdDocInfoOwner = (rule, value, callback) => {
   // } else {
   //   callback();
   // }
-    callback();
+  callback();
 };
 
 //自定义最终受益人列表当中证件反面照片的校验
@@ -1988,7 +1988,7 @@ const submit = async () => {
     // console.log(form_Info.value);
     // console.log(isPass);
     if (isPass) {
-      emit("result", form_Info.value);
+      emit("result", { subjectInfo: form_Info.value });
     } else {
       activeNames.value = ["1", "2", "3", "4", "5"];
       innerActiveNames.value = ["1", "2"];
