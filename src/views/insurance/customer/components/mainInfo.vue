@@ -1855,6 +1855,7 @@ const changeVariablesToOuterLayer = () => {
   } else {
     isShowCertificateLetterCopy.value = true;
   }
+  activeNames.value = ["1", "2", "3", "4", "5"];
 };
 //改变主体类型修改营业执照变量的方法
 const changeVariablesToBusinessLicenseInfo = () => {
