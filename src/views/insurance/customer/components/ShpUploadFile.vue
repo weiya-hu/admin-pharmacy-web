@@ -34,7 +34,7 @@
 <script setup lang="ts">
 /**
  * @description 上传文件组件
- * @params modelValue?: string//文件数据
+ * @params modelValue?: null//文件数据
  * @params exnameList?: string[] //支持的文件格式数组,不传默认图片格式['.jpg', '.png', '.BMP', ]
  * @params maxSize?: number //最大尺寸 单位M,不传默认5M
  * @params multiple?: boolean //是否支持多文件上传,不传默认不支持
@@ -52,7 +52,7 @@ import {getToken} from "../../../../utils/auth";
 const headers = ref({Authorization:"Bearer " + getToken()})
 const props = withDefaults(
     defineProps<{
-      modelValue?: string //文件名
+      modelValue?: null //文件名
       exnameList?: string[] //支持的文件格式数组
       maxSize?: number //最大尺寸 单位M
       showFileList?: boolean //是否显示上传的文件
@@ -61,7 +61,7 @@ const props = withDefaults(
       flag?: string //标识当前的dom
     }>(),
     {
-      modelValue: '',
+      modelValue: null,
       exnameList: () => ['.jpg', '.png', '.BMP',],
       maxSize: 5,
       showFileList: true,
@@ -95,10 +95,13 @@ const upChange = async (file: UploadFile, list: UploadFile[]) => {
   const names = props.exnameList
   if (!names.includes(exname)) {
     ElMessage.error(`请上传${names.join(',')}格式的文件`)
-    upload.value.handleRemove(file)
+    // upload.value.handleRemove(file)
+    removeSole(file)
+
   } else if (file.size && file.size / 1024 / 1024 > props.maxSize) {
     ElMessage.error(`请上传小于${props.maxSize}M的文件`)
-    upload.value.handleRemove(file)
+    // upload.value.handleRemove(file)
+    removeSole(file)
   } else {
     return
   }
@@ -126,7 +129,8 @@ const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) 
           urls.push(m.response!.data[0])
         }else{
           ElMessage.error(m.response!.msg)
-          upload.value.handleRemove(m)
+          // upload.value.handleRemove(m)
+          removeSole(m)
         }
       })
       emit('update:modelValue', urls)
@@ -134,9 +138,11 @@ const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) 
     })()
   } else {
     ElMessage.error(res.msg)
-    upload.value.handleRemove(uploadFile)
+    // upload.value.handleRemove(uploadFile)
+    removeSole(uploadFile)
   }
 }
+
 
 const PictureCardPreview = (uploadFile: UploadFile) => {
   dialogImageUrl.value = uploadFile.url!
@@ -151,24 +157,40 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
       urls.push(m.response!.data[0])
     }else{
       ElMessage.error(m.response!.msg)
-      upload.value.handleRemove(m)
+      // upload.value.handleRemove(m)
+      removeSole(m)
     }
   })
   if (props.multiple) {
     emit('update:modelValue', urls)
     emit('remove', urls)
   } else {
-    emit('update:modelValue', '')
-    emit('remove', '')
+    emit('update:modelValue', null)
+    emit('remove', null)
   }
 
+}
+
+
+//删除单个指定文件
+const removeSole = (file)=>{
+  upload.value.handleRemove(file)
+  if (!props.multiple) {
+    emit('update:modelValue', null)
+  }
 }
 
 //删除文件
 const removeFile =()=>{
   upload.value.clearFiles()
-  emit('update:modelValue', '')
-  emit('remove', '')
+  if (!props.multiple) {
+    emit('update:modelValue', null)
+    emit('remove', null)
+  }else{
+    emit('update:modelValue', [])
+    emit('remove', [])
+  }
+  
 }
 
 defineExpose({

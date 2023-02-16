@@ -80,8 +80,8 @@ import ShpUploadFile from './ShpUploadFile.vue'
 import { downloadGet } from '../../../../utils/request'
 const emit = defineEmits(['result'])
 const formValue = ref({
-  legalPersonCommitment:'',
-  legalPersonVideo:'',
+  legalPersonCommitment:null,
+  legalPersonVideo:null,
   businessAdditionPics:[],
   businessAdditionMsg:''
 })
