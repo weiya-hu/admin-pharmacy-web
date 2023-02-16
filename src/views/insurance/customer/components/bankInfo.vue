@@ -104,7 +104,6 @@
                 <div>1、17家直连银行无需填写，如为其他银行，则开户银行全称（含支行）和 开户银行联行号二选一<br/>2、需填写银行全称，如“深圳农村商业银行XXX支行”,详细参见
                   <el-link type="primary" @click="dialogVisible = true">开户银行全称（含支行）对照表</el-link>
                 </div>
-                <!--                <div>1、17家直连银行无需填写，如为其他银行，则开户银行全称（含支行）和 开户银行联行号二选一<br />2、需填写银行全称，如“深圳农村商业银行XXX支行”</div>-->
               </template>
             </labelExplain>
           </template>
@@ -138,9 +137,9 @@
           <el-input v-model="form.accountNumber" placeholder="请输入银行账号"/>
         </el-form-item>
 
-        <!--        <el-form-item>-->
-        <!--          <el-button @click="submit">保存</el-button>-->
-        <!--        </el-form-item>-->
+<!--        <el-form-item>-->
+<!--          <el-button @click="submit">保存</el-button>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <el-dialog v-model="dialogVisible" title="开户银行全称（含支行）对照表" draggable>
@@ -186,13 +185,27 @@ const dialogVisible = ref(false)
 const loading = ref(false)
 const tableData = ref([])
 
+const validBankid = ((rule, value, callback) => {
+  if (form.value.accountBank === '其他银行' && (value == '' && form.value.bankName == '')) {
+    callback(new Error('请输入开户“银行联行号”或“开户银行全称（含支行）”'))
+  } else {
+    callback()
+  }
+})
+const validBankName = (rule, value, callback) => {
+  if (form.value.accountBank === '其他银行' && (form.value.bankBranchId == '' && value == '')) {
+    callback(new Error('请输入开户“银行联行号”或“开户银行全称（含支行）”'))
+  } else {
+    callback()
+  }
+}
 const rules = reactive({
   bankAccountType: [{required: true, message: "请选择账户类型", trigger: "change"}],
   accountName: [{required: true, message: "请输入开户名称", trigger: "blur"}],
   accountBank: [{required: true, message: "请选择开户银行", trigger: "change"}],
   bankAddressCode: [{required: true, message: "请输入开户银行省市编码", trigger: "blur"}],
-  // bankBranchId: [{ required: true, message: "请输入开户银行联行号", trigger: "blur" }],
-  // bankName: [{ required: true, message: "请输入开户银行全称（含支行）", trigger: "blur" }],
+  bankBranchId: [{ required: true, validator: validBankid, trigger: "blur" }],
+  bankName: [{ required: true, validator: validBankName, trigger: "blur" }],
   accountNumber: [{required: true, message: "请输入银行账号", trigger: "blur"}]
 })
 
@@ -251,12 +264,8 @@ const emit = defineEmits(["result"]);
 const submit = () => {
   proxy.$refs["bankRef"].validate(valid => {
     if (valid) {
-      if (form.value.accountBank === '其他银行' && (form.value.bankBranchId == '' && form.value.bankName == '')) {
-        ElMessage.error('请输入开户银行联行号或开户银行全称（含支行）')
-      } else {
-        emit('result', {bankAccountInfo: form.value})
-        console.log('银行账户', form.value)
-      }
+      emit('result', {bankAccountInfo: form.value})
+      console.log('银行账户', form.value)
     } else {
       emit('result', false)
     }
