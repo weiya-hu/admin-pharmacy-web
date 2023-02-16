@@ -1202,12 +1202,13 @@ const validateIdDocInfoIdDocAddress = (rule, value, callback) => {
 };
 //自定义经营者/法人是否为受益人
 const validateIdDocInfoOwner = (rule, value, callback) => {
-  let { owner } = form_Info.value.identityInfo;
-  if (isSubjectType.value == "企业" && owner == false) {
-    callback(new Error("请选择经营者/法人是否为受益人"));
-  } else {
+  // let { owner } = form_Info.value.identityInfo;
+  // if (isSubjectType.value == "企业" && owner == false) {
+  //   callback(new Error("请选择经营者/法人是否为受益人"));
+  // } else {
+  //   callback();
+  // }
     callback();
-  }
 };
 
 //自定义最终受益人列表当中证件反面照片的校验
