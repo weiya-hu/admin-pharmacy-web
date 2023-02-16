@@ -138,6 +138,9 @@ const form = ref({
   activitiesRate: '', //优惠费率活动值
   activitiesAdditions: [] //优惠费率活动补充材料
 })
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).settlementInfo:null
+wechartDatas && (form.value = wechartDatas)
 
 const dialogVisibleTable = ref(false)
 const tableData = ref([])
@@ -216,7 +219,7 @@ getList()
 
 <style lang="scss" scoped>
 .box-card {
-    width: 650px;
+    // width: 650px;
 
     .card-header {
       display: flex;

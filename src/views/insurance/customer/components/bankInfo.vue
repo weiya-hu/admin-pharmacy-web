@@ -168,6 +168,11 @@ const form = ref({
   bankName: '', //开户银行全称（含支行）
   accountNumber: '', //银行账号
 })
+
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).bankAccountInfo:null
+wechartDatas && (form.value = wechartDatas)
+
 const accountBankList = ref([])
 const state = ref({
   province: '',
@@ -293,7 +298,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .box-card {
-  width: 650px;
+  // width: 650px;
 
   .card-header {
     display: flex;

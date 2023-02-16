@@ -2193,7 +2193,7 @@ defineExpose({
   }
 
   .box-card {
-    width: 650px !important;
+    // width: 650px !important;
   }
 
   .collapseName {

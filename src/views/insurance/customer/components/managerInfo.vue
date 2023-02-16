@@ -239,6 +239,7 @@ import {idCardOcr} from "@/api/insurance/wechatIncoming";
 import ShpUploadFile from './ShpUploadFile.vue';
 
 const {proxy} = getCurrentInstance();
+
 const form = ref({
   contactType: '', //超级管理员类型
   contactName: '', //超级管理员姓名
@@ -253,6 +254,10 @@ const form = ref({
   mobilePhone: '', //联系手机
   contactEmail: '' //联系邮箱
 });
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).contactInfo:null
+wechartDatas && (form.value = wechartDatas)
+
 const formDateRadio = ref(5);
 const zDialogVisible = ref(false);
 const zDialogImageUrl = ref('');
@@ -488,7 +493,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .box-card {
-  width: 650px;
+  // width: 650px;
 
   .card-header {
     display: flex;

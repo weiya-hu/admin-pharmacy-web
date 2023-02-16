@@ -627,6 +627,9 @@ const businessInfo = ref({
     },
   },
 });
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).businessInfo:null
+wechartDatas && (businessInfo.value = wechartDatas)
 
 //经营场景类型
 const salesInfos = [
@@ -873,7 +876,7 @@ defineExpose({
 <style lang="scss" scoped>
 .business-info {
   .box-card {
-    width: 650px;
+    // width: 650px;
 
     .card-header {
       display: flex;

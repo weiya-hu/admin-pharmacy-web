@@ -79,12 +79,17 @@ import labelExplain from './labelExplain.vue'
 import ShpUploadFile from './ShpUploadFile.vue'
 import { downloadGet } from '../../../../utils/request'
 const emit = defineEmits(['result'])
+
 const formValue = ref({
   legalPersonCommitment:null,
   legalPersonVideo:null,
   businessAdditionPics:[],
   businessAdditionMsg:''
 })
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData?JSON.parse(wechartData).additionInfo:null
+wechartDatas && (formValue.value = wechartDatas)
+
 const hh=ref()
 const foem =()=>{
   hh.value.removeFile()
@@ -108,7 +113,7 @@ defineExpose({
 <style lang="scss" scoped>
 .supply-info{
   .box-card { 
-    width: 650px;
+    // width: 650px;
     .card-header {
       display: flex;
       justify-content: space-between;
