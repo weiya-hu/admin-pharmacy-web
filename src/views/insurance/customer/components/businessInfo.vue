@@ -532,7 +532,7 @@
               )
             "
           >
-            <el-form-item label="商家企业微信CorpID  " prop="corpId">
+            <el-form-item label="商家企业微信CorpID  " prop="salesInfo.weworkInfo.subCorpId">
               <template #label>
                 <labelExplain label="商家企业微信CorpID  ">
                   <template #explain>
@@ -575,7 +575,7 @@
         </el-collapse>
       </el-form>
     </el-card>
-    <!--    <el-button @click="submit">show Value</el-button>-->
+    <el-button @click="showValue">show Value</el-button>
   </div>
 </template>
 
@@ -613,11 +613,16 @@ const businessInfo = ref({
     },
     appInfo: {
       appPics: [],
+      appAppid: '',
+      appSubAppid: '',
     },
     webInfo: {
-      webAuthorisation: "",
+      webAuthorisation: null,
+      domain: '',
+      webAppid: ''
     },
     weworkInfo: {
+      subCorpId: '',
       weworkPics: [],
     },
   },
@@ -811,7 +816,7 @@ const rules = ref({
       message: "必须上传图片",
     },
   ],
-  'salesInfo.webInfo.webAppId': [
+  'salesInfo.webInfo.webAppid': [
     {
       trigger: "change",
       required: true,
@@ -820,7 +825,7 @@ const rules = ref({
   ],
   'salesInfo.webInfo.domain': [
     {
-      trigger: "change",
+      trigger: "blur",
       required: true,
       message: "值不能为空",
     },
@@ -832,9 +837,20 @@ const rules = ref({
       message: "必须上传图片",
     },
   ],
+  'salesInfo.weworkInfo.subCorpId': [
+    {
+      trigger: "blur",
+      required: true,
+      message: "值不能为空",
+    },
+  ],
 
 
 });
+
+const showValue = () => {
+  console.log(businessInfo.value)
+}
 
 
 const submit = () => {

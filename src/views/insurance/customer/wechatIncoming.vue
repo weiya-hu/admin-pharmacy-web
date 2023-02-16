@@ -107,6 +107,8 @@ import {getApplymentList} from "@/api/insurance/wechatIncoming";
 import {onMounted, ref} from "vue";
 import wechartIncomingConfig from "./wechartIncomingConfig";
 import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
+import vueQr from 'vue-qr/src/packages/vue-qr.vue';
+
 
 const params = ref({});
 const loading = ref(false);
@@ -162,6 +164,8 @@ onMounted(() => {
     }
   });
 });
+
+
 </script>
 
 <style lang="scss" scoped>
