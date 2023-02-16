@@ -1366,6 +1366,106 @@ const form_Info_Rules = ref({
     { required: true, message: "请选择证件有效期结束时间", trigger: "blur" }
   ]
 });
+//重置最终受益人信息列表
+const resetUboInfoList = () => {
+  form_Info.value.uboInfoList = {
+    //证件类型
+    uboIdDocType: "",
+    //证件正面照片
+    uboIdDocCopy: "",
+    //证件反面照片
+    uboIdDocCopyBack: "",
+    //证件姓名
+    uboIdDocName: "",
+    // 证件号码
+    uboIdDocNumber: "",
+    // 证件居住地址
+    uboIdDocAddress: "",
+    //证件有效期开始时间
+    uboPeriodBegin: "",
+    // 证件有效期结束时间
+    uboPeriodEnd: ""
+  };
+
+};
+
+//重置营业执照的数据
+const resetBusinessLicenseInfo = () => {
+  form_Info.value.businessLicenseInfo = {
+    //营业执照照片
+    licenseCopy: "",
+    //注册号/统一社会信用代码
+    licenseNumber: "",
+    //商户名称
+    merchantName: "",
+    //个体户经营者/法人姓名
+    legalPerson: "",
+    //注册地址
+    licenseAddress: "",
+    //开始时间
+    periodBegin: "",
+    //结束时间
+    periodEnd: ""
+  };
+};
+//重置登记证书数据
+const resetCertificateInfo = () => {
+  form_Info.value.certificateInfo = {
+    //登记证书照片
+    certCopy: "",
+    // 登记证书类型
+    certType: "",
+    //证书号
+    certNumber: "",
+    //商户名称
+    merchantName: "",
+    //注册地址
+    companyAddress: "",
+    //法定代表
+    legalPerson: "",
+    //有效期限开始日期
+    periodBegin: "",
+    //有效期限结束日期
+    periodEnd: ""
+  };
+};
+
+//重置身份证信息数据
+const resetIdCardInfo = () => {
+  form_Info.value.identityInfo.idCardInfo = {
+    //身份证人像面照片
+    idCardCopy: "",
+    //身份证国徽面照片
+    idCardNational: "",
+    //身份证姓名
+    idCardName: "",
+    //身份证号码
+    idCardNumber: "",
+    //身份证居住地址
+    idCardAddress: "",
+    cardPeriodBegin: "",
+    cardPeriodEnd: ""
+  };
+};
+//重置其他证件信息数据
+const resetIdDocInfo = () => {
+  form_Info.value.identityInfo.idDocInfo = {
+    //证件正面照片
+    idDocCopy: "",
+    //证件反面照片
+    idDocCopyBack: "",
+    //证件姓名
+    idDocName: "",
+    //证件号码
+    idDocNumber: "",
+    //证件居住地址
+    idDocAddress: "",
+    //开始日期
+    docPeriodBegin: "",
+    // 结束日期
+    docPeriodEnd: ""
+  };
+};
 const form_Info = ref({
   subjectType: "", //主体类型
   financeInstitution: false,//是否是金融机构
@@ -1688,6 +1788,8 @@ const changeVariablesToUboInfoList = () => {
     uboInfo.value = true;
   } else {
     uboInfo.value = false;
+    //清空最终受益人数据
+    resetUboInfoList();
   }
 };
 //改变登记证书类型
@@ -1945,12 +2047,16 @@ watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identity
     if (idHolderType == "LEGAL" && idDocType == "IDENTIFICATION_TYPE_IDCARD") {
       isIdCard.value = true;
       idDoc.value = false;
+      resetIdDocInfo();
     } else if (idHolderType == "LEGAL" && idDocType !== "IDENTIFICATION_TYPE_IDCARD") {
       isIdCard.value = false;
       idDoc.value = true;
+      resetIdCardInfo();
     } else {
       isIdCard.value = false;
       idDoc.value = false;
+      resetIdDocInfo();
+      resetIdCardInfo();
     }
   }
 }, {
@@ -1966,9 +2072,12 @@ watch(() => isSubjectType.value, () => {
   if (isSubjectType.value == "个体户" || isSubjectType.value == "企业") {
     isShowBusiness.value = true;
     isShowCertificate.value = false;
+    //  数据重置
+    resetCertificateInfo();
   } else {
     isShowBusiness.value = false;
     isShowCertificate.value = true;
+    resetBusinessLicenseInfo();
   }
 }, {
   deep: true
