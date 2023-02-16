@@ -32,7 +32,6 @@
           <el-select v-model="form.qualificationType" filterable @change="handleChange" placeholder="请选择所属行业" style="width: 100%;">
             <el-option v-for="item in typeList" :value="item.id" :label="item.qualificationType" :key="item.id" />
           </el-select>
-<!--          <el-input maxlength="128" v-model="form.qualificationType" placeholder="请输入所属行业" />-->
         </el-form-item>
 
         <el-form-item prop="qualifications" v-if="otherAsk === 1">
@@ -132,9 +131,9 @@ import ShpUploadFile from './ShpUploadFile.vue';
 const { proxy } = getCurrentInstance();
 const form = ref({
   settlementId: '', //入驻结算规则ID
-  qualificationType: '', //所属行业
+  qualificationType: null, //所属行业
   qualifications: [], //特殊资质图片
-  activitiesId: '', //优惠费率活动ID
+  activitiesId: null, //优惠费率活动ID
   activitiesRate: '', //优惠费率活动值
   activitiesAdditions: [] //优惠费率活动补充材料
 })
@@ -173,8 +172,7 @@ const onClick = (type) => {
 const rules = reactive({
   settlementId: [{ required: true, message: "请输入入驻结算规则ID", trigger: "blur" }],
   qualificationType: [{ required: true, message: "请输入所属行业", trigger: "blur" }],
-  qualifications: [{ required: true, message: "请上传特殊资质图片", trigger: "change" }],
-  // activitiesId: [{ required: true, message: "请输入优惠费率活动ID", trigger: "blur" }]
+  qualifications: [{ required: true, message: "请上传特殊资质图片", trigger: "change" }]
 })
 
 const handleChange = (val) => {

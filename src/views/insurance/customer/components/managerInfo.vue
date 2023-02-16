@@ -242,9 +242,9 @@ import ShpUploadFile from './ShpUploadFile.vue';
 const {proxy} = getCurrentInstance();
 
 const form = ref({
-  contactType: '', //超级管理员类型
+  contactType: null, //超级管理员类型
   contactName: '', //超级管理员姓名
-  contactIdDocType: '', //超级管理员证件类型
+  contactIdDocType: null, //超级管理员证件类型
   contactIdNumber: '', //超级管理员身份证件号码
   contactIdDocCopy: null, //超级管理员证件正面照片
   contactIdDocCopyBack: null, //超级管理员证件反面照片
@@ -356,7 +356,7 @@ const rules = reactive({
 
 const handleChange = (val) => {
   if (val === 'LEGAL') {
-    form.value.contactIdDocType = ''
+    form.value.contactIdDocType = null
     form.value.contactIdNumber = ''
     form.value.contactIdDocCopy = null
     form.value.contactIdDocCopyBack = null

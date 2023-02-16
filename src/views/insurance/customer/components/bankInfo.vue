@@ -47,7 +47,7 @@
               </template>
             </labelExplain>
           </template>
-          <el-select v-model="form.accountBank" placeholder="请选择开户银行" style="width: 100%;">
+          <el-select v-model="form.accountBank" @change="handleChangeBank" placeholder="请选择开户银行" style="width: 100%;">
             <el-option v-for="item in accountBankList" :key="item.dictValue" :label="item.dictLabel"
                        :value="item.dictValue"/>
           </el-select>
@@ -160,9 +160,9 @@ import {ElMessage} from "element-plus";
 
 const {proxy} = getCurrentInstance();
 const form = ref({
-  bankAccountType: '',//账户类型
+  bankAccountType: null,//账户类型
   accountName: '', //开户名称
-  accountBank: '', //开户银行
+  accountBank: null, //开户银行
   bankAddressCode: '', //开户银行省市编码
   bankBranchId: '', //开户银行联行号
   bankName: '', //开户银行全称（含支行）
@@ -263,6 +263,12 @@ const handleChange = (val) => {
       loading.value = false
     }
   })
+}
+const handleChangeBank = (val) => {
+  if (val !== '其他银行') {
+    form.value.bankBranchId = ''
+    form.value.bankName = ''
+  }
 }
 
 const emit = defineEmits(["result"]);
