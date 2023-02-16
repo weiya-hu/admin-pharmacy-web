@@ -56,7 +56,8 @@
           <template #label>
             <labelExplain label="超级管理员身份证件号码">
               <template #explain>
-                <div>1、“超级管理员身份证号码”与“超级管理员微信openid”，二选一必填<br />2、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>3、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码</div>
+                <div>1、“超级管理员身份证号码”与“超级管理员微信openid”，二选一必填<br/>2、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>3、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码
+                </div>
               </template>
             </labelExplain>
           </template>
@@ -90,14 +91,17 @@
               :on-remove="zhandleRemove"
               :before-upload="beforeAvatarUpload"
           >
-            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
+            <el-icon class="form-img" color="#666666">
+              <Plus/>
+            </el-icon>
           </el-upload>
-          <el-dialog v-model="zDialogVisible" >
-            <img :src="zDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
+          <el-dialog v-model="zDialogVisible">
+            <img :src="zDialogImageUrl" alt="" style="width: 100%;object-fit: contain;"/>
           </el-dialog>
         </el-form-item>
 
-        <el-form-item prop="contactIdDocCopyBack" v-if="form.contactType === 'SUPER' && form.contactIdDocType !== 'IDENTIFICATION_TYPE_OVERSEA_PASSPORT'">
+        <el-form-item prop="contactIdDocCopyBack"
+                      v-if="form.contactType === 'SUPER' && form.contactIdDocType !== 'IDENTIFICATION_TYPE_OVERSEA_PASSPORT'">
           <template #label>
             <labelExplain label="超级管理员证件反面照片">
               <template #explain>
@@ -120,10 +124,12 @@
               :on-remove="fhandleRemove"
               :before-upload="beforeAvatarUpload"
           >
-            <el-icon class="form-img" color="#666666"><Plus /></el-icon>
+            <el-icon class="form-img" color="#666666">
+              <Plus/>
+            </el-icon>
           </el-upload>
-          <el-dialog v-model="fDialogVisible" >
-            <img :src="fDialogImageUrl" alt="" style="width: 100%;object-fit: contain;" />
+          <el-dialog v-model="fDialogVisible">
+            <img :src="fDialogImageUrl" alt="" style="width: 100%;object-fit: contain;"/>
           </el-dialog>
         </el-form-item>
 
@@ -131,11 +137,13 @@
           <template #label>
             <labelExplain label="超级管理员证件有效期时间" :explainShow="false"></labelExplain>
           </template>
-          <el-date-picker v-model="form.contactPeriodBegin" type="date" placeholder="请选择有效期开始日期" value-format="YYYY-MM-DD"
+          <el-date-picker v-model="form.contactPeriodBegin" type="date" placeholder="请选择有效期开始日期"
+                          value-format="YYYY-MM-DD"
                           @change="getStartTime" style="width: 47%"/>
           <span style="width: 6%;text-align: center">至</span>
           <span v-if="formDateRadio == -1">长期有效</span>
-          <el-date-picker v-model="form.contactPeriodEnd" disabled type="date" placeholder="有效期结束日期" v-else style="width: 47%" />
+          <el-date-picker v-model="form.contactPeriodEnd" disabled type="date" placeholder="有效期结束日期" v-else
+                          style="width: 47%"/>
         </el-form-item>
         <el-form-item v-if="form.contactType === 'SUPER'">
           <template #label>
@@ -153,18 +161,24 @@
           <template #label>
             <labelExplain label="业务办理授权函">
               <template #explain>
-                <div>请参照<el-link type="primary" href="https://kf.qq.com/faq/220509Y3Yvym220509fQvYR7.html" target="_blank">示例图</el-link>打印业务办理授权函，全部信息需打印，不支持手写商户信息，并加盖公章</div>
+                <div>请参照
+                  <el-link type="primary" href="https://kf.qq.com/faq/220509Y3Yvym220509fQvYR7.html" target="_blank">
+                    示例图
+                  </el-link>
+                  打印业务办理授权函，全部信息需打印，不支持手写商户信息，并加盖公章
+                </div>
               </template>
             </labelExplain>
           </template>
-          <ShpUploadFile v-model="form.businessAuthorizationLetter" :limit="1" :multiple="false" flag="businessAuthorizationLetter"></ShpUploadFile>
+          <ShpUploadFile v-model="form.businessAuthorizationLetter" :limit="1" :multiple="false"
+                         flag="businessAuthorizationLetter"></ShpUploadFile>
         </el-form-item>
 
         <el-form-item prop="openid">
           <template #label>
             <labelExplain label="超级管理员微信OpenID">
               <template #explain>
-                <div>1、“超级管理员身份证件号码”与“超级管理员微信openid”，二选一必填<br />2、超级管理员签约时，校验微信号是否与该微信openid一致</div>
+                <div>1、“超级管理员身份证件号码”与“超级管理员微信openid”，二选一必填<br/>2、超级管理员签约时，校验微信号是否与该微信openid一致</div>
               </template>
             </labelExplain>
           </template>
@@ -179,7 +193,7 @@
           <template #label>
             <labelExplain label="联系手机">
               <template #explain>
-                <div>1、11位数字<br />2、用于接收微信支付的重要管理信息及日常操作验证码</div>
+                <div>1、11位数字<br/>2、用于接收微信支付的重要管理信息及日常操作验证码</div>
               </template>
             </labelExplain>
           </template>
@@ -207,9 +221,9 @@
           />
         </el-form-item>
 
-<!--        <el-form-item>-->
-<!--          <el-button @click="submit()">保存</el-button>-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item>-->
+        <!--          <el-button @click="submit()">保存</el-button>-->
+        <!--        </el-form-item>-->
       </el-form>
     </el-card>
   </div>
@@ -224,7 +238,7 @@ import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {idCardOcr} from "@/api/insurance/wechatIncoming";
 import ShpUploadFile from './ShpUploadFile.vue';
 
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 const form = ref({
   contactType: '', //超级管理员类型
   contactName: '', //超级管理员姓名
@@ -322,25 +336,25 @@ const validEmail = (rule, value, callback) => {
   }
 }
 const rules = reactive({
-  contactType: [{ required: true, message: "请选择超级管理员类型", trigger: "change" }],
-  contactName: [{ required: true, message: "请输入超级管理员姓名", trigger: "blur" }],
-  contactIdDocType: [{ required: true, message: "请输入超级管理员证件类型", trigger: "change" }],
+  contactType: [{required: true, message: "请选择超级管理员类型", trigger: "change"}],
+  contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "blur"}],
+  contactIdDocType: [{required: true, message: "请输入超级管理员证件类型", trigger: "change"}],
   // contactIdNumber: [{ required: true, validator: validNumber, trigger: "blur" }],
-  contactIdDocCopy: [{ required: true, message: "请上传超级管理员证件正面照片", trigger: "change" }],
-  contactIdDocCopyBack: [{ required: true, message: "请上传超级管理员证件反面照片", trigger: "change" }],
-  contactPeriodBegin: [{ required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change" }],
-  businessAuthorizationLetter: [{ required: true, message: "请上传业务办理授权函", trigger: "change" }],
-  mobilePhone: [{ required: true, validator: validPhone, trigger: "blur" }],
-  contactEmail: [{ required: true, validator: validEmail, trigger: "blur" }]
+  contactIdDocCopy: [{required: true, message: "请上传超级管理员证件正面照片", trigger: "change"}],
+  contactIdDocCopyBack: [{required: true, message: "请上传超级管理员证件反面照片", trigger: "change"}],
+  contactPeriodBegin: [{required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change"}],
+  businessAuthorizationLetter: [{required: true, message: "请上传业务办理授权函", trigger: "change"}],
+  mobilePhone: [{required: true, validator: validPhone, trigger: "blur"}],
+  contactEmail: [{required: true, validator: validEmail, trigger: "blur"}]
 })
 
 const getStartTime = () => {
   let startTime = form.value.contactPeriodBegin
   let yearNum = Number(formDateRadio.value)
   if (startTime && yearNum !== -1) {
-    let year = startTime.substring(0,4)
+    let year = startTime.substring(0, 4)
     let monthDay = startTime.substring(4)
-    form.value.contactPeriodEnd =  Number(year) + yearNum + monthDay
+    form.value.contactPeriodEnd = Number(year) + yearNum + monthDay
   } else if (yearNum === -1) {
     form.value.contactPeriodEnd = '长期'
   } else {
@@ -367,6 +381,7 @@ function beforeAvatarUpload(file) {
   }
   return true
 }
+
 const handleExceed = () => {
   ElMessage.error(`最多上传1张图片`)
 }
@@ -411,13 +426,13 @@ const fHandleAvatarSuccess = (res) => {
           fFileList.value = []
         } else {
           form.value.contactIdDocCopyBack = res.data[0]
-          if (res_id.data.validDate.substring(11) === '长期'){
+          if (res_id.data.validDate.substring(11) === '长期') {
             formDateRadio.value = -1
           } else {
-            let startYear = res_id.data.validDate.substring(0,4)
-            let endYear = res_id.data.validDate.substring(11,15)
+            let startYear = res_id.data.validDate.substring(0, 4)
+            let endYear = res_id.data.validDate.substring(11, 15)
             formDateRadio.value = Number(endYear - startYear)
-            form.value.contactPeriodBegin = res_id.data.validDate.substring(0,10).replaceAll('.', '-')
+            form.value.contactPeriodBegin = res_id.data.validDate.substring(0, 10).replaceAll('.', '-')
             form.value.contactPeriodEnd = res_id.data.validDate.substring(11).replaceAll('.', '-')
           }
         }
@@ -446,11 +461,11 @@ const submit = () => {
     if (valid) {
       if (form.value.contactType !== 'SUPER' && form.value.openid == '') {
         ElMessage.error('请输入“超级管理员微信openid”')
-      } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && form.value.openid == '')){
+      } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && form.value.openid == '')) {
         ElMessage.error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”')
       } else {
         console.log('超级管理员', form.value)
-        emit('result', form.value)
+        emit('result', {contactInfo: form.value})
       }
     } else {
       emit('result', false)
@@ -467,6 +482,7 @@ defineExpose({
 <style lang="scss" scoped>
 .box-card {
   width: 650px;
+
   .card-header {
     display: flex;
     justify-content: space-between;
@@ -481,32 +497,40 @@ defineExpose({
     }
   }
 }
+
 .form-input {
   width: 100%;
 }
+
 .form-span {
   color: #999999;
   font-size: 12px;
   margin-left: 15px;
 }
+
 .form-img {
   width: 60px;
   height: 60px;
   border: 1px solid var(--el-border-color);
   border-radius: 6px;
 }
+
 .el-form-item {
   align-items: center;
+
   :deep(.el-form-item__label) {
     font-weight: 700;
   }
+
   :deep(.el-upload--picture-card) {
     --el-upload-picture-card-size: 60px;
     border: 0;
+
     i {
       font-size: 18px;
     }
   }
+
   :deep(.el-upload-list--picture-card) .el-upload-list__item {
     width: 60px;
     height: 60px;

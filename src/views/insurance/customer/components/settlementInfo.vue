@@ -187,8 +187,8 @@ const emit = defineEmits(["result"]);
 const submit = () => {
   proxy.$refs["settlementRef"].validate(valid => {
     if (valid) {
-      emit('result', form.value)
       console.log('结算规则' ,form.value)
+      emit('result', {settlementInfo:form.value})
     } else {
       emit('result', false)
     }

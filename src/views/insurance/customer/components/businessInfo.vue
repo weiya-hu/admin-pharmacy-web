@@ -840,7 +840,7 @@ const rules = ref({
 const submit = () => {
   form.value.validate(val => {
     if (val) {
-      emit('result', businessInfo.value)
+      emit('result', {businessInfo: businessInfo.value})
     } else {
       emit('result', false)
     }
