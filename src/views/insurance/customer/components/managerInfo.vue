@@ -221,9 +221,9 @@
           />
         </el-form-item>
 
-        <!--        <el-form-item>-->
-        <!--          <el-button @click="submit()">保存</el-button>-->
-        <!--        </el-form-item>-->
+<!--        <el-form-item>-->
+<!--          <el-button @click="submit()">保存</el-button>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-card>
   </div>
@@ -244,11 +244,11 @@ const form = ref({
   contactName: '', //超级管理员姓名
   contactIdDocType: '', //超级管理员证件类型
   contactIdNumber: '', //超级管理员身份证件号码
-  contactIdDocCopy: '', //超级管理员证件正面照片
-  contactIdDocCopyBack: '', //超级管理员证件反面照片
+  contactIdDocCopy: null, //超级管理员证件正面照片
+  contactIdDocCopyBack: null, //超级管理员证件反面照片
   contactPeriodBegin: '', //超级管理员证件有效期开始时间
   contactPeriodEnd: '', //超级管理员证件有效期结束时间
-  businessAuthorizationLetter: '', //业务办理授权函
+  businessAuthorizationLetter: null, //业务办理授权函
   openid: '', //超级管理员微信OpenID
   mobilePhone: '', //联系手机
   contactEmail: '' //联系邮箱
@@ -303,16 +303,18 @@ const IDtypes = [
 ];
 
 // 身份证号码验证
-// const validNumber = (rule, value, callback) => {
-//   let reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
-//   if (value === '' || value === undefined) {
-//     callback(new Error('请输入超级管理员身份证件号码'))
-//   } else if (!reg.test(value)) {
-//     callback(new Error('请输入正确超级管理员身份证件号码'))
-//   } else {
-//     callback()
-//   }
-// }
+const validNumber = (rule, value, callback) => {
+  let reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+  if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && value == '')) {
+    callback(new Error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”'))
+  } else if (value === '') {
+    callback(new Error('请输入超级管理员身份证件号码'))
+  } else if (!reg.test(value)) {
+    callback(new Error('请输入正确超级管理员身份证件号码'))
+  } else {
+    callback()
+  }
+}
 // 手机号码验证
 const validPhone = (rule, value, callback) => {
   let reg = /^1([3-9][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/
@@ -335,15 +337,26 @@ const validEmail = (rule, value, callback) => {
     callback()
   }
 }
+// openid验证
+const validOpenid = (rule, value, callback) => {
+  if (form.value.contactType !== 'SUPER' && value == '') {
+    callback(new Error('请输入超级管理员微信OpenID'))
+  } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && value == '')) {
+    callback(new Error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”'))
+  } else {
+    callback()
+  }
+}
 const rules = reactive({
   contactType: [{required: true, message: "请选择超级管理员类型", trigger: "change"}],
   contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "blur"}],
   contactIdDocType: [{required: true, message: "请输入超级管理员证件类型", trigger: "change"}],
-  // contactIdNumber: [{ required: true, validator: validNumber, trigger: "blur" }],
+  contactIdNumber: [{ required: true, validator: validNumber, trigger: "blur" }],
   contactIdDocCopy: [{required: true, message: "请上传超级管理员证件正面照片", trigger: "change"}],
   contactIdDocCopyBack: [{required: true, message: "请上传超级管理员证件反面照片", trigger: "change"}],
   contactPeriodBegin: [{required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change"}],
   businessAuthorizationLetter: [{required: true, message: "请上传业务办理授权函", trigger: "change"}],
+  openid: [{required: true, validator: validOpenid, trigger: "blur" }],
   mobilePhone: [{required: true, validator: validPhone, trigger: "blur"}],
   contactEmail: [{required: true, validator: validEmail, trigger: "blur"}]
 })
@@ -410,7 +423,7 @@ const zHandleAvatarSuccess = (res) => {
 const zhandleRemove = () => {
   form.value.contactIdNumber = ''
   form.value.contactName = ''
-  form.value.contactIdDocCopy = ''
+  form.value.contactIdDocCopy = null
 }
 const zhandlePictureCardPreview = (uploadFile) => {
   zDialogImageUrl.value = uploadFile.url
@@ -447,7 +460,7 @@ const fHandleAvatarSuccess = (res) => {
 const fhandleRemove = () => {
   form.value.contactPeriodBegin = ''
   form.value.contactPeriodEnd = ''
-  form.value.contactIdDocCopyBack = ''
+  form.value.contactIdDocCopyBack = null
   formDateRadio.value = 5
 }
 const fhandlePictureCardPreview = (uploadFile) => {
@@ -459,14 +472,8 @@ const emit = defineEmits(["result"]);
 const submit = () => {
   managerRef.value.validate(valid => {
     if (valid) {
-      if (form.value.contactType !== 'SUPER' && form.value.openid == '') {
-        ElMessage.error('请输入“超级管理员微信openid”')
-      } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && form.value.openid == '')) {
-        ElMessage.error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”')
-      } else {
-        console.log('超级管理员', form.value)
-        emit('result', {contactInfo: form.value})
-      }
+      console.log('超级管理员', form.value)
+      emit('result', {contactInfo: form.value})
     } else {
       emit('result', false)
     }
