@@ -57,7 +57,7 @@
           <template #label>
             <labelExplain label="超级管理员身份证件号码">
               <template #explain>
-                <div>1、“超级管理员身份证号码”与“超级管理员微信openid”，二选一必填<br/>2、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>3、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码
+                <div>1、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>2、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码
                 </div>
               </template>
             </labelExplain>
@@ -179,7 +179,7 @@
           <template #label>
             <labelExplain label="超级管理员微信OpenID">
               <template #explain>
-                <div>1、“超级管理员身份证件号码”与“超级管理员微信openid”，二选一必填<br/>2、超级管理员签约时，校验微信号是否与该微信openid一致</div>
+                <div>该字段选填，若上传则超级管理员签约时，会校验微信号是否与该微信OpenID一致</div>
               </template>
             </labelExplain>
           </template>
@@ -311,9 +311,7 @@ const IDtypes = [
 // 身份证号码验证
 const validNumber = (rule, value, callback) => {
   let reg = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
-  if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && value == '')) {
-    callback(new Error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”'))
-  } else if (value === '') {
+  if (value === '') {
     callback(new Error('请输入超级管理员身份证件号码'))
   } else if (!reg.test(value)) {
     callback(new Error('请输入正确超级管理员身份证件号码'))
@@ -343,16 +341,6 @@ const validEmail = (rule, value, callback) => {
     callback()
   }
 }
-// openid验证
-const validOpenid = (rule, value, callback) => {
-  if (form.value.contactType !== 'SUPER' && value == '') {
-    callback(new Error('请输入超级管理员微信OpenID'))
-  } else if (form.value.contactType === 'SUPER' && (form.value.contactIdNumber == '' && value == '')) {
-    callback(new Error('请输入“超级管理员身份证件号码”或“超级管理员微信openid”'))
-  } else {
-    callback()
-  }
-}
 const rules = reactive({
   contactType: [{required: true, message: "请选择超级管理员类型", trigger: "change"}],
   contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "blur"}],
@@ -362,13 +350,11 @@ const rules = reactive({
   contactIdDocCopyBack: [{required: true, message: "请上传超级管理员证件反面照片", trigger: "change"}],
   contactPeriodBegin: [{required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change"}],
   businessAuthorizationLetter: [{required: true, message: "请上传业务办理授权函", trigger: "change"}],
-  openid: [{required: true, validator: validOpenid, trigger: "blur" }],
   mobilePhone: [{required: true, validator: validPhone, trigger: "blur"}],
   contactEmail: [{required: true, validator: validEmail, trigger: "blur"}]
 })
 
 const handleChange = (val) => {
-  console.log(val)
   if (val === 'LEGAL') {
     form.value.contactIdDocType = ''
     form.value.contactIdNumber = ''
