@@ -592,7 +592,7 @@ const businessInfo = ref({
   merchantShortname: "",
   servicePhone: "",
   salesInfo: {
-    salesScenesType: ref(['SALES_SCENES_STORE']),
+    salesScenesType: ref([]),
     bizStoreInfo: {
       bizStoreName: "",
       bizAddressCode: "",
