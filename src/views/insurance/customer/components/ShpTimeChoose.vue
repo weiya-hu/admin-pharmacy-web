@@ -15,20 +15,22 @@
  *@endTime 结束时间
  */
 import { ElMessage } from "element-plus";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = withDefaults(
   defineProps<{
     chooseTag: string,
     beginTime?: any,
-    endTime?: any
+    endTime?: any,
+    defaultTime: any
   }>(),
   {
     beginTime: "",
     endTime: ""
   }
 );
+
 let chooseValue = ref();
 /**时间日期选择*/
 const dataPicker = (time) => {
@@ -84,7 +86,9 @@ const compareDate = (dateTime1, dateTime2) => {
     return true;
   }
 };
-
+watch(() => props.defaultTime, () => {
+  chooseValue.value = props.defaultTime;
+});
 </script>
 <style lang="scss" scoped>
 

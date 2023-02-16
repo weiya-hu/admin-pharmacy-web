@@ -62,7 +62,7 @@
           ></ShpUploadFile>
         </el-form-item>
         <el-collapse @change="ChangeCollapse" v-model="activeNames">
-          <el-collapse-item name="1">
+          <el-collapse-item v-if="isShowBusiness" name="1">
             <template #title>
               <div class="collapseName">营业执照:</div>
             </template>
@@ -76,9 +76,11 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
-                             v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
-                             flag="businessAdditionPics"></ShpUploadFile>
+              <ShpUploadFile
+                ref="licenseCopy_Instance"
+                @success="(data)=>{uploadImageSuccessCallback(data,true,'bizLicenseOcr','','licenseCopy')}"
+                v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
+                flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="businessLicenseInfo.licenseNumber">
               <template #label>
@@ -139,8 +141,10 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpTimeChoose :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
-                             :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
+              <ShpTimeChoose
+                :default-time="form_Info.businessLicenseInfo.periodBegin"
+                :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
+                :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
             </el-form-item>
             <el-form-item style="font-weight: bold">
               <template #label>
@@ -159,14 +163,16 @@
                              v-model="isPermanentlyValid_businessLicenseInfo" />
                 </div>
                 <div v-if="!isPermanentlyValid_businessLicenseInfo" class="chooseEndDate">
-                  <ShpTimeChoose :chooseTag="'end'" v-model="form_Info.businessLicenseInfo.periodEnd"
-                                 :begin-time="form_Info.businessLicenseInfo.periodBegin"></ShpTimeChoose>
+                  <ShpTimeChoose
+                    :default-time="form_Info.businessLicenseInfo.periodEnd"
+                    :chooseTag="'end'" v-model="form_Info.businessLicenseInfo.periodEnd"
+                    :begin-time="form_Info.businessLicenseInfo.periodBegin"></ShpTimeChoose>
 
                 </div>
               </div>
             </el-form-item>
           </el-collapse-item>
-          <el-collapse-item name="2">
+          <el-collapse-item v-if="isShowCertificate" name="2">
             <template #title>
               <div class="collapseName">登记证书:</div>
             </template>
@@ -180,7 +186,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+              <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                              v-model="form_Info.certificateInfo.certCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
@@ -314,7 +320,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+              <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                              v-model="form_Info.financeInstitutionInfo.financeLicensePics" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
@@ -361,7 +367,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+              <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                              v-model="form_Info.identityInfo.authorizeLetterCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
@@ -432,9 +438,11 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
-                                 v-model="form_Info.identityInfo.idCardInfo.idCardCopy" :limit="1" :multiple="false"
-                                 flag="businessAdditionPics"></ShpUploadFile>
+                  <ShpUploadFile
+                    ref="idCardInfoIdCardCopy_Instance"
+                    @success="(data)=>{uploadImageSuccessCallback(data,true,'idCardOcr','positive','idCardInfoIdCardCopy')}"
+                    v-model="form_Info.identityInfo.idCardInfo.idCardCopy" :limit="1" :multiple="false"
+                    flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idCardInfo.idCardNational"
                               style="align-items: center;font-weight: bold" label="身份证国徽面照片">
@@ -448,9 +456,10 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
-                                 v-model="form_Info.identityInfo.idCardInfo.idCardNational" :limit="1" :multiple="false"
-                                 flag="businessAdditionPics"></ShpUploadFile>
+                  <ShpUploadFile
+                    @success="(data)=>{uploadImageSuccessCallback(data,true,'idCardOcr','opposite','idCardInfoIdCardNational')}"
+                    v-model="form_Info.identityInfo.idCardInfo.idCardNational" :limit="1" :multiple="false"
+                    flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idCardInfo.idCardName" style="align-items: center;font-weight: bold"
                               label="身份证姓名">
@@ -506,7 +515,8 @@
                     </labelExplain>
                   </template>
 
-                  <ShpTimeChoose :chooseTag="'begin'" v-model="form_Info.identityInfo.idCardInfo.cardPeriodBegin"
+                  <ShpTimeChoose :default-time="form_Info.identityInfo.idCardInfo.cardPeriodBegin" :chooseTag="'begin'"
+                                 v-model="form_Info.identityInfo.idCardInfo.cardPeriodBegin"
                                  :end-time="form_Info.identityInfo.idCardInfo.cardPeriodEnd"></ShpTimeChoose>
                 </el-form-item>
                 <el-form-item prop="identityInfo.idCardInfo.cardPeriodEnd" style="align-items: center;font-weight: bold"
@@ -527,7 +537,8 @@
                                  v-model="isPermanentlyValid_identityInfo_idCardInfo" />
                     </div>
                     <div v-if="!isPermanentlyValid_identityInfo_idCardInfo" class="chooseEndDate">
-                      <ShpTimeChoose :chooseTag="'end'" v-model="form_Info.identityInfo.idCardInfo.cardPeriodEnd"
+                      <ShpTimeChoose :default-time="form_Info.identityInfo.idCardInfo.cardPeriodEnd" :chooseTag="'end'"
+                                     v-model="form_Info.identityInfo.idCardInfo.cardPeriodEnd"
                                      :begin-time="form_Info.identityInfo.idCardInfo.cardPeriodBegin"></ShpTimeChoose>
                     </div>
                   </div>
@@ -551,7 +562,7 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                  <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                                  v-model="form_Info.identityInfo.idDocInfo.idDocCopy" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
@@ -568,7 +579,7 @@
                       </template>
                     </labelExplain>
                   </template>
-                  <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
+                  <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                                  v-model="form_Info.identityInfo.idDocInfo.idDocCopyBack" :limit="1" :multiple="false"
                                  flag="businessAdditionPics"></ShpUploadFile>
                 </el-form-item>
@@ -669,9 +680,10 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
-                             v-model="form_Info.uboInfoList.uboIdDocCopy" :limit="1" :multiple="false"
-                             flag="businessAdditionPics"></ShpUploadFile>
+              <ShpUploadFile
+                @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfo,'idCardOcr','positive','idDocInfoIdDocCopy')}"
+                v-model="form_Info.uboInfoList.uboIdDocCopy" :limit="1" :multiple="false"
+                flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocCopyBack" style="align-items: center;font-weight: bold">
               <template #label>
@@ -684,9 +696,10 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpUploadFile @success="()=>{uploadImageSuccessCallback()}"
-                             v-model="form_Info.uboInfoList.uboIdDocCopyBack" :limit="1" :multiple="false"
-                             flag="businessAdditionPics"></ShpUploadFile>
+              <ShpUploadFile
+                @success="(data)=>{uploadImageSuccessCallback(data,isVailidateOcrToUboInfo,'idCardOcr','opposite','idDocInfoIdDocCopyBack')}"
+                v-model="form_Info.uboInfoList.uboIdDocCopyBack" :limit="1" :multiple="false"
+                flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocType">
               <template #label>
@@ -698,7 +711,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-select style="width: 100%;" v-model="form_Info.uboInfoList.uboIdDocType">
+              <el-select @change="changeUboIdDocType" style="width: 100%;" v-model="form_Info.uboInfoList.uboIdDocType">
                 <el-option :label="item.label" v-for="item in uboIdDocTypeOption" :value="item.value" :key="item.value">
                   {{ item.label }}
                 </el-option>
@@ -715,7 +728,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.identityInfo.idDocInfo.idDocName"></el-input>
+              <el-input v-model="form_Info.uboInfoList.uboIdDocName"></el-input>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocNumber" style="align-items: center;font-weight: bold"
                           label="证件号码">
@@ -728,7 +741,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.identityInfo.idDocInfo.idDocNumber"></el-input>
+              <el-input v-model="form_Info.uboInfoList.uboIdDocNumber"></el-input>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboIdDocAddress" style="align-items: center;font-weight: bold"
                           label="证件居住地址">
@@ -742,7 +755,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.identityInfo.idDocInfo.idDocAddress"></el-input>
+              <el-input v-model="form_Info.uboInfoList.uboIdDocAddress"></el-input>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboPeriodBegin" style="align-items: center;font-weight: bold"
                           label="证件有效期开始时间">
@@ -756,8 +769,10 @@
                   </template>
                 </labelExplain>
               </template>
-              <ShpTimeChoose :chooseTag="'begin'" v-model="form_Info.uboInfoList.uboPeriodBegin"
-                             :end-time="form_Info.uboInfoList.uboPeriodEnd"></ShpTimeChoose>
+              <ShpTimeChoose
+                :default-time="form_Info.uboInfoList.uboPeriodBegin"
+                :chooseTag="'begin'" v-model="form_Info.uboInfoList.uboPeriodBegin"
+                :end-time="form_Info.uboInfoList.uboPeriodEnd"></ShpTimeChoose>
             </el-form-item>
             <el-form-item prop="uboInfoList.uboPeriodEnd" style="align-items: center;font-weight: bold"
                           label="证件有效期结束时间">
@@ -777,32 +792,132 @@
                              v-model="isPermanentlyValid_uboInfoList" />
                 </div>
                 <div v-if="!isPermanentlyValid_uboInfoList" class="chooseEndDate">
-                  <ShpTimeChoose :chooseTag="'end'" v-model="form_Info.uboInfoList.uboPeriodEnd"
-                                 :begin-time="form_Info.uboInfoList.uboPeriodBegin"></ShpTimeChoose>
+                  <ShpTimeChoose
+                    :default-time="form_Info.uboInfoList.uboPeriodEnd"
+                    :chooseTag="'end'" v-model="form_Info.uboInfoList.uboPeriodEnd"
+                    :begin-time="form_Info.uboInfoList.uboPeriodBegin"></ShpTimeChoose>
                 </div>
               </div>
             </el-form-item>
           </el-collapse-item>
         </el-collapse>
       </el-form>
-<!--      <el-button @click="submit">校验</el-button>-->
+      <!--      <el-button @click="submit">校验</el-button>-->
     </el-card>
   </div>
 </template>
 <script setup>
 //主体资料
-import { nextTick, ref, watch } from "vue";
+import { nextTick, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import labelExplain from "./labelExplain.vue";
 import { getToken } from "@/utils/auth";
 import ShpUploadFile from "./ShpUploadFile.vue";
 import ShpTimeChoose from "@/views/insurance/customer/components/ShpTimeChoose";
+import { bizLicenseOcr, enterpriseLicenseOCR, idCardOcr } from "@/api/insurance/wechatIncoming";
 //token信息
 const uploadData = ref({
   uploadUrl: import.meta.env.VITE_APP_BASE_API + "pay/media/wxPictureUpload",
   token: getToken()
 });
+//上传组件实例
+const licenseCopy_Instance = ref(null);
+const idCardInfoIdCardCopy_Instance = ref(null);
+const idCardInfoIdCardNational_Instance = ref(null);
+const idDocInfoIdDocCopy_Instance = ref(null);
+const idDocInfoIdDocCopyBack_Instance = ref(null);
+//最终受益人的证件是否需要ocr校验
+const isVailidateOcrToUboInfo = ref(false);
+//上传组件的清除方法
+const uploadInstances = ref({
+  licenseCopyInstance: () => {
+    licenseCopy_Instance.value.removeFile();
+  },
+  idCardInfoIdCardCopyInstance: () => {
+    idCardInfoIdCardCopy_Instance.value.removeFile();
+  },
+  idCardInfoIdCardNationalInstance: () => {
+    idCardInfoIdCardNational_Instance.value.removeFile();
+  },
+  idDocInfoIdDocCopyInstance: () => {
+    idDocInfoIdDocCopy_Instance.value.removeFile();
+  },
+  idDocInfoIdDocCopyBackInstance: () => {
+    idDocInfoIdDocCopyBack_Instance.value.removeFile();
+  }
+});
 
+//单独存特殊校验后返回的值
+const specialChecksData = ref({
+  licenseCopyData: {},//营业执照校验信息
+  idCardInfoIdCardCopyData: {},//身份证人像面照片信息
+  idCardInfoIdCardNationalData: {},//身份证反向面照片信息
+  idDocInfoIdDocCopyData: {},//其他证件正向面信息
+  idDocInfoIdDocCopyBackData: {}//其他证件反向面信息
+});
+
+watch(() => specialChecksData.value, () => {
+  // 遍历当前对象将对应的值添加到指定的form_info对象当中
+  try {
+    Object.keys(specialChecksData.value).forEach(key => {
+      switch (key) {
+        case "licenseCopyData": {
+          let {
+            regNum,
+            name,
+            person,
+            address,
+            beginTime,
+            endTime
+          } = specialChecksData.value[key];
+          form_Info.value.businessLicenseInfo.licenseNumber = regNum;
+          form_Info.value.businessLicenseInfo.merchantName = name;
+          form_Info.value.businessLicenseInfo.legalPerson = person;
+          form_Info.value.businessLicenseInfo.licenseAddress = address;
+          form_Info.value.businessLicenseInfo.periodBegin = beginTime;
+          form_Info.value.businessLicenseInfo.periodEnd = endTime;
+        }
+          break;
+        case "idCardInfoIdCardCopyData": {
+          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
+          form_Info.value.identityInfo.idCardInfo.idCardName = name;
+          form_Info.value.identityInfo.idCardInfo.idCardNumber = idNum;
+          form_Info.value.identityInfo.idCardInfo.idCardAddress = address;
+          break;
+        }
+        case "idCardInfoIdCardNationalData": {
+          let { beginTime, endTime } = specialChecksData.value[key];
+          form_Info.value.identityInfo.idCardInfo.cardPeriodBegin = beginTime;
+          form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
+          break;
+        }
+        case "idDocInfoIdDocCopyData": {
+          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
+          form_Info.value.uboInfoList.uboIdDocName = name;
+          form_Info.value.uboInfoList.uboIdDocNumber = idNum;
+          form_Info.value.uboInfoList.uboIdDocAddress = address;
+          break;
+        }
+        case "idDocInfoIdDocCopyBackData": {
+          let { beginTime, endTime } = specialChecksData.value[key];
+          form_Info.value.uboInfoList.uboPeriodBegin = beginTime;
+          form_Info.value.uboInfoList.uboPeriodEnd = endTime;
+          console.log(form_Info.value.uboInfoList);
+          break;
+        }
+      }
+
+
+    });
+  } finally {
+    instance_Form.value.validate();
+  }
+
+
+}, {
+  immediate: false,
+  deep: true
+});
 
 //主题类型选择选项
 const subjectTypeOption = ref([
@@ -1373,6 +1488,10 @@ const isShowCertificateLetterCopy = ref(true);
 const isIdCard = ref(false);
 //控制其他证件信息的展示
 const idDoc = ref(false);
+//控制营业执照是否展示
+const isShowBusiness = ref(false);
+// 控制登记证书是否展示
+const isShowCertificate = ref(false);
 //控制最终受益人信息列表是否展示
 const uboInfo = ref(false);
 let instance_Form = ref(null);
@@ -1718,8 +1837,104 @@ const deadlinebySwitch = (tag) => {
   }
 };
 //上传图片成功后的回调
-const uploadImageSuccessCallback = () => {
-  instance_Form.value.validate();
+const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite, saveName) => {
+//  判断是否校验
+  if (tag) {
+    //判断校验类型
+    switch (instanceName) {
+      case "idCardOcr":
+        //人员校验
+        idCardOcr({ url: data.url }).then(res_id => {
+          if (res_id.code == 200) {
+            //  判断校验正面还是反面
+            if (positiveOrOpposite == "positive") {
+              if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
+                ElMessage.error("请上传证件正面照片");
+                let name = saveName + "Instance";
+                uploadInstances.value[name]();
+              } else {
+                let { address, idNum, name } = res_id.data;
+                let validateResultData = {
+                  address,
+                  idNum,
+                  name
+                };
+                let variableName = saveName + "Data";
+                specialChecksData.value[variableName] = validateResultData;
+              }
+            } else if (positiveOrOpposite == "opposite") {
+              if (res_id.data.authority === "" || res_id.data.validDate === "") {
+                ElMessage.error("请上传证件反面照片");
+                //  清除对应上传选项
+                let name = saveName + "Instance";
+                uploadInstances.value[name]();
+              } else {
+                let { validDate } = res_id.data;
+                let handleValidDate = validDate.split("-");
+                let validateResultData = {
+                  beginTime: handleValidDate[0].replaceAll(".", "-"),
+                  endTime: handleValidDate[1].replaceAll(".", "-")
+                };
+                let variableName = saveName + "Data";
+                specialChecksData.value[variableName] = validateResultData;
+              }
+            }
+          }
+
+        }).catch(() => {
+          let name = saveName + "Instance";
+          uploadInstances.value[name]();
+        });
+        break;
+      case "bizLicenseOcr":
+        // 营业执照校验
+        bizLicenseOcr({ url: data.url }).then(res_id => {
+          if (res_id.code === 200) {
+            let { regNum, name, person, address, period, setDate } = res_id.data;
+            let handlePeriod = period.split("至");
+            handlePeriod = handlePeriod.map(item => {
+              let handleItem = item.replaceAll(/年|月|日/g, "-");
+              if (handleItem.substring(handleItem.length - 1) == "-") {
+                handleItem = handleItem.substring(0, handleItem.length - 1);
+              }
+              return handleItem;
+            });
+
+            console.log(handlePeriod);
+            let validateResultData = {
+              regNum,
+              name,
+              person,
+              address,
+              beginTime: handlePeriod[0],
+              endTime: handlePeriod[1]
+            };
+            let variableName = saveName + "Data";
+            specialChecksData.value[variableName] = validateResultData;
+          }
+        }).catch(() => {
+          let name = saveName + "Instance";
+          uploadInstances.value[name]();
+        });
+        break;
+      case "enterpriseLicenseOCR":
+        //企业证照识别
+        enterpriseLicenseOCR({ url: data.url }).then(res_id => {
+          if (res_id.code === 200) {
+          }
+        });
+    }
+  } else {
+    instance_Form.value.validate();
+  }
+};
+//选择最终受益人的证件类型
+const changeUboIdDocType = (value) => {
+  if (value == "IDENTIFICATION_TYPE_IDCARD") {
+    isVailidateOcrToUboInfo.value = true;
+  } else {
+    isVailidateOcrToUboInfo.value = false;
+  }
 };
 
 //多条件监听身份证信息是否必传
@@ -1745,6 +1960,25 @@ watch(() => form_Info.value.financeInstitution, () => {
   controlFinanceInstitutionRuler(form_Info.value.financeInstitution);
 }, {
   immediate: true
+});
+watch(() => isSubjectType.value, () => {
+  if (isSubjectType.value == "个体户" || isSubjectType.value == "企业") {
+    isShowBusiness.value = true;
+    isShowCertificate.value = false;
+  } else {
+    isShowBusiness.value = false;
+    isShowCertificate.value = true;
+  }
+}, {
+  deep: true
+});
+watch(() => form_Info.value.businessLicenseInfo.periodEnd, () => {
+  if (form_Info.value.businessLicenseInfo.periodEnd == "长期") {
+    isPermanentlyValid_businessLicenseInfo.value = true;
+  } else {
+    isPermanentlyValid_businessLicenseInfo.value = false;
+  }
+
 });
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
