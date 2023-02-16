@@ -2,14 +2,14 @@
   <div class="wechart-coming" v-loading="loading">
     <div class="flex">
       <div>
-        <ManagerInfo ref="formInfoRef1" @result="getValue" class="form-item"/>
-        <MainInfo ref="formInfoRef2" @result="getValue" class="form-item"/>
-        <BankInfo ref="formInfoRef3" @result="getValue" class="form-item"/>
+        <ManagerInfo ref="formInfoRef1" @result="getValue($event,'formInfoRef1')" class="form-item"/>
+        <MainInfo ref="formInfoRef2" @result="getValue($event,'formInfoRef2')" class="form-item"/>
+        <BankInfo ref="formInfoRef3" @result="getValue($event,'formInfoRef3')" class="form-item"/>
       </div>
       <div>
-        <SettlementInfo ref="formInfoRef4" @result="getValue" class="form-item"/>
-        <BusinessInfo ref="formInfoRef5" @result="getValue"  class="form-item"/>
-        <SupplyInfo ref="formInfoRef6" @result="getValue" class="form-item"/>
+        <SettlementInfo ref="formInfoRef4" @result="getValue($event,'formInfoRef4')" class="form-item"/>
+        <BusinessInfo ref="formInfoRef5" @result="getValue($event,'formInfoRef5')"  class="form-item"/>
+        <SupplyInfo ref="formInfoRef6" @result="getValue($event,'formInfoRef6')" class="form-item"/>
       </div>
     </div>
     
@@ -43,30 +43,32 @@ const submit = ()=>{
   formInfoRef2.value.submit()
   formInfoRef3.value.submit()
   formInfoRef4.value.submit()
-  // formInfoRef5.value.submit()
+  formInfoRef5.value.submit()
   formInfoRef6.value.submit()
 }
 
-const getValue = async(val)=>{
+const getValue = async(val,str)=>{
+  console.log(111,val,str)
   if(val){
     num=num +1
     arr.push(val)
     console.log(num)
-    if(num == 5){
+    if(num == 6){
       console.log(arr)
       let data = {}
       arr.forEach(m=>{
-        data = {
-          ...m
-        }
+        Object.assign(data,m)
       })
       console.log(data)
       const {code, msg} = await addWxpayApplyment_api(data)
+      num =0
+      arr = []
       code == 200 && ElMessage.success(msg)
       code !== 200 && ElMessage.error(msg)
       
     }
   }else{
+    console.log(false)
     num =0
     arr = []
   }

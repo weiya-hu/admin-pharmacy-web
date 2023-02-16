@@ -97,7 +97,7 @@ const downloadTemplete = ()=>{
 }
 
 const submit =()=>{
-  emit('result',formValue.value)
+  emit('result',{additionInfo:formValue.value})
 }
 
 defineExpose({
