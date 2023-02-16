@@ -111,13 +111,37 @@
                   v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreName"
               ></el-input>
             </el-form-item>
+
+            <el-form-item>
+              <template #label>
+                <label-explain label="线下场所省市区">
+                  <template #explain>
+                    <div>选择开户银行省市区</div>
+                  </template>
+                </label-explain>
+              </template>
+              <el-select v-model="state.province" @change="provincChange" placeholder="请选择省份"
+                         style="width: 32%;margin-right: 2%;">
+                <el-option v-for="item in provinceList" :value="item.id" :label="item.name" :key="item.id"/>
+              </el-select>
+              <el-select v-model="state.city" @change="cityChange" placeholder="请选择城市"
+                         style="width: 32%;margin-right: 2%;">
+                <el-option v-for="item in cityList" :value="item.id" :label="item.name" :key="item.id"/>
+              </el-select>
+              <el-select v-model="state.area" @change="areaChange" placeholder="请选择地区" style="width: 32%;">
+                <el-option v-for="item in areaList" :value="item.id" :label="item.name" :key="item.id"/>
+              </el-select>
+            </el-form-item>
+
+
             <el-form-item prop="salesInfo.bizStoreInfo.bizAddressCode">
               <template #label>
-                <labelExplain label="线下场所省市编码">
+                <labelExplain label="线下场所省市编码生成">
                   <template #explain>
                     <div class="content-div">
                       1、只能由数字组成 <br/>
-                      2、详细参见 (
+                      2、可根据上一行省市区选择自动生成 <br/>
+                      3、详细参见 (
                       <el-link
                           href="https://pay.weixin.qq.com/wiki/doc/apiv3/download/%E7%9C%81%E5%B8%82%E5%8C%BA%E7%BC%96%E5%8F%B7%E5%AF%B9%E7%85%A7%E8%A1%A8.xlsx"
                           type="primary"
@@ -575,7 +599,7 @@
         </el-collapse>
       </el-form>
     </el-card>
-    <el-button @click="showValue">show Value</el-button>
+    <!--    <el-button @click="showValue">show Value</el-button>-->
   </div>
 </template>
 
@@ -584,6 +608,7 @@ import {computed, nextTick, onMounted, reactive, ref, watch} from "vue";
 import {getToken} from "@/utils/auth";
 import Modal from "@/plugins/modal";
 import ShpUploadFile from "./ShpUploadFile.vue";
+import {bankType, listArea, listCity, listProvince} from "@/api/insurance/wechatIncoming";
 
 const emit = defineEmits(['result'])
 
@@ -667,6 +692,14 @@ const MP = ref(true);
 const Program = ref(true);
 const App = ref(true);
 const selectArr = ref([0, 1, 2, 3, 4, 5]);
+const state = ref({
+  province: '',
+  city: '',
+  area: ''
+})
+const provinceList = ref([])
+const cityList = ref([])
+const areaList = ref([])
 
 
 watch(MP, (val, oldValue) => {
@@ -850,6 +883,47 @@ const rules = ref({
 
 
 });
+
+const provincChange = (val) => {
+  listCity({pid: val}).then(res => {
+    if (res.code === 200) {
+      cityList.value = res.data
+      state.value.city = ''
+      state.value.area = ''
+      form.value.bankAddressCode = ''
+    }
+  })
+}
+const cityChange = (val) => {
+  listArea({pid: val}).then(res => {
+    if (res.code === 200) {
+      areaList.value = res.data
+      state.value.area = ''
+      form.value.bankAddressCode = ''
+      if (res.data.length === 0 || res.data == null) {
+        form.value.bankAddressCode = val
+      }
+    }
+  })
+}
+const areaChange = (val) => {
+  businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode
+      = val
+}
+
+const getBankType = () => {
+  bankType('pay_bank_info').then(res => {
+    if (res.code === 200) {
+      accountBankList.value = res.data
+    }
+  })
+  listProvince().then(res => {
+    if (res.code == 200) {
+      provinceList.value = res.data
+    }
+  })
+};
+getBankType()
 
 const showValue = () => {
   console.log(businessInfo.value)

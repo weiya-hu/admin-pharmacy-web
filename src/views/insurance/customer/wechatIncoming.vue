@@ -97,6 +97,10 @@
         {{ scope.row.wechatApplymentId ? scope.row.wechatApplymentId : '--' }}
       </template>
 
+      <template #rejectReasonSlot="scope">
+        {{ scope.row.rejectReason ? scope.row.rejectReason : '--' }}
+      </template>
+
 
     </WechartIncommingTable>
   </div>
