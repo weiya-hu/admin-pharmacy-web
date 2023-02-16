@@ -41,7 +41,7 @@
       </template>
 
       <template #licenseAddressSlot="scope">
-        {{ scope.row.merchantShortname }}
+        {{ scope.row.licenseAddress }}
       </template>
 
 
@@ -50,7 +50,7 @@
       </template>
 
       <template #merchantShortnameSlot="scope">
-        {{ scope.row.licenseAddress }}
+        {{ scope.row.merchantShortname }}
       </template>
 
       <template #licenseNumberSlot="scope">
@@ -70,7 +70,7 @@
       </template>
 
       <template #salesScenesTypeNameSlot="scope">
-        {{ scope.row.salesScenesTypeName }}
+        {{ scope.row.salesScenesTypeName ? scope.row.salesScenesTypeName : '--' }}
       </template>
 
       <template #servicePhoneSlot="scope">
@@ -78,7 +78,7 @@
       </template>
 
       <template #signUrlSlot="scope">
-        <el-link :href="scope.row.signUrl" text type="primary">查看</el-link>
+        <el-link :href="scope.row.signUrl" text type="primary">啦啦啦</el-link>
       </template>
 
       <template #statusMsgSlot="scope">
@@ -86,7 +86,7 @@
       </template>
 
       <template #subMchidSlot="scope">
-        {{ scope.row.subMchid }}
+        {{ scope.row.subMchid ? scope.row.subMchid : '--' }}
       </template>
 
       <template #subjectTypeSlot="scope">
@@ -94,7 +94,7 @@
       </template>
 
       <template #wechatApplymentIdSlot="scope">
-        {{ getsubjectTypes(scope.row.wechatApplymentId) }}
+        {{ scope.row.wechatApplymentId ? scope.row.wechatApplymentId : '--' }}
       </template>
 
 

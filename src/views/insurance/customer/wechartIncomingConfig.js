@@ -94,11 +94,11 @@ let wechartIncomingConfig = [
     prop: "merchantShortname",
     slotName: "merchantShortnameSlot",
   },
-  {
-    label: "驳回原因",
-    prop: "rejectReason",
-    slotName: "rejectReasonSlot",
-  },
+  // {
+  //   label: "驳回原因",
+  //   prop: "rejectReason",
+  //   slotName: "rejectReasonSlot",
+  // },
   {
     label: "经营场景类型名称",
     prop: "salesScenesTypeName",
@@ -109,12 +109,12 @@ let wechartIncomingConfig = [
     prop: "servicePhone",
     slotName: "servicePhoneSlot",
   },
-  {
-    label: "签约链接",
-    prop: "signUrl",
-    slotName: "signUrlSlot",
-    isFixed: "right",
-  },
+  // {
+  //   label: "签约链接",
+  //   prop: "signUrl",
+  //   slotName: "signUrlSlot",
+  //   isFixed: "right",
+  // },
   {
     label: "申请状态",
     prop: "statusMsg",
