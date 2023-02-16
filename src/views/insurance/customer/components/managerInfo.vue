@@ -22,6 +22,7 @@
               v-model="form.contactType"
               placeholder="请选择超级管理员类型"
               class="form-input"
+              @change="handleChange"
           >
             <el-option label="经营者/法人" value="LEGAL"/>
             <el-option label="经办人" value="SUPER"/>
@@ -366,6 +367,20 @@ const rules = reactive({
   contactEmail: [{required: true, validator: validEmail, trigger: "blur"}]
 })
 
+const handleChange = (val) => {
+  console.log(val)
+  if (val === 'LEGAL') {
+    form.value.contactIdDocType = ''
+    form.value.contactIdNumber = ''
+    form.value.contactIdDocCopy = null
+    form.value.contactIdDocCopyBack = null
+    form.value.contactPeriodBegin = ''
+    form.value.contactPeriodEnd = ''
+    form.value.businessAuthorizationLetter = null
+    zFileList.value = []
+    fFileList.value = []
+  }
+}
 const getStartTime = () => {
   let startTime = form.value.contactPeriodBegin
   let yearNum = Number(formDateRadio.value)
