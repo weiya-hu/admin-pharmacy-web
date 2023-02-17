@@ -556,7 +556,6 @@
                                      :begin-time="form_Info.identityInfo.idCardInfo.cardPeriodBegin"></ShpTimeChoose>
                     </div>
                   </div>
-
                 </el-form-item>
               </el-collapse-item>
               <el-collapse-item name="2" v-if="idDoc">
@@ -1013,6 +1012,8 @@ const form_Info = ref({
   uboInfoList: []
 
 });
+//取消监听收集器数组
+let clearWatchArray = ref([]);
 //外层折叠面板name数组
 let activeNames = ref([]);
 //内层折叠面板name数组
@@ -1286,7 +1287,19 @@ const addUboInfoPersion = () => {
           isPermanentlyValid_uboInfoList.value[index] = false;
         }
       });
+      clearWatchArray.value = [];
+      form_Info.value.uboInfoList.forEach((item, index) => {
+        clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
+            if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
+              isPermanentlyValid_uboInfoList.value[index] = true;
+            } else {
+              isPermanentlyValid_uboInfoList.value[index] = false;
+            }
+          })
+        );
+      });
       instance_Form.value.validate();
+
     }
   }
 ;
@@ -1297,9 +1310,12 @@ const deleteUboInfoPersion = (index) => {
     ElMessage.error("经营者/法人不为受益人时，至少填写一个最终受益人");
     return;
   }
+  console.log(clearWatchArray.value);
   form_Info.value.uboInfoList.splice(index, 1);
   isVailidateOcrToUboInfoArray.value.splice(index, 1);
   isPermanentlyValid_uboInfoList.value.splice(index, 1);
+  console.log(clearWatchArray.value[index], "fn");
+  clearWatchArray.value[index]();
 };
 //监听specialChecksData当中的值将值回显到对应选项当中
 watch(() => specialChecksData.value, () => {
@@ -2109,9 +2125,11 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
                 } else {
                   let { validDate } = res_id.data;
                   let handleValidDate = validDate.split("-");
+                  handleValidDate[0] = handleValidDate[0].replaceAll(".", "-"),
+                    handleValidDate[1] = handleValidDate[1].replaceAll(".", "-");
                   let validateResultData = {
-                    beginTime: handleValidDate[0].replaceAll(".", "-"),
-                    endTime: handleValidDate[1].replaceAll(".", "-")
+                    beginTime: handleValidDate[0],
+                    endTime: handleValidDate[1]
                   };
                   let variableName = saveName + "Data";
                   specialChecksData.value[variableName] = validateResultData;
@@ -2124,14 +2142,12 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
             uploadInstances.value[name]();
           });
         } else {
-
           idCardOcr({ url: data.url }).then(res_id => {
             if (res_id.code == 200) {
               //  判断校验正面还是反面
               if (positiveOrOpposite == "positive") {
                 if (res_id.data.authority !== "" || res_id.data.validDate !== "") {
                   ElMessage.error("请上传证件正面照片");
-                  alert(111);
                   let clearName = `${positiveOrOpposite}Ref_${index}`;
                   proxy.refs[clearName][0].removeFile();
                   instance_Form.value.validate();
@@ -2155,9 +2171,11 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
                 } else {
                   let { validDate } = res_id.data;
                   let handleValidDate = validDate.split("-");
+                  handleValidDate[0] = handleValidDate[0].replaceAll(".", "-"),
+                    handleValidDate[1] = handleValidDate[1].replaceAll(".", "-");
                   let validateResultData = {
-                    beginTime: handleValidDate[0].replaceAll(".", "-"),
-                    endTime: handleValidDate[1].replaceAll(".", "-")
+                    beginTime: handleValidDate[0],
+                    endTime: handleValidDate[1]
                   };
                   let variableName = saveName + "Data";
                   specialChecksData.value[variableName][index] = validateResultData;
@@ -2295,8 +2313,16 @@ watch(() => form_Info.value.businessLicenseInfo.periodEnd, () => {
   } else {
     isPermanentlyValid_businessLicenseInfo.value = false;
   }
-
 });
+watch(() => form_Info.value.identityInfo.idCardInfo.cardPeriodEnd, () => {
+  if (form_Info.value.identityInfo.idCardInfo.cardPeriodEnd == "长期") {
+    isPermanentlyValid_identityInfo_idCardInfo.value = true;
+  } else {
+    isPermanentlyValid_identityInfo_idCardInfo.value = false;
+  }
+});
+
+
 onMounted(() => {
   form_Info.value.uboInfoList.forEach((item, index) => {
     isVailidateOcrToUboInfoArray.value[index] = false;
@@ -2326,6 +2352,16 @@ onMounted(() => {
     form_Info.value.uboInfoList = [];
     form_Info.value.uboInfoList.push(itemObj);
   }
+  form_Info.value.uboInfoList.forEach((item, index) => {
+    clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
+        if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
+          isPermanentlyValid_uboInfoList.value[index] = true;
+        } else {
+          isPermanentlyValid_uboInfoList.value[index] = false;
+        }
+      })
+    );
+  });
 });
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
