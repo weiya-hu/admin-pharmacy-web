@@ -211,7 +211,7 @@
               </template>
               <shp-upload-file
                   v-model="businessInfo.salesInfo.bizStoreInfo.storeEntrancePic"
-                  limit="2"
+                  :limit="2"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -235,7 +235,7 @@
 
               <shp-upload-file
                   v-model="businessInfo.salesInfo.bizStoreInfo.indoorPic"
-                  limit="2"
+                  :limit="2"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -319,7 +319,7 @@
               </template>
               <shp-upload-file
                   v-model="businessInfo.salesInfo.mpInfo.mpPics"
-                  limit="5"
+                  :limit="5"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -391,7 +391,7 @@
 
               <shp-upload-file
                   v-model="businessInfo.salesInfo.miniProgramInfo.miniProgramPics"
-                  limit="5"
+                  :limit="5"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -473,7 +473,7 @@
 
               <shp-upload-file
                   v-model="businessInfo.salesInfo.webInfo.webAuthorisation"
-                  limit="1"
+                  :limit="1"
                   @success="upLoadSuccess"
               />
             </el-form-item>
@@ -539,7 +539,7 @@
 
               <shp-upload-file
                   v-model="businessInfo.salesInfo.appInfo.appPics"
-                  limit="4"
+                  :limit="4"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -589,7 +589,7 @@
 
               <shp-upload-file
                   v-model="businessInfo.salesInfo.weworkInfo.weworkPics"
-                  limit="4"
+                  :limit="4"
                   multiple
                   @success="upLoadSuccess"
               />
@@ -845,13 +845,13 @@ const rules = ref({
       message: "必须上传图片",
     },
   ],
-  'salesInfo.webInfo.webAuthorisation': [
-    {
-      trigger: "change",
-      required: true,
-      message: "必须上传图片",
-    },
-  ],
+  // 'salesInfo.webInfo.webAuthorisation': [
+  //   {
+  //     trigger: "change",
+  //     required: true,
+  //     message: "必须上传图片",
+  //   },
+  // ],
   'salesInfo.webInfo.webAppid': [
     {
       trigger: "change",
@@ -912,11 +912,7 @@ const areaChange = (val) => {
 }
 
 const getBankType = () => {
-  bankType('pay_bank_info').then(res => {
-    if (res.code === 200) {
-      accountBankList.value = res.data
-    }
-  })
+
   listProvince().then(res => {
     if (res.code == 200) {
       provinceList.value = res.data

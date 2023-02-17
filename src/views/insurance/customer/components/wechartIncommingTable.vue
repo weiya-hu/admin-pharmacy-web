@@ -31,11 +31,13 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogShow" align-center center lock-scroll show-close>
-      <h2 style="text-align: center">商户授权码</h2>
-      <div class="qr-wrapper">
-        <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>
-      </div>
+    <el-dialog v-model="dialogShow" align-center="true" append-to-body center lock-scroll show-close>
+      <template #footer>
+        <h2 style="text-align: center">商户授权码</h2>
+        <div class="qr-wrapper">
+          <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>

@@ -97,7 +97,7 @@
       </template>
 
       <template #statusMsgSlot="scope">
-        {{ scope.row.statusMsg }}
+        {{ scope.row.statusMsg ? scope.row.statusMsg : '--' }}
       </template>
 
       <template #subMchidSlot="scope">
