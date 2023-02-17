@@ -686,9 +686,9 @@
             </template>
             <!--     循环遍历生成       -->
             <div class="templateUboinfo" v-for="(item,index)  in form_Info.uboInfoList" :key="index">
-              <div v-if="index!==0" style="display: flex;justify-content: flex-end"
+              <div v-if="index!==0" style="margin-bottom: 10px;display: flex;justify-content: flex-end"
                    @click="()=>deleteUboInfoPersion(index)">
-                <el-icon size="20px" style="color: red">
+                <el-icon size="20px" style="color: #a8a8a8">
                   <Close />
                 </el-icon>
               </div>
