@@ -1,6 +1,20 @@
 <template>
   <div class="outbox">
-    <WechartIncommingTable :tableListConfig="wechartIncomingConfig" :tableListData="tableListData">
+
+    <div style="display: flex; justify-content: right;margin-right: 20px">
+      <el-button
+          plain
+          type="primary"
+          @click="$router.push('/insurance/addWechatIncoming')"
+      >新增进件
+      </el-button
+      >
+    </div>
+
+    <WechartIncommingTable
+        :tableListConfig="wechartIncomingConfig"
+        :tableListData="tableListData"
+    >
       <template #businessCodeSlot="scope">
         {{ scope.row.businessCode }}
       </template>
@@ -20,7 +34,7 @@
         {{ scope.row.docPeriodEnd }}
       </template>
       <template #financeInstitutionSlot="scope">
-        {{ scope.row.financeInstitution == 0 ? '否' : '是' }}
+        {{ scope.row.financeInstitution == 0 ? "否" : "是" }}
       </template>
       <template #idDocAddressSlot="scope">
         {{ scope.row.idDocAddress }}
@@ -37,13 +51,12 @@
       </template>
 
       <template #idHolderTypeSlot="scope">
-        {{ scope.row.idHolderType == 'LEGAL' ? '法人' : '经办人' }}
+        {{ scope.row.idHolderType == "LEGAL" ? "法人" : "经办人" }}
       </template>
 
       <template #licenseAddressSlot="scope">
         {{ scope.row.licenseAddress }}
       </template>
-
 
       <template #licenseMerchantNameSlot="scope">
         {{ scope.row.licenseMerchantName }}
@@ -66,11 +79,13 @@
       </template>
 
       <template #ownerSlot="scope">
-        {{ scope.row.owner == 0 ? '否' : '是' }}
+        {{ scope.row.owner == 0 ? "否" : "是" }}
       </template>
 
       <template #salesScenesTypeNameSlot="scope">
-        {{ scope.row.salesScenesTypeName ? scope.row.salesScenesTypeName : '--' }}
+        {{
+          scope.row.salesScenesTypeName ? scope.row.salesScenesTypeName : "--"
+        }}
       </template>
 
       <template #servicePhoneSlot="scope">
@@ -86,7 +101,7 @@
       </template>
 
       <template #subMchidSlot="scope">
-        {{ scope.row.subMchid ? scope.row.subMchid : '--' }}
+        {{ scope.row.subMchid ? scope.row.subMchid : "--" }}
       </template>
 
       <template #subjectTypeSlot="scope">
@@ -94,15 +109,22 @@
       </template>
 
       <template #wechatApplymentIdSlot="scope">
-        {{ scope.row.wechatApplymentId ? scope.row.wechatApplymentId : '--' }}
+        {{ scope.row.wechatApplymentId ? scope.row.wechatApplymentId : "--" }}
       </template>
 
       <template #rejectReasonSlot="scope">
-        {{ scope.row.rejectReason ? scope.row.rejectReason : '--' }}
+        {{ scope.row.rejectReason ? scope.row.rejectReason : "--" }}
       </template>
-
-
     </WechartIncommingTable>
+    <div>
+      <Pagination
+          v-show="total > 0"
+          v-model:limit="params.pageSize"
+          v-model:page="params.pageNum"
+          :total="total"
+          @pagination="getPagination"
+      ></Pagination>
+    </div>
   </div>
 </template>
 
@@ -111,11 +133,11 @@ import {getApplymentList} from "@/api/insurance/wechatIncoming";
 import {onMounted, ref} from "vue";
 import wechartIncomingConfig from "./wechartIncomingConfig";
 import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
-import vueQr from 'vue-qr/src/packages/vue-qr.vue';
-
+import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const params = ref({});
 const loading = ref(false);
+const total = ref(0);
 const list = ref([]);
 let tableListData = ref([]);
 const idTypes = {
@@ -126,22 +148,22 @@ const idTypes = {
   IDENTIFICATION_TYPE_TAIWAN_PASSPORT: "中国台湾居民-来往大陆通行证",
   IDENTIFICATION_TYPE_FOREIGN_RESIDENT: "外国人居留证",
   IDENTIFICATION_TYPE_HONGKONG_MACAO_RESIDENT: "港澳居民证",
-  IDENTIFICATION_TYPE_TAIWAN_RESIDENT: "台湾居民证"
+  IDENTIFICATION_TYPE_TAIWAN_RESIDENT: "台湾居民证",
 };
 const financeTypes = {
   BANK_AGENT: "银行业",
   PAYMENT_AGENT: "支付机构",
   INSURANCE: "保险业",
   TRADE_AND_SETTLE: "交易及结算类金融机构",
-  OTHER: "其他金融机构"
+  OTHER: "其他金融机构",
 };
 const subjectTypes = {
-  SUBJECT_TYPE_INDIVIDUAL: '个体户',
-  SUBJECT_TYPE_ENTERPRISE: '企业',
-  SUBJECT_TYPE_GOVERNMENT: '党政机关',
-  SUBJECT_TYPE_INSTITUTIONS: '事业单位',
-  SUBJECT_TYPE_OTHERS: '其他组织'
-}
+  SUBJECT_TYPE_INDIVIDUAL: "个体户",
+  SUBJECT_TYPE_ENTERPRISE: "企业",
+  SUBJECT_TYPE_GOVERNMENT: "党政机关",
+  SUBJECT_TYPE_INSTITUTIONS: "事业单位",
+  SUBJECT_TYPE_OTHERS: "其他组织",
+};
 
 const getIdType = (val) => {
   for (let i in idTypes) {
@@ -160,19 +182,27 @@ const getsubjectTypes = (val) => {
   }
 };
 
+const getPagination = () => {
+  getApplymentList(params.value).then((res) => {
+    if (res.code == 200) {
+      tableListData.value = res.data.list;
+      total.value = Number(res.data.total);
+    }
+  });
+};
 
 onMounted(() => {
   getApplymentList(params.value).then((res) => {
     if (res.code == 200) {
       tableListData.value = res.data.list;
+      total.value = Number(res.data.total);
     }
   });
 });
-
-
 </script>
 
 <style lang="scss" scoped>
-
-
+.outbox {
+  padding: 20px;
+}
 </style>

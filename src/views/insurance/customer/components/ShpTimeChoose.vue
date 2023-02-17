@@ -1,6 +1,7 @@
 <template>
   <div class="timeContainer">
     <el-date-picker @change="(time)=>{dataPicker(time)}"
+                    :disabled="isDisable"
                     v-model="chooseValue"
                     type="date"
                     :placeholder="props.chooseTag=='begin'?'开始时间':'结束时间'"
@@ -23,15 +24,18 @@ const props = withDefaults(
     chooseTag: string,
     beginTime?: any,
     endTime?: any,
-    defaultTime: any
+    defaultTime: any,
+    disable?: Boolean
   }>(),
   {
     beginTime: "",
-    endTime: ""
+    endTime: "",
+    disable: false
   }
 );
 
 let chooseValue = ref();
+let isDisable = ref(false);
 /**时间日期选择*/
 const dataPicker = (time) => {
   switch (props.chooseTag) {
@@ -86,11 +90,21 @@ const compareDate = (dateTime1, dateTime2) => {
     return true;
   }
 };
-watch(() => props.defaultTime, () => {
+watch(() => [props.defaultTime, props.disable], () => {
   chooseValue.value = props.defaultTime;
+  isDisable.value = props.disable;
+}, {
+  immediate: true,
+  deep: true
 });
 </script>
 <style lang="scss" scoped>
 
+.timeContainer {
+  ::v-deep(.el-input) {
+    width: 186px !important;
+  }
+
+}
 
 </style>

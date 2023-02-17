@@ -34,6 +34,8 @@ import BusinessInfo from './components/businessInfo.vue'
 import BankInfo from './components/bankInfo.vue'
 import SupplyInfo from './components/supplyInfo.vue'
 import { ElMessage } from 'element-plus'
+
+const router = useRouter();
 const loading=ref(true)
 const formInfoRef1 = ref()
 const formInfoRef2 = ref()
@@ -65,8 +67,10 @@ const getValue = async(val)=>{
     if(active.value == 5){
       console.log(wechartDatas)
       const {code, msg} = await addWxpayApplyment_api(wechartDatas)
-      code == 200 && ElMessage.success(msg)//to do 成功后跳转
-
+      code == 200 && (()=>{
+        ElMessage.success(msg)//to do 成功后跳转
+        router.push('/insurance/wechatIncoming')
+      })()
       code !== 200 && ElMessage.error(msg)
     }
     active.value = active.value<5 ? active.value+1 : 5
