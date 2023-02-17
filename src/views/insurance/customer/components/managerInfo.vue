@@ -455,6 +455,7 @@ const fHandleAvatarSuccess = (res) => {
           form.value.contactIdDocCopyBack = res.data[0]
           if (res_id.data.validDate.substring(11) === '长期') {
             formDateRadio.value = -1
+            form.value.contactPeriodBegin = res_id.data.validDate.substring(0, 10).replaceAll('.', '-')
           } else {
             let startYear = res_id.data.validDate.substring(0, 4)
             let endYear = res_id.data.validDate.substring(11, 15)
