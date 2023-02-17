@@ -140,6 +140,11 @@
 
 let wechartIncomingConfig = [
   {
+    label: "订单号",
+    prop: "businessCode",
+    slotName: "businessCodeSlot",
+  },
+  {
     label: "超级管理员姓名",
     prop: "contactName",
     slotName: "contactNameSlot",
@@ -151,8 +156,8 @@ let wechartIncomingConfig = [
   },
   {
     label: "商户号",
-    prop: "licenseNumber",
-    slotName: "licenseNumberSlot",
+    prop: "subMchid",
+    slotName: "subMchidSlot",
   },
   {
     label: "申请状态",

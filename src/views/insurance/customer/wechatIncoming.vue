@@ -123,6 +123,7 @@
           v-model:page="params.pageNum"
           :total="total"
           @pagination="getPagination"
+
       ></Pagination>
     </div>
   </div>
@@ -135,7 +136,10 @@ import wechartIncomingConfig from "./wechartIncomingConfig";
 import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
-const params = ref({});
+const params = ref({
+  pageSize: 10,
+  pageNum: 1
+});
 const loading = ref(false);
 const total = ref(0);
 const list = ref([]);
