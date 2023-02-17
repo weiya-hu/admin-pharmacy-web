@@ -1513,15 +1513,6 @@ const form_Info_Rules = ref({
     { required: true, validator: validateCertificateLetterCopy, trigger: "blur" }
     // { required: true, message: "请上传单位函证明", trigger: "change" }
   ],
-  "businessLicenseInfo.licenseAddress": [
-    { required: true, message: "请填写注册地址", trigger: "blur" }
-  ],
-  "businessLicenseInfo.periodBegin": [
-    { required: true, message: "请选择有效期限开始日期", trigger: "blur" }
-  ],
-  "businessLicenseInfo.periodEnd": [
-    { required: true, message: "请选择有效期限结束日期", trigger: "blur" }
-  ],
   //营业执照
   "businessLicenseInfo.licenseNumber": [
     { required: true, message: "请填写注册号/统一社会信用代码", trigger: "blur" },
@@ -1536,6 +1527,15 @@ const form_Info_Rules = ref({
   ],
   "businessLicenseInfo.legalPerson": [
     { required: true, message: "请填写个体户经营者/法人姓名", trigger: "blur" }
+  ],
+  "businessLicenseInfo.licenseAddress": [
+    { required: true, message: "请填写注册地址", trigger: "blur" }
+  ],
+  "businessLicenseInfo.periodBegin": [
+    { required: true, message: "请选择有效期限开始日期", trigger: "blur" }
+  ],
+  "businessLicenseInfo.periodEnd": [
+    { required: true, message: "请选择有效期限结束日期", trigger: "blur" }
   ],
   //登记证书
   "certificateInfo.certCopy": [
@@ -1756,8 +1756,6 @@ const resetIdDocInfo = () => {
     docPeriodEnd: null
   };
 };
-let wechartData = sessionStorage.getItem("wechartFormData");
-let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null;
 /**方法定义*/
 // 折叠展开
 const ChangeCollapse = (activeNames) => {
