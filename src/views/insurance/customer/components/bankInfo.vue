@@ -191,14 +191,14 @@ const loading = ref(false)
 const tableData = ref([])
 
 const validBankid = ((rule, value, callback) => {
-  if (form.value.accountBank === '其他银行' && (value == '' && form.value.bankName == '')) {
+  if ((value === '' || value === undefined) && form.value.bankName === '') {
     callback(new Error('请输入开户“银行联行号”或“开户银行全称（含支行）”'))
   } else {
     callback()
   }
 })
 const validBankName = (rule, value, callback) => {
-  if (form.value.accountBank === '其他银行' && (form.value.bankBranchId == '' && value == '')) {
+  if ((form.value.bankBranchId === '' || form.value.bankBranchId === undefined) && (value === '' || value === undefined)) {
     callback(new Error('请输入开户“银行联行号”或“开户银行全称（含支行）”'))
   } else {
     callback()
