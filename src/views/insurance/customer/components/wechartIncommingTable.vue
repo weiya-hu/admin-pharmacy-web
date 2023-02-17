@@ -1,67 +1,72 @@
 <template>
   <div class="wrapper">
-    <el-table stripe v-loading="loading" :data="props.tableListData">
+    <el-table v-loading="loading" :data="props.tableListData" stripe>
       <template v-for="(itemConfig, index) in props.tableListConfig">
         <el-table-column
-            align="center"
-            :label="itemConfig.label"
-            show-overflow-tooltip
-            :prop="itemConfig.prop"
             :fixed="itemConfig.isFixed"
+            :label="itemConfig.label"
+            :prop="itemConfig.prop"
+            align="center"
+            show-overflow-tooltip
         >
           <template v-if="itemConfig.slotName" #default="scope">
-            <slot :row="scope.row" :name="itemConfig.slotName"></slot>
+            <slot :name="itemConfig.slotName" :row="scope.row"></slot>
           </template>
         </el-table-column>
       </template>
-      <el-table-column align="center" label="操作" show-overflow-tooltip fixed="right">
+      <el-table-column
+          align="center"
+          fixed="right"
+          label="操作"
+          show-overflow-tooltip
+      >
         <template #default="scope">
-          <div style="display: flex;justify-content: center">
-            <el-button text type="primary" @click="showQrCode(scope.row)">查看授权码</el-button>
+          <div style="display: flex; justify-content: center">
+            <el-button text type="primary" @click="showQrCode(scope.row)"
+            >查看授权码
+            </el-button
+            >
           </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog align-center center v-model="dialogShow" lock-scroll show-close>
+    <el-dialog v-model="dialogShow" align-center center lock-scroll show-close>
       <h2 style="text-align: center">商户授权码</h2>
       <div class="qr-wrapper">
-        <vue-qr ref="qrcode" :text="signUrl" logo-src="" :size="200"></vue-qr>
+        <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>
       </div>
     </el-dialog>
   </div>
 </template>
 
-<script lang="ts" setup>
-const props = withDefaults(
-    defineProps<{
-      tableListConfig: [];
-      tableListData: [];
-    }>(),
-    {}
-);
+<script setup>
+const props = defineProps({
+  tableListConfig: Array,
+  tableListData: Array,
+});
+
 import {onMounted, ref} from "vue";
 import {getSignUrl} from "@/api/insurance/wechatIncoming";
-import vueQr from 'vue-qr/src/packages/vue-qr.vue'
-
+import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const params = ref({});
-const signUrl = ref('');
-const qrcode = ref({})
+const signUrl = ref("");
+const qrcode = ref({});
 const loading = ref(false);
 const dialogShow = ref(false);
 const showQrCode = async (row) => {
   if (row.signUrl) {
-    signUrl.value = row.signUrl
-    dialogShow.value = true
+    signUrl.value = row.signUrl;
+    dialogShow.value = true;
   } else {
-    let res = await getSignUrl(row.applyMentId)
+    let res = await getSignUrl(row.applyMentId);
     if (res.code == 200) {
-      signUrl.value = res.data
-      dialogShow.value = true
+      signUrl.value = res.data;
+      dialogShow.value = true;
     }
   }
-}
+};
 // const list = ref([]);
 </script>
 
@@ -73,8 +78,6 @@ const showQrCode = async (row) => {
   .qr-wrapper {
     display: flex;
     justify-content: center;
-
   }
 }
-
 </style>

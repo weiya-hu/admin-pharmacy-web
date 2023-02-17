@@ -9,7 +9,7 @@
           >
         </div>
       </template>
-      <el-form :model="businessInfo" :rules="rules" ref="form">
+      <el-form ref="form" :model="businessInfo" :rules="rules">
         <el-form-item prop="merchantShortname">
           <template #label>
             <labelExplain label="商户简称">
@@ -27,12 +27,12 @@
             </labelExplain>
           </template>
           <el-input
+              v-model="businessInfo.merchantShortname"
               label="商户简称"
-              placeholder="请输入商户简称"
               maxlength="30"
               minlength="2"
+              placeholder="请输入商户简称"
               style="width: 250px"
-              v-model="businessInfo.merchantShortname"
           ></el-input>
         </el-form-item>
         <el-form-item label="客服电话" prop="servicePhone">
@@ -46,10 +46,10 @@
             </labelExplain>
           </template>
           <el-input
+              v-model="businessInfo.servicePhone"
               label="客服电话"
               placeholder="请输入客服电话"
               style="width: 250px"
-              v-model="businessInfo.servicePhone"
           ></el-input>
         </el-form-item>
         <el-form-item label="经营场景" prop="salesInfo.salesScenesType">
@@ -64,16 +64,16 @@
             </labelExplain>
           </template>
           <el-select
-              multiple
               v-model="businessInfo.salesInfo.salesScenesType"
-              style="width: 250px"
+              multiple
               placeholder="请选择经营场景 (可多选) "
+              style="width: 250px"
           >
             <el-option
                 v-for="item in salesInfos"
-                :value="item.value"
                 :key="item.label"
                 :label="item.label"
+                :value="item.value"
             >
             </el-option>
           </el-select>
@@ -85,13 +85,13 @@
         >
           <!--线下-->
           <el-collapse-item
-              :name="0"
-              title="线下场景"
               v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_STORE'
               )
             "
+              :name="0"
+              title="线下场景"
           >
             <el-form-item prop="salesInfo.bizStoreInfo.bizStoreName">
               <template #label>
@@ -106,9 +106,9 @@
               </template>
 
               <el-input
+                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreName"
                   placeholder=" 请输入门店名称 "
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreName"
               ></el-input>
             </el-form-item>
 
@@ -116,27 +116,27 @@
               <template #label>
                 <label-explain label="线下场所省市区">
                   <template #explain>
-                    <div>选择开户银行省市区</div>
+                    <div>选择线下场所省市区</div>
                   </template>
                 </label-explain>
               </template>
-              <el-select v-model="state.province" @change="provincChange" placeholder="请选择省份"
-                         style="width: 32%;margin-right: 2%;">
-                <el-option v-for="item in provinceList" :value="item.id" :label="item.name" :key="item.id"/>
+              <el-select v-model="state.province" placeholder="请选择省份" style="width: 32%;margin-right: 2%;"
+                         @change="provincChange">
+                <el-option v-for="item in provinceList" :key="item.id" :label="item.name" :value="item.id"/>
               </el-select>
-              <el-select v-model="state.city" @change="cityChange" placeholder="请选择城市"
-                         style="width: 32%;margin-right: 2%;">
-                <el-option v-for="item in cityList" :value="item.id" :label="item.name" :key="item.id"/>
+              <el-select v-model="state.city" placeholder="请选择城市" style="width: 32%;margin-right: 2%;"
+                         @change="cityChange">
+                <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.id"/>
               </el-select>
-              <el-select v-model="state.area" @change="areaChange" placeholder="请选择地区" style="width: 32%;">
-                <el-option v-for="item in areaList" :value="item.id" :label="item.name" :key="item.id"/>
+              <el-select v-model="state.area" placeholder="请选择地区" style="width: 32%;" @change="areaChange">
+                <el-option v-for="item in areaList" :key="item.id" :label="item.name" :value="item.id"/>
               </el-select>
             </el-form-item>
 
 
             <el-form-item prop="salesInfo.bizStoreInfo.bizAddressCode">
               <template #label>
-                <labelExplain label="线下场所省市编码生成">
+                <labelExplain label="线下场所省市编码">
                   <template #explain>
                     <div class="content-div">
                       1、只能由数字组成 <br/>
@@ -154,9 +154,9 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.bizStoreInfo.bizAddressCode"
                   placeholder=" 请输入线下场所省市编码 "
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizAddressCode"
               ></el-input>
             </el-form-item>
             <el-form-item prop="salesInfo.bizStoreInfo.bizStoreAddress">
@@ -171,9 +171,9 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreAddress"
                   placeholder=" 请输入线下场所地址 "
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizStoreAddress"
               ></el-input>
             </el-form-item>
             <el-form-item prop="bizSubAppid">
@@ -188,18 +188,18 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.bizStoreInfo.bizSubAppid"
                   placeholder="(选填)"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.bizSubAppid"
               ></el-input>
             </el-form-item>
             <el-form-item prop="salesInfo.bizStoreInfo.storeEntrancePic">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                       线下场所门头照片
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -210,19 +210,19 @@
                 </labelExplain>
               </template>
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.bizStoreInfo.storeEntrancePic"
                   limit="2"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.storeEntrancePic"
               />
             </el-form-item>
             <el-form-item prop="salesInfo.bizStoreInfo.indoorPic">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                       线下场所内部照片
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -234,21 +234,21 @@
               </template>
 
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.bizStoreInfo.indoorPic"
                   limit="2"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.bizStoreInfo.indoorPic"
               />
             </el-form-item>
           </el-collapse-item>
 
           <!-- 公众号-->
           <el-collapse-item
-              :name="1"
-              title="公众号"
               v-if="
               businessInfo.salesInfo.salesScenesType.includes('SALES_SCENES_MP')
             "
+              :name="1"
+              title="公众号"
           >
             <el-radio-group v-model="MP" class="ml-4">
               <el-radio :label="true" size="large">服务商公众号AppID</el-radio>
@@ -258,8 +258,8 @@
             <el-form-item v-if="MP" prop="salesInfo.mpInfo.mpAppid">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="服务商公众号AppID"
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -272,16 +272,16 @@
               </template>
               <el-input
                   v-show="MP"
+                  v-model="businessInfo.salesInfo.mpInfo.mpAppid"
                   :placeholder="'请输入服务商公众号AppID'"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.mpInfo.mpAppid"
               ></el-input>
             </el-form-item>
             <el-form-item v-if="!MP" prop="salesInfo.mpInfo.mpSubAppid">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="商家公众号AppID"
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -295,9 +295,9 @@
 
               <el-input
                   v-show="!MP"
+                  v-model="businessInfo.salesInfo.mpInfo.mpSubAppid"
                   :placeholder="'请输入商家公众号AppID'"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.mpInfo.mpSubAppid"
               ></el-input>
             </el-form-item>
 
@@ -305,10 +305,10 @@
             <el-form-item prop="salesInfo.mpInfo.mpPics">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                     公众号页面截图
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -318,10 +318,10 @@
                 </labelExplain>
               </template>
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.mpInfo.mpPics"
                   limit="5"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.mpInfo.mpPics"
               />
             </el-form-item>
           </el-collapse-item>
@@ -358,28 +358,28 @@
               </template>
               <el-input
                   v-if="Program"
-                  :placeholder="'请输入服务商小程序AppID'"
-                  style="width: 250px"
                   v-model="
                   businessInfo.salesInfo.miniProgramInfo.miniProgramAppid
                 "
+                  :placeholder="'请输入服务商小程序AppID'"
+                  style="width: 250px"
               ></el-input>
               <el-input
                   v-if="!Program"
-                  :placeholder="'请输入商家小程序AppID'"
-                  style="width: 250px"
                   v-model="
                   businessInfo.salesInfo.miniProgramInfo.miniProgramSubAppid
                 "
+                  :placeholder="'请输入商家小程序AppID'"
+                  style="width: 250px"
               ></el-input>
             </el-form-item>
             <el-form-item prop="salesInfo.miniProgramInfo.miniProgramPics">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                     小程序页面截图
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -390,10 +390,10 @@
               </template>
 
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.miniProgramInfo.miniProgramPics"
                   limit="5"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.miniProgramInfo.miniProgramPics"
               />
             </el-form-item>
           </el-collapse-item>
@@ -401,13 +401,13 @@
           <!--互联网网站-->
           <el-collapse-item
 
-              :name=4
-              title="互联网网站"
               v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_WEB'
               )
             "
+              :name=4
+              title="互联网网站"
           >
 
             <el-form-item label="互联网网站域名 " prop="salesInfo.webInfo.domain">
@@ -422,10 +422,10 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.webInfo.domain"
                   label="互联网网站域名"
                   placeholder="请输入互联网网站域名"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.webInfo.domain"
               ></el-input>
             </el-form-item>
 
@@ -441,20 +441,20 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.webInfo.webAppid"
                   label="商家APPID"
                   placeholder="请输入网站对应的商家APPID"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.webInfo.webAppid"
               ></el-input>
             </el-form-item>
 
             <el-form-item prop="salesInfo.webInfo.webAuthorisation">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                     网站授权函
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -472,22 +472,22 @@
               </template>
 
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.webInfo.webAuthorisation"
                   limit="1"
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.webInfo.webAuthorisation"
               />
             </el-form-item>
           </el-collapse-item>
 
           <!--App-->
           <el-collapse-item
-              :name="3"
-              title="App"
               v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_APP'
               )
             "
+              :name="3"
+              title="App"
           >
             <el-radio-group v-model="App" class="ml-4">
               <el-radio :label="true" size="large">服务商应用AppID</el-radio>
@@ -510,24 +510,24 @@
               </template>
               <el-input
                   v-if="App"
+                  v-model="businessInfo.salesInfo.appInfo.appAppid"
                   :placeholder="'请输入服务商应用AppID'"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.appInfo.appAppid"
               ></el-input>
               <el-input
                   v-if="!App"
+                  v-model="businessInfo.salesInfo.appInfo.appSubAppid"
                   :placeholder="'请输入商家应用AppID'"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.appInfo.appSubAppid"
               ></el-input>
             </el-form-item>
             <el-form-item prop="salesInfo.appInfo.appPics">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                     APP截图
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">
@@ -538,23 +538,23 @@
               </template>
 
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.appInfo.appPics"
                   limit="4"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.appInfo.appPics"
               />
             </el-form-item>
           </el-collapse-item>
 
           <!-- 企业微信-->
           <el-collapse-item
-              :name="5"
-              title="企业微信"
               v-if="
               businessInfo.salesInfo.salesScenesType.includes(
                 'SALES_SCENES_WEWORK'
               )
             "
+              :name="5"
+              title="企业微信"
           >
             <el-form-item label="商家企业微信CorpID  " prop="salesInfo.weworkInfo.subCorpId">
               <template #label>
@@ -567,19 +567,19 @@
                 </labelExplain>
               </template>
               <el-input
+                  v-model="businessInfo.salesInfo.weworkInfo.subCorpId"
                   label="商家企业微信CorpID"
                   placeholder="请输入商家企业微信CorpID"
                   style="width: 250px"
-                  v-model="businessInfo.salesInfo.weworkInfo.subCorpId"
               ></el-input>
             </el-form-item>
             <el-form-item prop="salesInfo.weworkInfo.weworkPics">
               <template #label>
                 <labelExplain
-                    style="font-weight: bold"
                     label="
                     企业微信页面截图
                     "
+                    style="font-weight: bold"
                 >
                   <template #explain>
                     <div class="content-div">1、最多可上传5张照片</div>
@@ -588,10 +588,10 @@
               </template>
 
               <shp-upload-file
+                  v-model="businessInfo.salesInfo.weworkInfo.weworkPics"
                   limit="4"
                   multiple
                   @success="upLoadSuccess"
-                  v-model="businessInfo.salesInfo.weworkInfo.weworkPics"
               />
             </el-form-item>
           </el-collapse-item>
@@ -653,7 +653,7 @@ const businessInfo = ref({
   },
 });
 let wechartData = sessionStorage.getItem('wechartFormData')
-let wechartDatas = wechartData?JSON.parse(wechartData).businessInfo:null
+let wechartDatas = wechartData ? JSON.parse(wechartData).businessInfo : null
 // wechartDatas && (businessInfo.value = wechartDatas)
 
 //经营场景类型
@@ -768,7 +768,7 @@ const rules = ref({
   ],
   'salesInfo.bizStoreInfo.indoorPic': [
     {
-      trigger: "blur",
+      trigger: "change",
       required: true,
       message: "必须上传图片",
     },
@@ -908,7 +908,7 @@ const cityChange = (val) => {
 }
 const areaChange = (val) => {
   businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode
-      = val
+      = val.toString()
 }
 
 const getBankType = () => {
