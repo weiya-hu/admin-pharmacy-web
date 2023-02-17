@@ -3,11 +3,11 @@
     <el-table v-loading="loading" :data="props.tableListData" stripe>
       <template v-for="(itemConfig, index) in props.tableListConfig">
         <el-table-column
-            :fixed="itemConfig.isFixed"
-            :label="itemConfig.label"
-            :prop="itemConfig.prop"
-            align="center"
-            show-overflow-tooltip
+          :fixed="itemConfig.isFixed"
+          :label="itemConfig.label"
+          :prop="itemConfig.prop"
+          align="center"
+          show-overflow-tooltip
         >
           <template v-if="itemConfig.slotName" #default="scope">
             <slot :name="itemConfig.slotName" :row="scope.row"></slot>
@@ -15,30 +15,32 @@
         </el-table-column>
       </template>
       <el-table-column
-          align="center"
-          fixed="right"
-          label="操作"
-          show-overflow-tooltip
+        align="center"
+        fixed="right"
+        label="操作"
+        show-overflow-tooltip
       >
         <template #default="scope">
           <div style="display: flex; justify-content: center">
             <el-button text type="primary" @click="showQrCode(scope.row)"
-            >查看授权码
-            </el-button
-            >
+              >查看授权码
+            </el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogShow" align-center="true" center lock-scroll show-close>
-      <template #footer>
-        <h2 style="text-align: center">商户授权码</h2>
-        <div class="qr-wrapper">
-          <iframe :src="signUrl"></iframe>
-          <!--          <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>-->
-        </div>
-      </template>
+    <el-dialog
+      v-model="dialogShow"
+      align-center="true"
+      center
+      lock-scroll
+      show-close
+    >
+      <h2 style="text-align: center">商户授权码</h2>
+      <div class="qr-wrapper">
+        <iframe :src="signUrl"></iframe>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -49,8 +51,8 @@ const props = defineProps({
   tableListData: Array,
 });
 
-import {onMounted, ref} from "vue";
-import {getSignUrl} from "@/api/insurance/wechatIncoming";
+import { onMounted, ref } from "vue";
+import { getSignUrl } from "@/api/insurance/wechatIncoming";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const params = ref({});
@@ -89,11 +91,10 @@ const showQrCode = async (row) => {
     justify-content: center;
 
     iframe {
-      width: 450px;
-      height: 450px;
-      border: none
+      width: 150px;
+      height: 150px;
+      border: none;
     }
   }
-
 }
 </style>
