@@ -208,7 +208,7 @@ const rules = reactive({
   bankAccountType: [{required: true, message: "请选择账户类型", trigger: "change"}],
   accountName: [{required: true, message: "请输入开户名称", trigger: "blur"}],
   accountBank: [{required: true, message: "请选择开户银行", trigger: "change"}],
-  bankAddressCode: [{required: true, message: "请输入开户银行省市编码", trigger: "blur"}],
+  bankAddressCode: [{required: true, message: "请输入开户银行省市编码", trigger: "change"}],
   bankBranchId: [{ required: true, validator: validBankid, trigger: "blur" }],
   bankName: [{ required: true, validator: validBankName, trigger: "blur" }],
   accountNumber: [{required: true, message: "请输入银行账号", trigger: "blur"}]

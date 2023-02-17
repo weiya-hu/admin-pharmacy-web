@@ -29,17 +29,6 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="contactName">
-          <template #label>
-            <labelExplain label="超级管理员姓名" :explainShow="false"></labelExplain>
-          </template>
-          <el-input
-              v-model="form.contactName"
-              placeholder="请输入超级管理员姓名"
-              class="form-input"
-          />
-        </el-form-item>
-
         <el-form-item prop="contactIdDocType" v-if="form.contactType === 'SUPER'">
           <template #label>
             <labelExplain label="超级管理员证件类型" :explainShow="false"></labelExplain>
@@ -51,22 +40,6 @@
           >
             <el-option v-for='item in IDtypes' :label="item.label" :value="item.value" :key="item.value"/>
           </el-select>
-        </el-form-item>
-
-        <el-form-item prop="contactIdNumber" v-if="form.contactType === 'SUPER'">
-          <template #label>
-            <labelExplain label="超级管理员身份证件号码">
-              <template #explain>
-                <div>1、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>2、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码
-                </div>
-              </template>
-            </labelExplain>
-          </template>
-          <el-input
-              v-model="form.contactIdNumber"
-              placeholder="请输入超级管理员身份证件号码"
-              class="form-input"
-          />
         </el-form-item>
 
         <el-form-item prop="contactIdDocCopy" v-if="form.contactType === 'SUPER'">
@@ -134,6 +107,33 @@
           <el-dialog v-model="fDialogVisible">
             <img :src="fDialogImageUrl" alt="" style="width: 100%;object-fit: contain;"/>
           </el-dialog>
+        </el-form-item>
+
+        <el-form-item prop="contactName">
+          <template #label>
+            <labelExplain label="超级管理员姓名" :explainShow="false"></labelExplain>
+          </template>
+          <el-input
+              v-model="form.contactName"
+              placeholder="请输入超级管理员姓名"
+              class="form-input"
+          />
+        </el-form-item>
+
+        <el-form-item prop="contactIdNumber" v-if="form.contactType === 'SUPER'">
+          <template #label>
+            <labelExplain label="超级管理员身份证件号码">
+              <template #explain>
+                <div>1、超级管理员签约时，校验微信号绑定的银行卡实名信息，是否与该证件号码一致<br/>2、可传身份证、来往内地通行证、来往大陆通行证、护照等证件号码
+                </div>
+              </template>
+            </labelExplain>
+          </template>
+          <el-input
+              v-model="form.contactIdNumber"
+              placeholder="请输入超级管理员身份证件号码"
+              class="form-input"
+          />
         </el-form-item>
 
         <el-form-item prop="contactPeriodBegin" v-if="form.contactType === 'SUPER'">
@@ -345,9 +345,9 @@ const validEmail = (rule, value, callback) => {
 }
 const rules = reactive({
   contactType: [{required: true, message: "请选择超级管理员类型", trigger: "change"}],
-  contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "blur"}],
-  contactIdDocType: [{required: true, message: "请输入超级管理员证件类型", trigger: "change"}],
-  contactIdNumber: [{ required: true, validator: validNumber, trigger: "blur" }],
+  contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "change"}],
+  contactIdDocType: [{required: true, message: "请选择超级管理员证件类型", trigger: "change"}],
+  contactIdNumber: [{ required: true, validator: validNumber, trigger: "change" }],
   contactIdDocCopy: [{required: true, message: "请上传超级管理员证件正面照片", trigger: "change"}],
   contactIdDocCopyBack: [{required: true, message: "请上传超级管理员证件反面照片", trigger: "change"}],
   contactPeriodBegin: [{required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change"}],
