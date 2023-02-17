@@ -833,10 +833,10 @@
                   <div>
                     <el-switch active-text="长期有效"
                                inactive-text="长期有效"
-                               inline-prompt @change="()=>{deadlinebySwitch('uboInfoList')}"
-                               v-model="isPermanentlyValid_uboInfoList" />
+                               inline-prompt @change="()=>{deadlinebySwitch('uboInfoList',index)}"
+                               v-model="isPermanentlyValid_uboInfoList[index]" />
                   </div>
-                  <div v-if="!isPermanentlyValid_uboInfoList" class="chooseEndDate">
+                  <div v-if="!isPermanentlyValid_uboInfoList[index]" class="chooseEndDate">
                     <ShpTimeChoose
                       :default-time="item.uboPeriodEnd"
                       :chooseTag="'end'" v-model="item.uboPeriodEnd"
@@ -858,7 +858,7 @@
 </template>
 <script setup>
 //主体资料
-import { getCurrentInstance, nextTick, reactive, ref, watch } from "vue";
+import { getCurrentInstance, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import labelExplain from "./labelExplain.vue";
 import { getToken } from "@/utils/auth";
@@ -948,19 +948,30 @@ const addUboInfoPersion = () => {
       uboPeriodEnd: null
     };
     let { owner } = form_Info.value.identityInfo;
-    if (owner) {
-      if (form_Info.value.uboInfoList.length > 3) {
-        ElMessage.error("最多存在4个受益人");
+    try {
+      if (owner) {
+        if (form_Info.value.uboInfoList.length > 3) {
+          ElMessage.error("最多存在4个受益人");
+        } else {
+          form_Info.value.uboInfoList.push(itemObj);
+          form_Info.value.uboInfoList.forEach((item, index) => {
+            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
+              isVailidateOcrToUboInfoArray.value[index] = false;
+            }
+            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
+              isPermanentlyValid_uboInfoList.value[index] = false;
+            }
+          });
+        }
       } else {
-        form_Info.value.uboInfoList.push(itemObj);
-
+        if (form_Info.value.uboInfoList.length > 2) {
+          ElMessage.error("最多存在3个受益人");
+        } else {
+          form_Info.value.uboInfoList.push(itemObj);
+        }
       }
-    } else {
-      if (form_Info.value.uboInfoList.length > 2) {
-        ElMessage.error("最多存在3个受益人");
-      } else {
-        form_Info.value.uboInfoList.push(itemObj);
-      }
+    } finally {
+      instance_Form.value.validate();
     }
   }
 ;
@@ -1721,7 +1732,7 @@ const isPermanentlyValid_businessLicenseInfo = ref(false);
 const isPermanentlyValid_certificateInfo = ref(false);
 const isPermanentlyValid_identityInfo_idCardInfo = ref(false);
 const isPermanentlyValid_identityInfo_idDocInfo = ref(false);
-const isPermanentlyValid_uboInfoList = ref(false);
+let isPermanentlyValid_uboInfoList = ref([]);
 const isShowCertificateLetterCopy = ref(true);
 //控制身份证信息展示
 const isIdCard = ref(false);
@@ -2038,42 +2049,41 @@ const controlIdDocTypeRuler = (isAdd) => {
 };
 
 //证件结束日期为长期
-const deadlinebySwitch = (tag) => {
+const deadlinebySwitch = (tag, index = null) => {
   switch (tag) {
     case "businessLicenseInfoTime":
       if (isPermanentlyValid_businessLicenseInfo.value) {
         form_Info.value.businessLicenseInfo.periodEnd = "长期";
       } else {
-        form_Info.value.businessLicenseInfo.periodEnd = "";
+        form_Info.value.businessLicenseInfo.periodEnd = null;
       }
       break;
     case "certificateInfo":
       if (isPermanentlyValid_certificateInfo.value) {
         form_Info.value.certificateInfo.periodEnd = "长期";
       } else {
-        form_Info.value.certificateInfo.periodEnd = "";
+        form_Info.value.certificateInfo.periodEnd = null;
       }
       break;
     case "identityInfoIdCardInfo":
       if (isPermanentlyValid_identityInfo_idCardInfo.value) {
         form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = "长期";
       } else {
-        form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = "";
+        form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = null;
       }
       break;
     case "uboInfoList":
-      if (isPermanentlyValid_uboInfoList.value) {
-        form_Info.value.uboInfoList.uboPeriodEnd = "长期";
+      if (isPermanentlyValid_uboInfoList.value[index]) {
+        form_Info.value.uboInfoList[index].uboPeriodEnd = "长期";
       } else {
-        form_Info.value.uboInfoList.uboPeriodEnd = "";
+        form_Info.value.uboInfoList[index].uboPeriodEnd = null;
       }
       break;
     case "identityInfoIdCardInfo":
       if (isPermanentlyValid_identityInfo_idDocInfo.value) {
         form_Info.value.identityInfo.idDocInfo.docPeriodEnd = "长期";
       } else {
-        form_Info.value.identityInfo.idDocInfo.docPeriodEnd = "";
-
+        form_Info.value.identityInfo.idDocInfo.docPeriodEnd = null;
       }
       break;
   }
@@ -2190,8 +2200,6 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
               }
               return handleItem;
             });
-
-            console.log(handlePeriod);
             let validateResultData = {
               regNum,
               name,
@@ -2275,14 +2283,13 @@ watch(() => form_Info.value.businessLicenseInfo.periodEnd, () => {
   }
 
 });
-watch(() => form_Info.value.uboInfoList, () => {
-  form_Info.value.uboInfoList.forEach(item => {
-    isVailidateOcrToUboInfoArray.value.push(false);
+onMounted(() => {
+  form_Info.value.uboInfoList.forEach((item, index) => {
+    isVailidateOcrToUboInfoArray.value[index] = false;
+    isPermanentlyValid_uboInfoList.value[index] = false;
   });
-}, {
-  immediate: true,
-  deep: true
 });
+
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
