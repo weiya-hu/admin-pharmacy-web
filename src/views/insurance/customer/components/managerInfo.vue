@@ -88,6 +88,7 @@
               list-type="picture-card"
               :on-exceed="handleExceed"
               :on-success="zHandleAvatarSuccess"
+              :on-error="zHandleAvatarError"
               :on-preview="zhandlePictureCardPreview"
               :on-remove="zhandleRemove"
               :before-upload="beforeAvatarUpload"
@@ -121,6 +122,7 @@
               list-type="picture-card"
               :on-exceed="handleExceed"
               :on-success="fHandleAvatarSuccess"
+              :on-error="fHandleAvatarError"
               :on-preview="fhandlePictureCardPreview"
               :on-remove="fhandleRemove"
               :before-upload="beforeAvatarUpload"
@@ -424,7 +426,13 @@ const zHandleAvatarSuccess = (res) => {
     }).catch(err => {
       zFileList.value = []
     })
+  } else {
+    zFileList.value = []
+    ElMessage.error(res.msg)
   }
+}
+const zHandleAvatarError = (err) => {
+  zFileList.value = []
 }
 const zhandleRemove = () => {
   form.value.contactIdNumber = ''
@@ -461,7 +469,13 @@ const fHandleAvatarSuccess = (res) => {
     }).catch(err => {
       fFileList.value = []
     })
+  } else {
+    fFileList.value = []
+    ElMessage.error(res.msg)
   }
+}
+const fHandleAvatarError = (err) => {
+  fFileList.value = []
 }
 const fhandleRemove = () => {
   form.value.contactPeriodBegin = ''
