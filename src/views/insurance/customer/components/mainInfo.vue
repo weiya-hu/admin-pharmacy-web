@@ -82,7 +82,7 @@
                 v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
                 flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="businessLicenseInfo.licenseNumber">
               <template #label>
                 <labelExplain label="注册号/统一社会信用代码">
                   <template #explain>
@@ -92,9 +92,9 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.licenseNumber"></el-input>
+              <el-input v-model="form_Info.businessLicenseInfo.licenseNumber"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="businessLicenseInfo.merchantName">
               <template #label>
                 <labelExplain label="商户名称">
                   <template #explain>
@@ -104,9 +104,9 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.merchantName"></el-input>
+              <el-input v-model="form_Info.businessLicenseInfo.merchantName"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="businessLicenseInfo.legalPerson">
               <template #label>
                 <labelExplain label="个体户经营者/法人姓名">
                   <template #explain>
@@ -116,9 +116,9 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.legalPerson"></el-input>
+              <el-input v-model="form_Info.businessLicenseInfo.legalPerson"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="businessLicenseInfo.licenseAddress">
               <template #label>
                 <labelExplain label="注册地址">
                   <template #explain>
@@ -129,9 +129,9 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.licenseAddress"></el-input>
+              <el-input v-model="form_Info.businessLicenseInfo.licenseAddress"></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="businessLicenseInfo.periodBegin">
               <template #label>
                 <labelExplain label="有效期限开始日期">
                   <template #explain>
@@ -143,13 +143,12 @@
               </template>
               <div style="display: flex">
                 <ShpTimeChoose
-                  :disable="true"
                   :default-time="form_Info.businessLicenseInfo.periodBegin"
                   :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
                   :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
               </div>
             </el-form-item>
-            <el-form-item style="font-weight: bold">
+            <el-form-item style="font-weight: bold" prop="businessLicenseInfo.periodEnd">
               <template #label>
                 <labelExplain label="有效期限结束日期">
                   <template #explain>
@@ -166,14 +165,13 @@
                     active-text="长期有效"
                     inactive-text="长期有效"
                     inline-prompt
-                    :disabled="true"
+
                     @change="()=>{deadlinebySwitch('businessLicenseInfoTime')}"
                     v-model="isPermanentlyValid_businessLicenseInfo">
                   </el-switch>
                 </div>
                 <div v-if="!isPermanentlyValid_businessLicenseInfo" class="chooseEndDate">
                   <ShpTimeChoose
-                    :disable="true"
                     :default-time="form_Info.businessLicenseInfo.periodEnd"
                     :chooseTag="'end'" v-model="form_Info.businessLicenseInfo.periodEnd"
                     :begin-time="form_Info.businessLicenseInfo.periodBegin"></ShpTimeChoose>
@@ -411,7 +409,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-radio-group v-model="form_Info.identityInfo.owner">
+              <el-radio-group @change="changeOwner" v-model="form_Info.identityInfo.owner">
                 <el-radio :label="true" size="large">是</el-radio>
                 <el-radio :label="false" size="large">否</el-radio>
               </el-radio-group>
@@ -876,6 +874,7 @@ const uploadData = ref({
 });
 //全局代理对象
 const proxy = getCurrentInstance();
+/**变量定义*/
 //上传组件实例（身份证和其他证件上传的实例）
 const licenseCopy_Instance = ref(null);
 const idCardInfoIdCardCopy_Instance = ref(null);
@@ -919,19 +918,100 @@ const specialChecksData = ref({
 });
 //最终受益人当中是否需要进行身份校验（仅有当证件类型选择身份证的时候需要ocr身份校验）
 const isVailidateOcrToUboInfoArray = ref([]);
-//选择最终受益人的证件类型
-const changeUboIdDocType = (value, index) => {
-  //如果为身份证需要ocr校验
-  if (value == "IDENTIFICATION_TYPE_IDCARD") {
-    isVailidateOcrToUboInfoArray.value[index] = true;
-  } else {
-    isVailidateOcrToUboInfoArray.value[index] = false;
-  }
-};
-
-//添加受益人
-const addUboInfoPersion = () => {
-    let itemObj = {
+//表单主体信息
+const form_Info = ref({
+  subjectType: null, //主体类型
+  financeInstitution: false,//是否是金融机构
+  certificateLetterCopy: null,//单位证明函照片
+  //-营业执照
+  businessLicenseInfo: {
+    //营业执照照片
+    licenseCopy: null,
+    //注册号/统一社会信用代码
+    licenseNumber: null,
+    //商户名称
+    merchantName: null,
+    //个体户经营者/法人姓名
+    legalPerson: null,
+    //注册地址
+    licenseAddress: null,
+    //开始时间
+    periodBegin: null,
+    //结束时间
+    periodEnd: null
+  },
+  //登记证书
+  certificateInfo: {
+    //登记证书照片
+    certCopy: null,
+    // 登记证书类型
+    certType: null,
+    //证书号
+    certNumber: null,
+    //商户名称
+    merchantName: null,
+    //注册地址
+    companyAddress: null,
+    //法定代表
+    legalPerson: null,
+    //有效期限开始日期
+    periodBegin: null,
+    //有效期限结束日期
+    periodEnd: null
+  },
+  //金融机构许可证信息
+  financeInstitutionInfo: {
+    //金融机构类型
+    financeType: null,
+    //金融机构许可证图片
+    financeLicensePics: null
+  },
+  // 经营者/法人身份证件
+  identityInfo: {
+    //证件持有人类型
+    idHolderType: "LEGAL",
+    // 证件类型
+    idDocType: null,
+    //法定代表人说明函
+    authorizeLetterCopy: null,
+    //经营者/法人是否为受益人
+    owner: false,
+    // 身份证信息
+    idCardInfo: {
+      //身份证人像面照片
+      idCardCopy: null,
+      //身份证国徽面照片
+      idCardNational: null,
+      //身份证姓名
+      idCardName: null,
+      //身份证号码
+      idCardNumber: null,
+      //身份证居住地址
+      idCardAddress: null,
+      cardPeriodBegin: null,
+      cardPeriodEnd: null
+    },
+    //其他类型证件信息
+    idDocInfo: {
+      //证件正面照片
+      idDocCopy: null,
+      //证件反面照片
+      idDocCopyBack: null,
+      //证件姓名
+      idDocName: null,
+      //证件号码
+      idDocNumber: null,
+      //证件居住地址
+      idDocAddress: null,
+      //开始日期
+      docPeriodBegin: null,
+      // 结束日期
+      docPeriodEnd: null
+    }
+  },
+  //最终受益人信息列表
+  uboInfoList: [
+    {
       //证件类型
       uboIdDocType: null,
       //证件正面照片
@@ -948,133 +1028,42 @@ const addUboInfoPersion = () => {
       uboPeriodBegin: null,
       // 证件有效期结束时间
       uboPeriodEnd: null
-    };
-    let { owner } = form_Info.value.identityInfo;
-    try {
-      if (owner) {
-        if (form_Info.value.uboInfoList.length > 3) {
-          ElMessage.error("最多存在4个受益人");
-        } else {
-          form_Info.value.uboInfoList.push(itemObj);
-          form_Info.value.uboInfoList.forEach((item, index) => {
-            //初始化添加的受益人是否需要进行ocr校验
-            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
-              isVailidateOcrToUboInfoArray.value[index] = false;
-            }
-            //初始化长期的选择器是否展示
-            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
-              isPermanentlyValid_uboInfoList.value[index] = false;
-            }
-          });
-        }
-      } else {
-        if (form_Info.value.uboInfoList.length > 2) {
-          ElMessage.error("最多存在3个受益人");
-        } else {
-          form_Info.value.uboInfoList.push(itemObj);
-          form_Info.value.uboInfoList.forEach((item, index) => {
-            //初始化添加的受益人是否需要进行ocr校验
-            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
-              isVailidateOcrToUboInfoArray.value[index] = false;
-            }
-            //初始化长期的选择器是否展示
-            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
-              isPermanentlyValid_uboInfoList.value[index] = false;
-            }
-          });
-        }
-      }
-    } finally {
-      instance_Form.value.validate();
     }
-  }
-;
-//删除受益人
-const deleteUboInfoPersion = (index) => {
-  form_Info.value.uboInfoList.splice(index, 1);
+  ]
 
-};
-
-watch(() => specialChecksData.value, () => {
-  // 遍历当前对象将对应的值添加到指定的form_info对象当中
-  try {
-    Object.keys(specialChecksData.value).forEach(key => {
-      switch (key) {
-        case "licenseCopyData": {
-          let {
-            regNum,
-            name,
-            person,
-            address,
-            beginTime,
-            endTime
-          } = specialChecksData.value[key];
-          form_Info.value.businessLicenseInfo.licenseNumber = regNum;
-          form_Info.value.businessLicenseInfo.merchantName = name;
-          form_Info.value.businessLicenseInfo.legalPerson = person;
-          form_Info.value.businessLicenseInfo.licenseAddress = address;
-          form_Info.value.businessLicenseInfo.periodBegin = beginTime;
-          form_Info.value.businessLicenseInfo.periodEnd = endTime;
-        }
-          break;
-        case "idCardInfoIdCardCopyData": {
-          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
-          form_Info.value.identityInfo.idCardInfo.idCardName = name;
-          form_Info.value.identityInfo.idCardInfo.idCardNumber = idNum;
-          form_Info.value.identityInfo.idCardInfo.idCardAddress = address;
-          break;
-        }
-        case "idCardInfoIdCardNationalData": {
-          let { beginTime, endTime } = specialChecksData.value[key];
-          form_Info.value.identityInfo.idCardInfo.cardPeriodBegin = beginTime;
-          form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
-          break;
-        }
-        case "uboInfoListUboIdDocCopyData": {
-          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
-          form_Info.value.uboInfoList.uboIdDocName = name;
-          form_Info.value.uboInfoList.uboIdDocNumber = idNum;
-          form_Info.value.uboInfoList.uboIdDocAddress = address;
-          break;
-        }
-        case "uboInfoListUboIdDocCopyBackData": {
-
-          break;
-        }
-        case "uboInfoListPositiveData": {
-          //遍历数组对应赋值
-          specialChecksData.value[key].forEach((item, index) => {
-            let { address = "", idNum = "", name = "" } = item;
-            form_Info.value.uboInfoList[index].uboIdDocName = name;
-            form_Info.value.uboInfoList[index].uboIdDocNumber = idNum;
-            form_Info.value.uboInfoList[index].uboIdDocAddress = address;
-          });
-          break;
-        }
-        case "uboInfoListOppositeData": {
-          specialChecksData.value[key].forEach((item, index) => {
-            let { beginTime, endTime } = item;
-            form_Info.value.uboInfoList[index].uboPeriodBegin = beginTime;
-            form_Info.value.uboInfoList[index].uboPeriodEnd = endTime;
-          });
-          break;
-        }
-      }
-
-
-    });
-  } finally {
-    instance_Form.value.validate();
-  }
-
-
-}, {
-  immediate: false,
-  deep: true
 });
-
-
-//主题类型选择选项
+//外层折叠面板name数组
+let activeNames = ref([]);
+//内层折叠面板name数组
+let innerActiveNames = ref([]);
+//营业执照中证件结束时间选择器是否展示
+const isPermanentlyValid_businessLicenseInfo = ref(false);
+//登记证书中证件结束时间选择器是否展示
+const isPermanentlyValid_certificateInfo = ref(false);
+//身份证信息中证件结束时间选择器是否展示
+const isPermanentlyValid_identityInfo_idCardInfo = ref(false);
+//其他证件信息中证件结束时间选择器是否展示
+const isPermanentlyValid_identityInfo_idDocInfo = ref(false);
+//最终受益人当中证件结束时间选择器师傅展示的集合
+let isPermanentlyValid_uboInfoList = ref([]);
+//单位函证明是否展示
+const isShowCertificateLetterCopy = ref(true);
+//控制身份证信息展示
+const isIdCard = ref(false);
+//控制其他证件信息的展示
+const idDoc = ref(false);
+//控制营业执照是否展示
+const isShowBusiness = ref(false);
+// 控制登记证书是否展示
+const isShowCertificate = ref(false);
+//控制最终受益人信息列表是否展示
+const uboInfo = ref(false);
+//form表单实例
+let instance_Form = ref(null);
+/**常量定义*/
+//主体类型
+const isSubjectType = ref(null);
+//主体类型选择选项
 const subjectTypeOption = ref([
   {
     label: "个体户",
@@ -1163,6 +1152,7 @@ const idDocTypeOption = ref([
     disabled: false
   }
 ]);
+//其他受益人证件类型选择选项
 const uboIdDocTypeOption = ref([
   {
     label: "中国大陆居民-身份证",
@@ -1258,8 +1248,159 @@ const certTypeOption = ref([
     disabled: false
   }
 ]);
-//主体类型
-const isSubjectType = ref(null);
+/**方法定义*/
+//选择最终受益人的证件类型
+const changeUboIdDocType = (value, index) => {
+  //如果为身份证需要ocr校验
+  if (value == "IDENTIFICATION_TYPE_IDCARD") {
+    isVailidateOcrToUboInfoArray.value[index] = true;
+  } else {
+    isVailidateOcrToUboInfoArray.value[index] = false;
+  }
+};
+//添加受益人
+const addUboInfoPersion = () => {
+    let itemObj = {
+      //证件类型
+      uboIdDocType: null,
+      //证件正面照片
+      uboIdDocCopy: null,
+      //证件反面照片
+      uboIdDocCopyBack: null,
+      //证件姓名
+      uboIdDocName: null,
+      // 证件号码
+      uboIdDocNumber: null,
+      // 证件居住地址
+      uboIdDocAddress: null,
+      //证件有效期开始时间
+      uboPeriodBegin: null,
+      // 证件有效期结束时间
+      uboPeriodEnd: null
+    };
+    let { owner } = form_Info.value.identityInfo;
+    try {
+      if (owner) {
+        if (form_Info.value.uboInfoList.length > 3) {
+          ElMessage.error("最多存在4个受益人");
+        } else {
+          form_Info.value.uboInfoList.push(itemObj);
+          form_Info.value.uboInfoList.forEach((item, index) => {
+            //初始化添加的受益人是否需要进行ocr校验
+            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
+              isVailidateOcrToUboInfoArray.value[index] = false;
+            }
+            //初始化长期的选择器是否展示
+            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
+              isPermanentlyValid_uboInfoList.value[index] = false;
+            }
+          });
+        }
+      } else {
+        if (form_Info.value.uboInfoList.length > 2) {
+          ElMessage.error("最多存在3个受益人");
+        } else {
+          form_Info.value.uboInfoList.push(itemObj);
+          form_Info.value.uboInfoList.forEach((item, index) => {
+            //初始化添加的受益人是否需要进行ocr校验
+            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
+              isVailidateOcrToUboInfoArray.value[index] = false;
+            }
+            //初始化长期的选择器是否展示
+            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
+              isPermanentlyValid_uboInfoList.value[index] = false;
+            }
+          });
+        }
+      }
+    } finally {
+      instance_Form.value.validate();
+    }
+  }
+;
+//删除受益人
+const deleteUboInfoPersion = (index) => {
+  form_Info.value.uboInfoList.splice(index, 1);
+  isVailidateOcrToUboInfoArray.value.splice(index, 1);
+  isPermanentlyValid_uboInfoList.value.splice(index, 1);
+};
+//监听specialChecksData当中的值将值回显到对应选项当中
+watch(() => specialChecksData.value, () => {
+  // 遍历当前对象将对应的值添加到指定的form_info对象当中
+  try {
+    Object.keys(specialChecksData.value).forEach(key => {
+      switch (key) {
+        case "licenseCopyData": {
+          let {
+            regNum,
+            name,
+            person,
+            address,
+            beginTime,
+            endTime
+          } = specialChecksData.value[key];
+          form_Info.value.businessLicenseInfo.licenseNumber = regNum;
+          form_Info.value.businessLicenseInfo.merchantName = name;
+          form_Info.value.businessLicenseInfo.legalPerson = person;
+          form_Info.value.businessLicenseInfo.licenseAddress = address;
+          form_Info.value.businessLicenseInfo.periodBegin = beginTime;
+          form_Info.value.businessLicenseInfo.periodEnd = endTime;
+        }
+          break;
+        case "idCardInfoIdCardCopyData": {
+          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
+          form_Info.value.identityInfo.idCardInfo.idCardName = name;
+          form_Info.value.identityInfo.idCardInfo.idCardNumber = idNum;
+          form_Info.value.identityInfo.idCardInfo.idCardAddress = address;
+          break;
+        }
+        case "idCardInfoIdCardNationalData": {
+          let { beginTime, endTime } = specialChecksData.value[key];
+          form_Info.value.identityInfo.idCardInfo.cardPeriodBegin = beginTime;
+          form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
+          break;
+        }
+        case "uboInfoListUboIdDocCopyData": {
+          let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
+          form_Info.value.uboInfoList.uboIdDocName = name;
+          form_Info.value.uboInfoList.uboIdDocNumber = idNum;
+          form_Info.value.uboInfoList.uboIdDocAddress = address;
+          break;
+        }
+        case "uboInfoListUboIdDocCopyBackData": {
+          break;
+        }
+        case "uboInfoListPositiveData": {
+          //遍历数组对应赋值
+          specialChecksData.value[key].forEach((item, index) => {
+            let { address = "", idNum = "", name = "" } = item;
+            form_Info.value.uboInfoList[index].uboIdDocName = name;
+            form_Info.value.uboInfoList[index].uboIdDocNumber = idNum;
+            form_Info.value.uboInfoList[index].uboIdDocAddress = address;
+          });
+          break;
+        }
+        case "uboInfoListOppositeData": {
+          specialChecksData.value[key].forEach((item, index) => {
+            let { beginTime, endTime } = item;
+            form_Info.value.uboInfoList[index].uboPeriodBegin = beginTime;
+            form_Info.value.uboInfoList[index].uboPeriodEnd = endTime;
+          });
+          break;
+        }
+      }
+    });
+  } finally {
+    instance_Form.value.validate();
+  }
+
+
+}, {
+  immediate: false,
+  deep: true
+});
+
+/**自定义校验规则定义*/
 //自定义校验统一社会信用代码
 const validateLicenseNumber = (rule, value, callback) => {
   let validateReg = /^[0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}$/;
@@ -1281,21 +1422,8 @@ const validateCertificateLetterCopy = (rule, value, callback) => {
     callback();
   }
 };
-//自定义营业执照照片校验
-const validateLicenseCopy = (rule, value, callback) => {
-  callback();
-};
-//自定义登记证书上传校验
-const validateCertCopy = (rule, value, callback) => {
-  callback();
-};
-//自定义登记证书类型校验
-const validateCertType = (rule, value, callback) => {
-  callback();
-};
 //自定义金融机构许可证图片校验
 const validateFinanceLicensePics = (rule, value, callback) => {
-
   callback(new Error("请上传金融机构许可证图片"));
 };
 //自定义法人代表说明函校验
@@ -1307,14 +1435,6 @@ const validateAuthorizeLetterCopy = (rule, value, callback) => {
     callback();
   }
 
-};
-//自定义身份证信息中身份证人像面照片的校验
-const validateIdCardInfoIdCardCopy = (rule, value, callback) => {
-  callback();
-};
-//自定义身份证信息中身份证国徽面照片的校验
-const validateIdCardInfoIdCardNational = (rule, value, callback) => {
-  callback();
 };
 //自定义身份证信息中身份证号码校验
 const validateIdCardInfoIdCardNumber = (rule, value, callback) => {
@@ -1365,21 +1485,26 @@ const validateIdDocInfoOwner = (rule, value, callback) => {
   // }
   callback();
 };
-
 //自定义最终受益人列表当中证件反面照片的校验
 const validateUboInfoListUboIdDocCopyBack = (rule, value, callback) => {
-  let index = Number(rule.field.split(".")[1]);
-  let { uboIdDocType } = form_Info.value.uboInfoList[index];
-  console.log(uboIdDocType);
-  //若为护照无需上传
-  if (value == null && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
-    callback();
-  } else if (value == null && uboIdDocType !== "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
-    callback("请上传证件反面照片");
+  let { owner } = form_Info.value.identityInfo;
+  if (!owner) {
+    let index = Number(rule.field.split(".")[1]);
+    let { uboIdDocType } = form_Info.value.uboInfoList[index];
+    console.log(uboIdDocType);
+    //若为护照无需上传
+    if (value == null && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
+      callback();
+    } else if (value == null && uboIdDocType !== "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
+      callback("请上传证件反面照片");
+    } else {
+      callback();
+    }
   } else {
     callback();
   }
 };
+/**表单校验规则汇总*/
 const form_Info_Rules = ref({
   "subjectType": [
     { required: true, message: "请选择主体类型", trigger: "change" }
@@ -1387,6 +1512,15 @@ const form_Info_Rules = ref({
   "certificateLetterCopy": [
     { required: true, validator: validateCertificateLetterCopy, trigger: "blur" }
     // { required: true, message: "请上传单位函证明", trigger: "change" }
+  ],
+  "businessLicenseInfo.licenseAddress": [
+    { required: true, message: "请填写注册地址", trigger: "blur" }
+  ],
+  "businessLicenseInfo.periodBegin": [
+    { required: true, message: "请选择有效期限开始日期", trigger: "blur" }
+  ],
+  "businessLicenseInfo.periodEnd": [
+    { required: true, message: "请选择有效期限结束日期", trigger: "blur" }
   ],
   //营业执照
   "businessLicenseInfo.licenseNumber": [
@@ -1523,6 +1657,7 @@ const form_Info_Rules = ref({
     { required: true, message: "请选择证件有效期结束时间", trigger: "blur" }
   ]
 });
+/**重置方法*/
 //重置最终受益人信息列表
 const resetUboInfoList = () => {
   form_Info.value.uboInfoList = [{
@@ -1545,7 +1680,6 @@ const resetUboInfoList = () => {
   }];
 
 };
-
 //重置营业执照的数据
 const resetBusinessLicenseInfo = () => {
   form_Info.value.businessLicenseInfo = {
@@ -1586,7 +1720,6 @@ const resetCertificateInfo = () => {
     periodEnd: null
   };
 };
-
 //重置身份证信息数据
 const resetIdCardInfo = () => {
   form_Info.value.identityInfo.idCardInfo = {
@@ -1623,148 +1756,14 @@ const resetIdDocInfo = () => {
     docPeriodEnd: null
   };
 };
-const form_Info = ref({
-  subjectType: null, //主体类型
-  financeInstitution: false,//是否是金融机构
-  certificateLetterCopy: null,//单位证明函照片
-  //-营业执照
-  businessLicenseInfo: {
-    //营业执照照片
-    licenseCopy: null,
-    //注册号/统一社会信用代码
-    licenseNumber: null,
-    //商户名称
-    merchantName: null,
-    //个体户经营者/法人姓名
-    legalPerson: null,
-    //注册地址
-    licenseAddress: null,
-    //开始时间
-    periodBegin: null,
-    //结束时间
-    periodEnd: null
-  },
-  //登记证书
-  certificateInfo: {
-    //登记证书照片
-    certCopy: null,
-    // 登记证书类型
-    certType: null,
-    //证书号
-    certNumber: null,
-    //商户名称
-    merchantName: null,
-    //注册地址
-    companyAddress: null,
-    //法定代表
-    legalPerson: null,
-    //有效期限开始日期
-    periodBegin: null,
-    //有效期限结束日期
-    periodEnd: null
-  },
-  //金融机构许可证信息
-  financeInstitutionInfo: {
-    //金融机构类型
-    financeType: null,
-    //金融机构许可证图片
-    financeLicensePics: null
-  },
-  // 经营者/法人身份证件
-  identityInfo: {
-    //证件持有人类型
-    idHolderType: "LEGAL",
-    // 证件类型
-    idDocType: null,
-    //法定代表人说明函
-    authorizeLetterCopy: null,
-    //经营者/法人是否为受益人
-    owner: false,
-    // 身份证信息
-    idCardInfo: {
-      //身份证人像面照片
-      idCardCopy: null,
-      //身份证国徽面照片
-      idCardNational: null,
-      //身份证姓名
-      idCardName: null,
-      //身份证号码
-      idCardNumber: null,
-      //身份证居住地址
-      idCardAddress: null,
-      cardPeriodBegin: null,
-      cardPeriodEnd: null
-    },
-    //其他类型证件信息
-    idDocInfo: {
-      //证件正面照片
-      idDocCopy: null,
-      //证件反面照片
-      idDocCopyBack: null,
-      //证件姓名
-      idDocName: null,
-      //证件号码
-      idDocNumber: null,
-      //证件居住地址
-      idDocAddress: null,
-      //开始日期
-      docPeriodBegin: null,
-      // 结束日期
-      docPeriodEnd: null
-    }
-  },
-  //最终受益人信息列表
-  uboInfoList: [
-    {
-      //证件类型
-      uboIdDocType: null,
-      //证件正面照片
-      uboIdDocCopy: null,
-      //证件反面照片
-      uboIdDocCopyBack: null,
-      //证件姓名
-      uboIdDocName: null,
-      // 证件号码
-      uboIdDocNumber: null,
-      // 证件居住地址
-      uboIdDocAddress: null,
-      //证件有效期开始时间
-      uboPeriodBegin: null,
-      // 证件有效期结束时间
-      uboPeriodEnd: null
-    }
-  ]
-
-});
 let wechartData = sessionStorage.getItem("wechartFormData");
 let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null;
-// wechartDatas && (form_Info.value = wechartDatas)
-
-let activeNames = ref([]);
-let innerActiveNames = ref([]);
-const isPermanentlyValid_businessLicenseInfo = ref(false);
-const isPermanentlyValid_certificateInfo = ref(false);
-const isPermanentlyValid_identityInfo_idCardInfo = ref(false);
-const isPermanentlyValid_identityInfo_idDocInfo = ref(false);
-let isPermanentlyValid_uboInfoList = ref([]);
-const isShowCertificateLetterCopy = ref(true);
-//控制身份证信息展示
-const isIdCard = ref(false);
-//控制其他证件信息的展示
-const idDoc = ref(false);
-//控制营业执照是否展示
-const isShowBusiness = ref(false);
-// 控制登记证书是否展示
-const isShowCertificate = ref(false);
-//控制最终受益人信息列表是否展示
-const uboInfo = ref(false);
-let instance_Form = ref(null);
-
-/**折叠展开*/
+/**方法定义*/
+// 折叠展开
 const ChangeCollapse = (activeNames) => {
   console.log(activeNames);
 };
-/**选择主体类型*/
+//选择主体类型
 const chooseSubjectType = (value) => {
   if (value) {
     isSubjectType.value = subjectTypeOption.value.filter(item => {
@@ -1859,12 +1858,11 @@ const chooseSubjectType = (value) => {
     }
   }
 };
-/**选择是否为金融机构*/
+//选择是否为金融机构
 const chooseFinanceInstitution = (value) => {
   controlFinanceInstitutionRuler(value);
 };
-
-/**选择证件持有人类型*/
+//选择证件持有人类型
 const chooseIdHolderType = (value) => {
   if (value == "LEGAL") {
     controlIdDocTypeRuler(true);
@@ -1961,7 +1959,6 @@ const changeCertificateInfoCertType = () => {
   console.log(form_Info.value.certificateInfo, "???");
   console.log(form_Info.value.certificateInfo.certType, "???");
 };
-
 //控制营业执照整体是否添加校验
 const controlBusinessLicenseInfoRuler = (isAdd) => {
   let allRuleToBusiness = {};
@@ -2023,7 +2020,6 @@ const controlCertificateInfoRuler = (isAdd) => {
     isChangeRulerRequired(allRuleToCertificateInfo, isAdd);
   }
 };
-
 //控制金融机构许可证信息选项是否校验
 const controlFinanceInstitutionRuler = (isAdd) => {
   let allRuleToFinanceInstitution = {};
@@ -2050,7 +2046,6 @@ const controlFinanceInstitutionRuler = (isAdd) => {
     isChangeRulerRequired(allRuleToFinanceInstitution, isAdd);
   }
 };
-
 //通过证件持有人类型控制经营者/法人身份证件当中的校验项（证件类型）
 const controlIdDocTypeRuler = (isAdd) => {
   Object.keys(form_Info_Rules.value).forEach(itemKey => {
@@ -2061,7 +2056,6 @@ const controlIdDocTypeRuler = (isAdd) => {
     }
   });
 };
-
 //证件结束日期为长期
 const deadlinebySwitch = (tag, index = null) => {
   switch (tag) {
@@ -2245,8 +2239,24 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
     instance_Form.value.validate();
   }
 };
-
-
+//是否为最终受益人
+const changeOwner = (value) => {
+  let objAll = {};
+  if (value) {
+    Object.keys(form_Info_Rules.value).forEach(itemKey => {
+      if (itemKey.indexOf("uboInfoList") !== -1) {
+        form_Info_Rules.value[itemKey][0].required = false;
+      }
+    });
+  } else {
+    Object.keys(form_Info_Rules.value).forEach(itemKey => {
+      if (itemKey.indexOf("uboInfoList") !== -1) {
+        form_Info_Rules.value[itemKey][0].required = true;
+      }
+    });
+  }
+};
+/**监听器*/
 //多条件监听身份证信息是否必传
 watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identityInfo.idDocType], () => {
   let { identityInfo: { idHolderType, idDocType } } = form_Info.value;
@@ -2303,7 +2313,6 @@ onMounted(() => {
     isPermanentlyValid_uboInfoList.value[index] = false;
   });
 });
-
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
 const submit = async () => {
