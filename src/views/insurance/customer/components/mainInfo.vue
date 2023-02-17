@@ -92,7 +92,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.businessLicenseInfo.licenseNumber"></el-input>
+              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.licenseNumber"></el-input>
             </el-form-item>
             <el-form-item prop="businessLicenseInfo.merchantName">
               <template #label>
@@ -104,7 +104,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.businessLicenseInfo.merchantName"></el-input>
+              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.merchantName"></el-input>
             </el-form-item>
             <el-form-item prop="businessLicenseInfo.legalPerson">
               <template #label>
@@ -116,7 +116,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.businessLicenseInfo.legalPerson"></el-input>
+              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.legalPerson"></el-input>
             </el-form-item>
             <el-form-item>
               <template #label>
@@ -129,7 +129,7 @@
                   </template>
                 </labelExplain>
               </template>
-              <el-input v-model="form_Info.businessLicenseInfo.licenseAddress"></el-input>
+              <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.licenseAddress"></el-input>
             </el-form-item>
             <el-form-item>
               <template #label>
@@ -143,6 +143,7 @@
               </template>
               <div style="display: flex">
                 <ShpTimeChoose
+                  :disable="true"
                   :default-time="form_Info.businessLicenseInfo.periodBegin"
                   :chooseTag="'begin'" v-model="form_Info.businessLicenseInfo.periodBegin"
                   :end-time="form_Info.businessLicenseInfo.periodEnd"></ShpTimeChoose>
@@ -165,12 +166,14 @@
                     active-text="长期有效"
                     inactive-text="长期有效"
                     inline-prompt
+                    :disabled="true"
                     @change="()=>{deadlinebySwitch('businessLicenseInfoTime')}"
                     v-model="isPermanentlyValid_businessLicenseInfo">
                   </el-switch>
                 </div>
                 <div v-if="!isPermanentlyValid_businessLicenseInfo" class="chooseEndDate">
                   <ShpTimeChoose
+                    :disable="true"
                     :default-time="form_Info.businessLicenseInfo.periodEnd"
                     :chooseTag="'end'" v-model="form_Info.businessLicenseInfo.periodEnd"
                     :begin-time="form_Info.businessLicenseInfo.periodBegin"></ShpTimeChoose>
@@ -871,7 +874,9 @@ const uploadData = ref({
   uploadUrl: import.meta.env.VITE_APP_BASE_API + "pay/media/wxPictureUpload",
   token: getToken()
 });
-//上传组件实例
+//全局代理对象
+const proxy = getCurrentInstance();
+//上传组件实例（身份证和其他证件上传的实例）
 const licenseCopy_Instance = ref(null);
 const idCardInfoIdCardCopy_Instance = ref(null);
 const idCardInfoIdCardNational_Instance = ref(null);
@@ -880,10 +885,7 @@ const uboInfoListUboIdDocCopyBack_Instance = ref(null);
 const certificateInfoCertCopy_Instance = ref(null);
 //最终受益人的证件是否需要ocr校验
 const isVailidateOcrToUboInfo = ref(false);
-const proxy = getCurrentInstance();
-
-
-//上传组件的清除方法
+//上传文件失败清除文件的方法
 const uploadInstances = ref({
   licenseCopyInstance: () => {
     licenseCopy_Instance.value.removeFile();
@@ -904,8 +906,7 @@ const uploadInstances = ref({
     certificateInfoCertCopy_Instance.value.removeFile();
   }
 });
-
-//单独存特殊校验后返回的值
+//存储特殊文件ocr校验后回传的值用于默认填写
 const specialChecksData = ref({
   licenseCopyData: {},//营业执照校验信息
   idCardInfoIdCardCopyData: {},//身份证人像面照片信息
@@ -916,10 +917,11 @@ const specialChecksData = ref({
   uboInfoListPositiveData: [],  //存放最终受益人正面信息
   uboInfoListOppositeData: []//存放最终受益人反面信息
 });
-//最终受益人当中是否需要进行身份校验
+//最终受益人当中是否需要进行身份校验（仅有当证件类型选择身份证的时候需要ocr身份校验）
 const isVailidateOcrToUboInfoArray = ref([]);
 //选择最终受益人的证件类型
 const changeUboIdDocType = (value, index) => {
+  //如果为身份证需要ocr校验
   if (value == "IDENTIFICATION_TYPE_IDCARD") {
     isVailidateOcrToUboInfoArray.value[index] = true;
   } else {
@@ -955,9 +957,11 @@ const addUboInfoPersion = () => {
         } else {
           form_Info.value.uboInfoList.push(itemObj);
           form_Info.value.uboInfoList.forEach((item, index) => {
+            //初始化添加的受益人是否需要进行ocr校验
             if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
               isVailidateOcrToUboInfoArray.value[index] = false;
             }
+            //初始化长期的选择器是否展示
             if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
               isPermanentlyValid_uboInfoList.value[index] = false;
             }
@@ -968,6 +972,16 @@ const addUboInfoPersion = () => {
           ElMessage.error("最多存在3个受益人");
         } else {
           form_Info.value.uboInfoList.push(itemObj);
+          form_Info.value.uboInfoList.forEach((item, index) => {
+            //初始化添加的受益人是否需要进行ocr校验
+            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
+              isVailidateOcrToUboInfoArray.value[index] = false;
+            }
+            //初始化长期的选择器是否展示
+            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
+              isPermanentlyValid_uboInfoList.value[index] = false;
+            }
+          });
         }
       }
     } finally {
@@ -1287,7 +1301,7 @@ const validateFinanceLicensePics = (rule, value, callback) => {
 //自定义法人代表说明函校验
 const validateAuthorizeLetterCopy = (rule, value, callback) => {
   let { idHolderType } = form_Info.value.identityInfo;
-  if (!value && idHolderType == "SUPER") {
+  if (idHolderType == "SUPER") {
     callback(new Error("请上传法人代表说明函"));
   } else {
     callback();
