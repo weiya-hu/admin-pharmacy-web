@@ -82,7 +82,7 @@
                 v-model="form_Info.businessLicenseInfo.licenseCopy" :limit="1" :multiple="false"
                 flag="businessAdditionPics"></ShpUploadFile>
             </el-form-item>
-            <el-form-item prop="businessLicenseInfo.licenseNumber">
+            <el-form-item>
               <template #label>
                 <labelExplain label="注册号/统一社会信用代码">
                   <template #explain>
@@ -94,7 +94,7 @@
               </template>
               <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.licenseNumber"></el-input>
             </el-form-item>
-            <el-form-item prop="businessLicenseInfo.merchantName">
+            <el-form-item>
               <template #label>
                 <labelExplain label="商户名称">
                   <template #explain>
@@ -106,7 +106,7 @@
               </template>
               <el-input :disabled="true" v-model="form_Info.businessLicenseInfo.merchantName"></el-input>
             </el-form-item>
-            <el-form-item prop="businessLicenseInfo.legalPerson">
+            <el-form-item>
               <template #label>
                 <labelExplain label="个体户经营者/法人姓名">
                   <template #explain>
