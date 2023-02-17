@@ -1406,8 +1406,8 @@ const validateFinanceLicensePics = (rule, value, callback) => {
 //自定义法人代表说明函校验
 const validateAuthorizeLetterCopy = (rule, value, callback) => {
   let { idHolderType } = form_Info.value.identityInfo;
-  console.log(idHolderType, "???");
-  if (idHolderType == "SUPER") {
+  console.log(idHolderType);
+  if (idHolderType == "SUPER" && value == null) {
     callback(new Error("请上传法人代表说明函"));
   } else {
     callback();
