@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from "vue";
+import {onUpdated, reactive, ref} from "vue";
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {listActivity, listSettlement} from "@/api/insurance/wechatIncoming";
 import ShpUploadFile from './ShpUploadFile.vue';
@@ -189,7 +189,9 @@ defineExpose({
 })
 
 const getList = () => {
-  listSettlement({subjectType: JSON.parse(wechartData).subjectInfo.subjectType}).then(res => {
+  let wechartData = sessionStorage.getItem('wechartFormData')
+  let wechartDatas = wechartData?JSON.parse(wechartData).subjectInfo:null
+  listSettlement({subjectType: wechartDatas && wechartDatas.subjectType}).then(res => {
     if (res.code === 200) {
       typeList.value = res.data
     }
@@ -200,7 +202,10 @@ const getList = () => {
     }
   })
 }
-getList()
+
+onUpdated(() => {
+  getList()
+})
 </script>
 
 <style lang="scss" scoped>
