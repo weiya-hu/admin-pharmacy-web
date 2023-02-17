@@ -81,7 +81,7 @@
               v-model:file-list="zFileList"
               :action="uploadData.uploadUrl"
               :headers="{'Authorization':uploadData.token}"
-              method:="get"
+              method:="POST"
               accept="image/*"
               :limit="1"
               :show-file-list="true"
@@ -114,7 +114,7 @@
               v-model:file-list="fFileList"
               :action="uploadData.uploadUrl"
               :headers="{'Authorization':uploadData.token}"
-              method:="get"
+              method:="POST"
               accept="image/*"
               :limit="1"
               :show-file-list="true"
@@ -383,7 +383,7 @@ const getStartTime = () => {
 
 // 微信图片上传
 let uploadData = reactive({
-  uploadUrl: `${window.location.protocol}//${window.location.host}${process.env.NODE_ENV === 'development' ? '/dev-api' : '/prod-api'}/ 'pay/media/wxPictureUpload'`,
+  uploadUrl: import.meta.env.VITE_APP_BASE_API + '/pay/media/wxPictureUpload',
   token: getToken()
 })
 
