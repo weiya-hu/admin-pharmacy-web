@@ -1857,16 +1857,14 @@ const chooseFinanceInstitution = (value) => {
 };
 //选择证件持有人类型
 const chooseIdHolderType = (value) => {
+
   if (value == "LEGAL") {
     controlIdDocTypeRuler(true);
-
   } else {
     controlIdDocTypeRuler(false);
   }
 //  清除数据
-//   clearWatchArray.value.forEach(clearFn => {
-//     clearFn();
-//   });
+
 };
 //改变主体类型修改外层变量的方法
 const changeVariablesToOuterLayer = () => {
@@ -2246,6 +2244,10 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
 };
 //是否为最终受益人
 const changeOwner = (value) => {
+  //清空所有监听
+  clearWatchArray.value.forEach(clearFn => {
+    clearFn();
+  });
   if (value) {
     form_Info.value.uboInfoList = [];
   } else {
@@ -2270,6 +2272,16 @@ const changeOwner = (value) => {
     form_Info.value.uboInfoList = [];
     form_Info.value.uboInfoList.push(itemObj);
   }
+  form_Info.value.uboInfoList.forEach((item, index) => {
+    clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
+        if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
+          isPermanentlyValid_uboInfoList.value[index] = true;
+        } else {
+          isPermanentlyValid_uboInfoList.value[index] = false;
+        }
+      })
+    );
+  });
 };
 /**监听器*/
 //多条件监听身份证信息是否必传
