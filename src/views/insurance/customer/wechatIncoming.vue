@@ -132,6 +132,7 @@
 <script setup>
 import {getApplymentList} from "@/api/insurance/wechatIncoming";
 import {onMounted, ref} from "vue";
+
 import wechartIncomingConfig from "./wechartIncomingConfig";
 import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
@@ -143,7 +144,7 @@ const params = ref({
 const loading = ref(false);
 const total = ref(0);
 const list = ref([]);
-let tableListData = ref([]);
+const tableListData = ref([]);
 const idTypes = {
   IDENTIFICATION_TYPE_IDCARD: "中国大陆居民-身份证",
   IDENTIFICATION_TYPE_OVERSEA_PASSPORT: "其他国家或地区居民-护照",
@@ -174,11 +175,7 @@ const getIdType = (val) => {
     if (i == val) return idTypes[i];
   }
 };
-const getFinanceType = (val) => {
-  for (let i in financeTypes) {
-    if (i == val) return financeTypes[i];
-  }
-};
+
 
 const getsubjectTypes = (val) => {
   for (let i in subjectTypes) {

@@ -726,9 +726,6 @@ watch(App, (val, oldValue) => {
   }
 });
 
-const upLoadSuccess = (urls) => {
-};
-
 
 //校验规则
 const rules = ref({
@@ -921,9 +918,9 @@ const getBankType = () => {
 };
 getBankType()
 
-const showValue = () => {
-  console.log(businessInfo.value)
-}
+// const showValue = () => {
+//   console.log(businessInfo.value)
+// }
 
 
 const submit = () => {

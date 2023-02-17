@@ -31,11 +31,12 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogShow" align-center="true" append-to-body center lock-scroll show-close>
+    <el-dialog v-model="dialogShow" align-center="true" center lock-scroll show-close>
       <template #footer>
         <h2 style="text-align: center">商户授权码</h2>
         <div class="qr-wrapper">
-          <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>
+          <iframe :src="signUrl"></iframe>
+          <!--          <vue-qr ref="qrcode" :size="200" :text="signUrl" logo-src=""></vue-qr>-->
         </div>
       </template>
     </el-dialog>
@@ -75,11 +76,24 @@ const showQrCode = async (row) => {
 <style lang="scss" scoped>
 .wrapper {
   margin: 20px;
-  //padding: 20px;
+
+  //:deep(.el-dialog) {
+  //  margin: 0 !important;
+  //  left: 50%;
+  //  top: 50%;
+  //  transform: translate(-50%, -50%)
+  //}
 
   .qr-wrapper {
     display: flex;
     justify-content: center;
+
+    iframe {
+      width: 450px;
+      height: 450px;
+      border: none
+    }
   }
+
 }
 </style>
