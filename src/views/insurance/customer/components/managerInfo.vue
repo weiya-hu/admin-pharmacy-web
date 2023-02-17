@@ -383,7 +383,7 @@ const getStartTime = () => {
 
 // 微信图片上传
 let uploadData = reactive({
-  uploadUrl: import.meta.env.VITE_APP_BASE_API + 'pay/media/wxPictureUpload',
+  uploadUrl: `${window.location.protocol}//${window.location.host}${process.env.NODE_ENV === 'development' ? '/dev-api' : '/prod-api'}/ 'pay/media/wxPictureUpload'`,
   token: getToken()
 })
 
