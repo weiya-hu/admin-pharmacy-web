@@ -81,10 +81,11 @@ export function bankInfo(data) {
 }
 
 // 获取关系对照列表
-export function listSettlement() {
+export function listSettlement(data) {
   return request({
     url: "pay/settlement/rule/list",
     method: "get",
+    params: data
   });
 }
 

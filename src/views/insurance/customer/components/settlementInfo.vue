@@ -23,17 +23,6 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="settlementId">
-          <template #label>
-            <labelExplain label="入驻结算规则ID">
-              <template #explain>
-                <div>请选择结算规则ID，详细参见<el-link type="primary" @click="onClick('settlement')">费率结算规则对照表</el-link>，示例值：719</div>
-              </template>
-            </labelExplain>
-          </template>
-          <el-input maxlength="3" v-model="form.settlementId" placeholder="请输入入驻结算规则ID" />
-        </el-form-item>
-
         <el-form-item prop="qualifications" v-if="otherAsk === 1">
           <template #label>
             <labelExplain label="特殊资质图片">
@@ -154,7 +143,7 @@ const activitiesList = ref([])
 const onClick = (type) => {
   if (type === 'settlement') {
     dialogVisibleTable.value = true
-    listSettlement().then(res => {
+    listSettlement({}).then(res => {
       if (res.code === 200) {
         tableData.value = res.data
       }
@@ -170,7 +159,6 @@ const onClick = (type) => {
 }
 
 const rules = reactive({
-  settlementId: [{ required: true, message: "请输入入驻结算规则ID", trigger: "blur" }],
   qualificationType: [{ required: true, message: "请输入所属行业", trigger: "blur" }],
   qualifications: [{ required: true, message: "请上传特殊资质图片", trigger: "change" }]
 })
@@ -201,7 +189,7 @@ defineExpose({
 })
 
 const getList = () => {
-  listSettlement().then(res => {
+  listSettlement({subjectType: JSON.parse(wechartData).subjectInfo.subjectType}).then(res => {
     if (res.code === 200) {
       typeList.value = res.data
     }
