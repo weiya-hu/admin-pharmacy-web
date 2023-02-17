@@ -687,7 +687,7 @@
             </template>
             <!--     循环遍历生成       -->
             <div class="templateUboinfo" v-for="(item,index)  in form_Info.uboInfoList" :key="index">
-              <div v-if="index!==0" style="margin-bottom: 10px;display: flex;justify-content: flex-end"
+              <div style="margin-bottom: 10px;display: flex;justify-content: flex-end"
                    @click="()=>deleteUboInfoPersion(index)">
                 <el-icon size="20px" style="color: #a8a8a8">
                   <Close />
@@ -1010,26 +1010,7 @@ const form_Info = ref({
     }
   },
   //最终受益人信息列表
-  uboInfoList: [
-    {
-      //证件类型
-      uboIdDocType: null,
-      //证件正面照片
-      uboIdDocCopy: null,
-      //证件反面照片
-      uboIdDocCopyBack: null,
-      //证件姓名
-      uboIdDocName: null,
-      // 证件号码
-      uboIdDocNumber: null,
-      // 证件居住地址
-      uboIdDocAddress: null,
-      //证件有效期开始时间
-      uboPeriodBegin: null,
-      // 证件有效期结束时间
-      uboPeriodEnd: null
-    }
-  ]
+  uboInfoList: []
 
 });
 //外层折叠面板name数组
@@ -1281,45 +1262,41 @@ const addUboInfoPersion = () => {
     let { owner } = form_Info.value.identityInfo;
     try {
       if (owner) {
-        if (form_Info.value.uboInfoList.length > 3) {
+        if (form_Info.value.uboInfoList.length > 2) {
           ElMessage.error("最多存在4个受益人");
         } else {
           form_Info.value.uboInfoList.push(itemObj);
-          form_Info.value.uboInfoList.forEach((item, index) => {
-            //初始化添加的受益人是否需要进行ocr校验
-            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
-              isVailidateOcrToUboInfoArray.value[index] = false;
-            }
-            //初始化长期的选择器是否展示
-            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
-              isPermanentlyValid_uboInfoList.value[index] = false;
-            }
-          });
         }
       } else {
-        if (form_Info.value.uboInfoList.length > 2) {
+        if (form_Info.value.uboInfoList.length > 1) {
           ElMessage.error("最多存在3个受益人");
         } else {
           form_Info.value.uboInfoList.push(itemObj);
-          form_Info.value.uboInfoList.forEach((item, index) => {
-            //初始化添加的受益人是否需要进行ocr校验
-            if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
-              isVailidateOcrToUboInfoArray.value[index] = false;
-            }
-            //初始化长期的选择器是否展示
-            if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
-              isPermanentlyValid_uboInfoList.value[index] = false;
-            }
-          });
         }
       }
     } finally {
+      form_Info.value.uboInfoList.forEach((item, index) => {
+        //初始化添加的受益人是否需要进行ocr校验
+        if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
+          isVailidateOcrToUboInfoArray.value[index] = false;
+        }
+        console.log((isPermanentlyValid_uboInfoList.value[index] instanceof Boolean));
+        //初始化长期的选择器是否展示
+        if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
+          isPermanentlyValid_uboInfoList.value[index] = false;
+        }
+      });
       instance_Form.value.validate();
     }
   }
 ;
 //删除受益人
 const deleteUboInfoPersion = (index) => {
+  let { owner } = form_Info.value.identityInfo;
+  if (index == 0 && !owner) {
+    ElMessage.error("经营者/法人不为受益人时，至少填写一个最终受益人");
+    return;
+  }
   form_Info.value.uboInfoList.splice(index, 1);
   isVailidateOcrToUboInfoArray.value.splice(index, 1);
   isPermanentlyValid_uboInfoList.value.splice(index, 1);
@@ -1429,6 +1406,7 @@ const validateFinanceLicensePics = (rule, value, callback) => {
 //自定义法人代表说明函校验
 const validateAuthorizeLetterCopy = (rule, value, callback) => {
   let { idHolderType } = form_Info.value.identityInfo;
+  console.log(idHolderType, "???");
   if (idHolderType == "SUPER") {
     callback(new Error("请上传法人代表说明函"));
   } else {
@@ -1491,7 +1469,6 @@ const validateUboInfoListUboIdDocCopyBack = (rule, value, callback) => {
   if (!owner) {
     let index = Number(rule.field.split(".")[1]);
     let { uboIdDocType } = form_Info.value.uboInfoList[index];
-    console.log(uboIdDocType);
     //若为护照无需上传
     if (value == null && uboIdDocType == "IDENTIFICATION_TYPE_OVERSEA_PASSPORT") {
       callback();
@@ -2081,7 +2058,9 @@ const deadlinebySwitch = (tag, index = null) => {
     case "uboInfoList":
       if (isPermanentlyValid_uboInfoList.value[index]) {
         form_Info.value.uboInfoList[index].uboPeriodEnd = "长期";
+        isPermanentlyValid_uboInfoList.value[index] = true;
       } else {
+        isPermanentlyValid_uboInfoList.value[index] = false;
         form_Info.value.uboInfoList[index].uboPeriodEnd = null;
       }
       break;
@@ -2204,6 +2183,9 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
               if (handleItem.substring(handleItem.length - 1) == "-") {
                 handleItem = handleItem.substring(0, handleItem.length - 1);
               }
+              if (item == "永久") {
+                handleItem = "长期";
+              }
               return handleItem;
             });
             let validateResultData = {
@@ -2239,19 +2221,29 @@ const uploadImageSuccessCallback = (data, tag, instanceName, positiveOrOpposite,
 };
 //是否为最终受益人
 const changeOwner = (value) => {
-  let objAll = {};
   if (value) {
-    Object.keys(form_Info_Rules.value).forEach(itemKey => {
-      if (itemKey.indexOf("uboInfoList") !== -1) {
-        form_Info_Rules.value[itemKey][0].required = false;
-      }
-    });
+    form_Info.value.uboInfoList = [];
   } else {
-    Object.keys(form_Info_Rules.value).forEach(itemKey => {
-      if (itemKey.indexOf("uboInfoList") !== -1) {
-        form_Info_Rules.value[itemKey][0].required = true;
-      }
-    });
+    let itemObj = {
+      //证件类型
+      uboIdDocType: null,
+      //证件正面照片
+      uboIdDocCopy: null,
+      //证件反面照片
+      uboIdDocCopyBack: null,
+      //证件姓名
+      uboIdDocName: null,
+      // 证件号码
+      uboIdDocNumber: null,
+      // 证件居住地址
+      uboIdDocAddress: null,
+      //证件有效期开始时间
+      uboPeriodBegin: null,
+      // 证件有效期结束时间
+      uboPeriodEnd: null
+    };
+    form_Info.value.uboInfoList = [];
+    form_Info.value.uboInfoList.push(itemObj);
   }
 };
 /**监听器*/
@@ -2310,6 +2302,30 @@ onMounted(() => {
     isVailidateOcrToUboInfoArray.value[index] = false;
     isPermanentlyValid_uboInfoList.value[index] = false;
   });
+//  受益人为否是默认其他受益人添加一项
+  let itemObj = {
+    //证件类型
+    uboIdDocType: null,
+    //证件正面照片
+    uboIdDocCopy: null,
+    //证件反面照片
+    uboIdDocCopyBack: null,
+    //证件姓名
+    uboIdDocName: null,
+    // 证件号码
+    uboIdDocNumber: null,
+    // 证件居住地址
+    uboIdDocAddress: null,
+    //证件有效期开始时间
+    uboPeriodBegin: null,
+    // 证件有效期结束时间
+    uboPeriodEnd: null
+  };
+  let { owner } = form_Info.value.identityInfo;
+  if (!owner) {
+    form_Info.value.uboInfoList = [];
+    form_Info.value.uboInfoList.push(itemObj);
+  }
 });
 const emit = defineEmits(["result"]);//提交校验
 //提交校验
