@@ -35,7 +35,7 @@
 /**
  * @description 上传文件组件
  * @params modelValue?: null//文件数据
- * @params exnameList?: string[] //支持的文件格式数组,不传默认图片格式['.jpg', '.png', '.BMP', ]
+ * @params exnameList?: string[] //支持的文件格式数组,不传默认图片格式['.jpg', '.png', '.BMP', '.bmp', '.JPG', '.PNG',]
  * @params maxSize?: number //最大尺寸 单位M,不传默认5M
  * @params multiple?: boolean //是否支持多文件上传,不传默认不支持
  * @params limit?: number //上传的文件最大数,不传默认上传一张
@@ -62,7 +62,7 @@ const props = withDefaults(
     }>(),
     {
       modelValue: null,
-      exnameList: () => ['.jpg', '.png', '.BMP',],
+      exnameList: () => ['.jpg', '.png', '.BMP', '.bmp', '.JPG', '.PNG',],
       maxSize: 5,
       showFileList: true,
       multiple: false,
@@ -118,6 +118,7 @@ const handleExceed = (files: any) => {
 }
 
 const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
+  console.log(res,uploadFile,uploadFiles)
   if (res.code == 200) {
     (!props.multiple) ? (() => {
       emit('update:modelValue', res.data[0])
