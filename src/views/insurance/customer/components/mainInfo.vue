@@ -395,8 +395,8 @@
                 </labelExplain>
               </template>
               <el-radio-group @change="chooseIdHolderType" v-model="form_Info.identityInfo.idHolderType">
-                <el-radio label="LEGAL" size="large">法人</el-radio>
-                <el-radio label="SUPER" size="large">经办人</el-radio>
+                <el-radio :disabled="controlIdHolderTypeDisabled" label="LEGAL" size="large">法人</el-radio>
+                <el-radio :disabled="controlIdHolderTypeDisabled" label="SUPER" size="large">经办人</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item prop="identityInfo.idDocInfo.owner">
@@ -852,7 +852,7 @@
 
         </el-collapse>
       </el-form>
-      <!--      <el-button @click="submit">校验</el-button>-->
+      <el-button @click="submit">校验</el-button>
     </el-card>
   </div>
 </template>
@@ -881,6 +881,8 @@ const idCardInfoIdCardNational_Instance = ref(null);
 const uboInfoListUboIdDocCopy_Instance = ref(null);
 const uboInfoListUboIdDocCopyBack_Instance = ref(null);
 const certificateInfoCertCopy_Instance = ref(null);
+//证件持有人选择控制
+let controlIdHolderTypeDisabled = ref(true);
 //最终受益人的证件是否需要ocr校验
 const isVailidateOcrToUboInfo = ref(false);
 //上传文件失败清除文件的方法
@@ -1857,9 +1859,14 @@ const chooseFinanceInstitution = (value) => {
 const chooseIdHolderType = (value) => {
   if (value == "LEGAL") {
     controlIdDocTypeRuler(true);
+
   } else {
     controlIdDocTypeRuler(false);
   }
+//  清除数据
+//   clearWatchArray.value.forEach(clearFn => {
+//     clearFn();
+//   });
 };
 //改变主体类型修改外层变量的方法
 const changeVariablesToOuterLayer = () => {
@@ -2304,7 +2311,15 @@ watch(() => isSubjectType.value, () => {
     isShowCertificate.value = true;
     resetBusinessLicenseInfo();
   }
+  if (isSubjectType.value == "政府机关" || isSubjectType.value == "事业单位") {
+    controlIdHolderTypeDisabled.value = false;
+  } else {
+    form_Info.value.identityInfo.idHolderType = "LEGAL";
+    controlIdHolderTypeDisabled.value = true;
+  }
+
 }, {
+  immediate: true,
   deep: true
 });
 watch(() => form_Info.value.businessLicenseInfo.periodEnd, () => {
@@ -2368,6 +2383,7 @@ const emit = defineEmits(["result"]);//提交校验
 const submit = async () => {
   instance_Form.value.validate((isPass) => {
     if (isPass) {
+      console.log(form_Info.value, "???");
       emit("result", { subjectInfo: form_Info.value });
     } else {
       activeNames.value = ["1", "2", "3", "4", "5"];
