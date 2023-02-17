@@ -10,17 +10,6 @@
         </div>
       </template>
       <el-form ref="settlementRef" :model="form" :rules="rules">
-        <el-form-item prop="settlementId">
-          <template #label>
-            <labelExplain label="入驻结算规则ID">
-              <template #explain>
-                <div>请选择结算规则ID，详细参见<el-link type="primary" @click="onClick('settlement')">费率结算规则对照表</el-link>，示例值：719</div>
-              </template>
-            </labelExplain>
-          </template>
-          <el-input maxlength="3" v-model="form.settlementId" placeholder="请输入入驻结算规则ID" />
-        </el-form-item>
-
         <el-form-item prop="qualificationType">
           <template #label>
             <labelExplain label="所属行业">
@@ -32,6 +21,17 @@
           <el-select v-model="form.qualificationType" filterable @change="handleChange" placeholder="请选择所属行业" style="width: 100%;">
             <el-option v-for="item in typeList" :value="item.id" :label="item.qualificationType" :key="item.id" />
           </el-select>
+        </el-form-item>
+
+        <el-form-item prop="settlementId">
+          <template #label>
+            <labelExplain label="入驻结算规则ID">
+              <template #explain>
+                <div>请选择结算规则ID，详细参见<el-link type="primary" @click="onClick('settlement')">费率结算规则对照表</el-link>，示例值：719</div>
+              </template>
+            </labelExplain>
+          </template>
+          <el-input maxlength="3" v-model="form.settlementId" placeholder="请输入入驻结算规则ID" />
         </el-form-item>
 
         <el-form-item prop="qualifications" v-if="otherAsk === 1">
