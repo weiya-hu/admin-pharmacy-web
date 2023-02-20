@@ -852,7 +852,7 @@
 
         </el-collapse>
       </el-form>
-<!--      <el-button @click="submit">校验</el-button>-->
+      <!--      <el-button @click="submit">校验</el-button>-->
     </el-card>
   </div>
 </template>
@@ -1271,7 +1271,7 @@ const addUboInfoPersion = () => {
           form_Info.value.uboInfoList.push(itemObj);
         }
       } else {
-        if (form_Info.value.uboInfoList.length > 1) {
+        if (form_Info.value.uboInfoList.length > 2) {
           ElMessage.error("最多存在3个受益人");
         } else {
           form_Info.value.uboInfoList.push(itemObj);
@@ -1279,15 +1279,14 @@ const addUboInfoPersion = () => {
       }
     } finally {
       form_Info.value.uboInfoList.forEach((item, index) => {
+        console.log(isVailidateOcrToUboInfoArray.value, isPermanentlyValid_uboInfoList.value);
         //初始化添加的受益人是否需要进行ocr校验
         if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
           isVailidateOcrToUboInfoArray.value[index] = false;
         }
-        console.log((isPermanentlyValid_uboInfoList.value[index] instanceof Boolean));
-        //初始化长期的选择器是否展示
-        if (!(isPermanentlyValid_uboInfoList.value[index] instanceof Boolean)) {
-          isPermanentlyValid_uboInfoList.value[index] = false;
-        }
+      });
+      clearWatchArray.value.forEach(clearFn => {
+        clearFn();
       });
       clearWatchArray.value = [];
       form_Info.value.uboInfoList.forEach((item, index) => {
@@ -1301,23 +1300,21 @@ const addUboInfoPersion = () => {
         );
       });
       instance_Form.value.validate();
-
     }
   }
 ;
 //删除受益人
 const deleteUboInfoPersion = (index) => {
   let { owner } = form_Info.value.identityInfo;
-  if (index == 0 && !owner) {
+  if (form_Info.value.uboInfoList.length == 1 && !owner) {
     ElMessage.error("经营者/法人不为受益人时，至少填写一个最终受益人");
     return;
   }
-  console.log(clearWatchArray.value);
   form_Info.value.uboInfoList.splice(index, 1);
   isVailidateOcrToUboInfoArray.value.splice(index, 1);
   isPermanentlyValid_uboInfoList.value.splice(index, 1);
-  console.log(clearWatchArray.value[index], "fn");
   clearWatchArray.value[index]();
+  clearWatchArray.value.splice(index, 1);
 };
 //监听specialChecksData当中的值将值回显到对应选项当中
 watch(() => specialChecksData.value, () => {
@@ -2248,6 +2245,9 @@ const changeOwner = (value) => {
   clearWatchArray.value.forEach(clearFn => {
     clearFn();
   });
+  clearWatchArray.value = [];
+  isPermanentlyValid_uboInfoList.value = [];
+  isVailidateOcrToUboInfoArray.value = [];
   if (value) {
     form_Info.value.uboInfoList = [];
   } else {
