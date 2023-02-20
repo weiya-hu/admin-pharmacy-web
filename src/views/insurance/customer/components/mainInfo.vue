@@ -414,7 +414,7 @@
                 <el-radio :label="false" size="large">否</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item prop="identityInfo.idDocType">
+            <el-form-item v-if="isShowIdDocType" prop="identityInfo.idDocType">
               <template #label>
                 <labelExplain label="证件类型">
                   <template #explain>
@@ -1014,6 +1014,8 @@ const form_Info = ref({
   uboInfoList: []
 
 });
+//经营者/法人身份证件 中证件类型是否展示
+const isShowIdDocType = ref(false);
 //取消监听收集器数组
 let clearWatchArray = ref([]);
 //外层折叠面板name数组
@@ -2287,6 +2289,11 @@ const changeOwner = (value) => {
 //多条件监听身份证信息是否必传
 watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identityInfo.idDocType], () => {
   let { identityInfo: { idHolderType, idDocType } } = form_Info.value;
+  if (idHolderType == "SUPER") {
+    isShowIdDocType.value = false;
+  } else {
+    isShowIdDocType.value = true;
+  }
   if (idHolderType && idDocType) {
     if (idHolderType == "LEGAL" && idDocType == "IDENTIFICATION_TYPE_IDCARD") {
       isIdCard.value = true;
