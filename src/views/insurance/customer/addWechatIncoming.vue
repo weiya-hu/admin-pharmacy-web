@@ -57,8 +57,7 @@ const choose = computed(()=>{
   return list[active.value].name
 })
 
-
-const getValue = async(val)=>{
+const getValue = (val)=>{
   console.log(111,val)
   if(val){
     let wechartData = sessionStorage.getItem('wechartFormData')
@@ -66,12 +65,25 @@ const getValue = async(val)=>{
     sessionStorage.setItem('wechartFormData',JSON.stringify(wechartDatas))
     if(active.value == 5){
       console.log(wechartDatas)
-      const {code, msg} = await addWxpayApplyment_api(wechartDatas)
-      code == 200 && (()=>{
-        ElMessage.success(msg)//to do 成功后跳转
+      loading.value = true
+      addWxpayApplyment_api(wechartDatas).then(res=>{
+        console.log(11)
+        console.log(res)
+        loading.value = false
+        ElMessage.success(res.msg)//to do 成功后跳转
         router.push('/insurance/wechatIncoming')
-      })()
-      code !== 200 && ElMessage.error(msg)
+      }).catch(res=>{
+        console.log(22)
+        console.log(res)
+        loading.value = false
+      })
+      // const {code, msg} = await addWxpayApplyment_api(wechartDatas)
+      // loading.value = false
+      // code == 200 && (()=>{
+      //   ElMessage.success(msg)//to do 成功后跳转
+      //   router.push('/insurance/wechatIncoming')
+      // })()
+      // code !== 200 && ElMessage.error(msg)
     }
     active.value = active.value<5 ? active.value+1 : 5
   }else{
