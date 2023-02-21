@@ -136,10 +136,6 @@
           </template>
           <el-input v-model="form.accountNumber" placeholder="请输入银行账号"/>
         </el-form-item>
-
-<!--        <el-form-item>-->
-<!--          <el-button @click="submit">保存</el-button>-->
-<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <el-dialog v-model="dialogVisible" title="开户银行全称（含支行）对照表" draggable>
@@ -156,7 +152,6 @@
 import {reactive, ref} from "vue";
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {bankInfo, bankType, listArea, listCity, listProvince} from "@/api/insurance/wechatIncoming";
-import {ElMessage} from "element-plus";
 
 const {proxy} = getCurrentInstance();
 const form = ref({
@@ -241,6 +236,24 @@ const areaChange = (val) => {
   form.value.bankAddressCode = val
 }
 
+const getBankAddressCode = () => {
+  let provinceData = form.value.bankAddressCode.substring(0, 2) + '0000'
+  let cityData = form.value.bankAddressCode.substring(0, 4) + '00'
+  provinceList.value.filter(item => item.id == provinceData).forEach(items => state.value.province = items.id)
+  listCity({pid: state.value.province}).then(res => {
+    if (res.code === 200) {
+      cityList.value = res.data
+      cityList.value.filter(item => item.id == cityData).forEach(items => state.value.city = items.id)
+      listArea({pid: state.value.city}).then(res => {
+        if (res.code === 200) {
+          areaList.value = res.data
+          areaList.value.filter(item => item.id == form.value.bankAddressCode).forEach(items => state.value.area = items.id)
+        }
+      })
+    }
+  })
+}
+
 const remoteMethod = (query) => {
   loadingSelect.value = true
   bankInfo({name: query}).then(res => {
@@ -282,17 +295,20 @@ const submit = () => {
     }
   })
 }
-const getBankType = () => {
-  bankType('pay_bank_info').then(res => {
+const getBankType = async () => {
+  await bankType('pay_bank_info').then(res => {
     if (res.code === 200) {
       accountBankList.value = res.data
     }
   })
-  listProvince().then(res => {
+  await listProvince().then(res => {
     if (res.code == 200) {
       provinceList.value = res.data
     }
   })
+  if (form.value.bankAddressCode) {
+    getBankAddressCode()
+  }
 }
 
 getBankType()
