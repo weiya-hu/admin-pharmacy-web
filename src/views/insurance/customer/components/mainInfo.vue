@@ -1016,9 +1016,6 @@ const form_Info = ref({
 
 });
 
-let wechartData = sessionStorage.getItem('wechartFormData')
-let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null
-wechartDatas && (form_Info.value = wechartDatas)
 
 //经营者/法人身份证件 中证件类型是否展示
 const isShowIdDocType = ref(false);
@@ -1289,7 +1286,6 @@ const addUboInfoPersion = () => {
       }
     } finally {
       form_Info.value.uboInfoList.forEach((item, index) => {
-        console.log(isVailidateOcrToUboInfoArray.value, isPermanentlyValid_uboInfoList.value);
         //初始化添加的受益人是否需要进行ocr校验
         if (!(isVailidateOcrToUboInfoArray.value[index] instanceof Boolean)) {
           isVailidateOcrToUboInfoArray.value[index] = false;
@@ -1341,32 +1337,40 @@ watch(() => specialChecksData.value, () => {
             beginTime,
             endTime
           } = specialChecksData.value[key];
-          form_Info.value.businessLicenseInfo.licenseNumber = regNum;
-          form_Info.value.businessLicenseInfo.merchantName = name;
-          form_Info.value.businessLicenseInfo.legalPerson = person;
-          form_Info.value.businessLicenseInfo.licenseAddress = address;
-          form_Info.value.businessLicenseInfo.periodBegin = beginTime;
-          form_Info.value.businessLicenseInfo.periodEnd = endTime;
+          if (regNum && name && person && address && beginTime && endTime) {
+            form_Info.value.businessLicenseInfo.licenseNumber = regNum;
+            form_Info.value.businessLicenseInfo.merchantName = name;
+            form_Info.value.businessLicenseInfo.legalPerson = person;
+            form_Info.value.businessLicenseInfo.licenseAddress = address;
+            form_Info.value.businessLicenseInfo.periodBegin = beginTime;
+            form_Info.value.businessLicenseInfo.periodEnd = endTime;
+          }
         }
           break;
         case "idCardInfoIdCardCopyData": {
           let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
-          form_Info.value.identityInfo.idCardInfo.idCardName = name;
-          form_Info.value.identityInfo.idCardInfo.idCardNumber = idNum;
-          form_Info.value.identityInfo.idCardInfo.idCardAddress = address;
+          if (address && idNum && name) {
+            form_Info.value.identityInfo.idCardInfo.idCardName = name;
+            form_Info.value.identityInfo.idCardInfo.idCardNumber = idNum;
+            form_Info.value.identityInfo.idCardInfo.idCardAddress = address;
+          }
           break;
         }
         case "idCardInfoIdCardNationalData": {
           let { beginTime, endTime } = specialChecksData.value[key];
-          form_Info.value.identityInfo.idCardInfo.cardPeriodBegin = beginTime;
-          form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
+          if (beginTime && endTime) {
+            form_Info.value.identityInfo.idCardInfo.cardPeriodBegin = beginTime;
+            form_Info.value.identityInfo.idCardInfo.cardPeriodEnd = endTime;
+          }
           break;
         }
         case "uboInfoListUboIdDocCopyData": {
           let { address = "", idNum = "", name = "" } = specialChecksData.value[key];
-          form_Info.value.uboInfoList.uboIdDocName = name;
-          form_Info.value.uboInfoList.uboIdDocNumber = idNum;
-          form_Info.value.uboInfoList.uboIdDocAddress = address;
+          if (address && idNum && name) {
+            form_Info.value.uboInfoList.uboIdDocName = name;
+            form_Info.value.uboInfoList.uboIdDocNumber = idNum;
+            form_Info.value.uboInfoList.uboIdDocAddress = address;
+          }
           break;
         }
         case "uboInfoListUboIdDocCopyBackData": {
@@ -1376,17 +1380,21 @@ watch(() => specialChecksData.value, () => {
           //遍历数组对应赋值
           specialChecksData.value[key].forEach((item, index) => {
             let { address = "", idNum = "", name = "" } = item;
-            form_Info.value.uboInfoList[index].uboIdDocName = name;
-            form_Info.value.uboInfoList[index].uboIdDocNumber = idNum;
-            form_Info.value.uboInfoList[index].uboIdDocAddress = address;
+            if (address && idNum && name) {
+              form_Info.value.uboInfoList[index].uboIdDocName = name;
+              form_Info.value.uboInfoList[index].uboIdDocNumber = idNum;
+              form_Info.value.uboInfoList[index].uboIdDocAddress = address;
+            }
           });
           break;
         }
         case "uboInfoListOppositeData": {
           specialChecksData.value[key].forEach((item, index) => {
             let { beginTime, endTime } = item;
-            form_Info.value.uboInfoList[index].uboPeriodBegin = beginTime;
-            form_Info.value.uboInfoList[index].uboPeriodEnd = endTime;
+            if (beginTime && endTime) {
+              form_Info.value.uboInfoList[index].uboPeriodBegin = beginTime;
+              form_Info.value.uboInfoList[index].uboPeriodEnd = endTime;
+            }
           });
           break;
         }
@@ -1395,8 +1403,6 @@ watch(() => specialChecksData.value, () => {
   } finally {
     instance_Form.value.validate();
   }
-
-
 }, {
   immediate: false,
   deep: true
@@ -2365,7 +2371,147 @@ watch(() => form_Info.value.identityInfo.idCardInfo.cardPeriodEnd, () => {
     isPermanentlyValid_identityInfo_idCardInfo.value = false;
   }
 });
+nextTick(() => {
+  let wechartData = sessionStorage.getItem("wechartFormData");
+  let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null;
 
+  if (wechartData) {
+    form_Info.value.subjectType = wechartDatas.subjectType;
+    let { subjectType } = form_Info.value;
+    isSubjectType.value = subjectTypeOption.value.filter(item => {
+      return item.value == subjectType;
+    }) [0].label;
+    wechartDatas && (innitDataToFormInfo(wechartDatas));
+    switch (subjectType) {
+      //个体户
+      case "SUBJECT_TYPE_INDIVIDUAL":
+        controlBusinessLicenseInfoRuler(true);
+        controlCertificateInfoRuler(false);
+        //改外层变量
+        changeVariablesToOuterLayer();
+        //改主体类型修改营业执照变量
+        changeVariablesToBusinessLicenseInfo();
+        //改主体类型修改登记证书变量
+        changeVariablesToCertificateInfo();
+        // 改金融机构许可证信息变量
+        changeVariablesToFinanceInstitutionInfo();
+        //改经营者/法人身份证件信息变量
+        changeVariablesToIdentityInfo();
+        //改最终受益人信息列表信息变量
+        changeVariablesToUboInfoList();
+        break;
+      //  企业
+      case "SUBJECT_TYPE_ENTERPRISE":
+        controlBusinessLicenseInfoRuler(true);
+        controlCertificateInfoRuler(false);
+        //改外层变量
+        changeVariablesToOuterLayer();
+        //改主体类型修改营业执照变量
+        changeVariablesToBusinessLicenseInfo();
+        //改主体类型修改登记证书变量
+        changeVariablesToCertificateInfo();
+        // 改金融机构许可证信息变量
+        changeVariablesToFinanceInstitutionInfo();
+        //改经营者/法人身份证件信息变量
+        changeVariablesToIdentityInfo();
+        //改最终受益人信息列表信息变量
+        changeVariablesToUboInfoList();
+        break;
+      //  政府机关
+      case "SUBJECT_TYPE_GOVERNMENT":
+        controlBusinessLicenseInfoRuler(false);
+        controlCertificateInfoRuler(true);
+        //改外层变量
+        changeVariablesToOuterLayer();
+        //改主体类型修改营业执照变量
+        changeVariablesToBusinessLicenseInfo();
+        //改主体类型修改登记证书变量
+        changeVariablesToCertificateInfo();
+        // 改金融机构许可证信息变量
+        changeVariablesToFinanceInstitutionInfo();
+        //改经营者/法人身份证件信息变量
+        changeVariablesToIdentityInfo();
+        //改最终受益人信息列表信息变量
+        changeVariablesToUboInfoList();
+        break;
+      // 事业单位
+      case "SUBJECT_TYPE_INSTITUTIONS":
+        controlBusinessLicenseInfoRuler(false);
+        controlCertificateInfoRuler(true);
+        //改外层变量
+        changeVariablesToOuterLayer();
+        //改主体类型修改营业执照变量
+        changeVariablesToBusinessLicenseInfo();
+        //改主体类型修改登记证书变量
+        changeVariablesToCertificateInfo();
+        // 改金融机构许可证信息变量
+        changeVariablesToFinanceInstitutionInfo();
+        //改经营者/法人身份证件信息变量
+        changeVariablesToIdentityInfo();
+        //改最终受益人信息列表信息变量
+        changeVariablesToUboInfoList();
+        break;
+      //  社会组织
+      case "SUBJECT_TYPE_OTHERS":
+        controlBusinessLicenseInfoRuler(false);
+        controlCertificateInfoRuler(true);
+        //改外层变量
+        changeVariablesToOuterLayer();
+        //改主体类型修改营业执照变量
+        changeVariablesToBusinessLicenseInfo();
+        //改主体类型修改登记证书变量
+        changeVariablesToCertificateInfo();
+        // 改金融机构许可证信息变量
+        changeVariablesToFinanceInstitutionInfo();
+        //改经营者/法人身份证件信息变量
+        changeVariablesToIdentityInfo();
+        //改最终受益人信息列表信息变量
+        changeVariablesToUboInfoList();
+        break;
+    }
+  }
+});
+//初始化本地缓存当中的信息
+const innitDataToFormInfo = (wechartDatas) => {
+  let itemObj = {
+    //证件类型
+    uboIdDocType: null,
+    //证件正面照片
+    uboIdDocCopy: null,
+    //证件反面照片
+    uboIdDocCopyBack: null,
+    //证件姓名
+    uboIdDocName: null,
+    // 证件号码
+    uboIdDocNumber: null,
+    // 证件居住地址
+    uboIdDocAddress: null,
+    //证件有效期开始时间
+    uboPeriodBegin: null,
+    // 证件有效期结束时间
+    uboPeriodEnd: null
+  };
+//  初始化其他受益人的信息
+  if (wechartDatas.uboInfoList.length !== 0) {
+    clearWatchArray.value.forEach(watcherItem => {
+      watcherItem();
+    });
+    clearWatchArray.value = [];
+    form_Info.value.uboInfoList = [];
+    wechartDatas.uboInfoList.forEach((item, index) => {
+      form_Info.value.uboInfoList.push(itemObj);
+      clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
+          if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
+            isPermanentlyValid_uboInfoList.value[index] = true;
+          } else {
+            isPermanentlyValid_uboInfoList.value[index] = false;
+          }
+        })
+      );
+    });
+  }
+  form_Info.value = wechartDatas;
+};
 
 onMounted(() => {
   form_Info.value.uboInfoList.forEach((item, index) => {
@@ -2396,6 +2542,10 @@ onMounted(() => {
     form_Info.value.uboInfoList = [];
     form_Info.value.uboInfoList.push(itemObj);
   }
+  clearWatchArray.value.forEach(watcherItem => {
+    watcherItem();
+  });
+  clearWatchArray.value = [];
   form_Info.value.uboInfoList.forEach((item, index) => {
     clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
         if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
@@ -2413,11 +2563,12 @@ const submit = async () => {
   instance_Form.value.validate((isPass) => {
     if (isPass) {
       console.log(form_Info.value, "???");
+      activeNames.value = ["1", "2", "3", "4", "5"];
+      innerActiveNames.value = ["1", "2"];
       emit("result", { subjectInfo: form_Info.value });
     } else {
       activeNames.value = ["1", "2", "3", "4", "5"];
       innerActiveNames.value = ["1", "2"];
-      console.log(form_Info.value, "???");
       emit("result", false);
     }
   });
