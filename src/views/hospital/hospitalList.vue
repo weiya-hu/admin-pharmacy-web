@@ -1,0 +1,299 @@
+<template>
+  <div class="out_box">
+    <header>
+      <div class="search">
+        <div @click="innitListData" class="search_icon">
+        </div>
+        <input @keyup.enter="innitListData" v-model="searchParams.name" placeholder="请输入医院名称"
+               class="serach_input" />
+      </div>
+      <div class="code">
+        <span class="code_imageicon"></span>
+        <span>
+          授权二维码
+        </span>
+      </div>
+    </header>
+    <main>
+      <div class="list_content">
+        <template v-for="(item,index) in listData" :key="index">
+          <el-card shadow="always" style="width:260pt;height: 235pt" class="box-card">
+            <template #header>
+              <div class="status">
+                <span v-if="item.status=='1'" class="green"></span>
+                <span v-else class="red"></span>
+              </div>
+            </template>
+            <div class="content">
+              <div class="baseInfo">
+                <div class="Logo">
+                  <img :src="item.logo" />
+                </div>
+                <div class="name">
+                  {{ item.fullname }}
+                </div>
+              </div>
+              <div class="control">
+                <div class="test_desc">
+                  <span v-if="item.status=='1'" style="color: green">启用</span>
+                  <span v-else style="color: red">禁用</span>
+                </div>
+                <div class="switch">
+                  <el-switch
+                    @change="(value)=>{changeStatus(value,index)}"
+                    :model-value="item.status=='1'?true:false"
+                    class="ml-2"
+                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                  />
+                </div>
+              </div>
+            </div>
+          </el-card>
+        </template>
+        <el-card shadow="always" style="width:260pt;height: 235pt" class="add-card">
+          <div class="content">
+            <div class="baseInfo">
+              <div class="add_Logo">
+                <el-icon class="avatar-uploader-icon">
+                  <Plus />
+                </el-icon>
+              </div>
+              <div class="add_Name">
+                新建医院信息
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </div>
+    </main>
+    <footer>
+      <div class="pagination">
+        <el-pagination layout="prev, pager, next" :total="total" />
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script setup name="HospitalList">
+import { onMounted, ref } from "vue";
+import { getHospitalList } from "@/api/hospital/hospitalList";
+//列表数据条数
+let total = ref(0);
+//列表数据详情
+let listData = ref([]);
+//搜索参数
+let searchParams = ref({
+  isAsc: "",//排序的方向desc或者asc
+  name: "",//医院名称
+  orderByColumn: "",//排序列
+  pageNum: 10,//当前记录起始索引
+  pageSize: 1,//每页显示记录数
+  status: ""//状态
+});
+//改变状态
+const changeStatus = (value, index) => {
+  let result = value ? "1" : "0";
+  listData.value[index].status = result;
+};
+//初始化列表数据
+const innitListData = async () => {
+  let resultDataList = await getHospitalList(searchParams.value);
+  if (resultDataList.code == 200) {
+    listData.value = resultDataList.data.list;
+    total.value = Number(resultDataList.data.total);
+  }
+};
+onMounted(() => {
+  innitListData();
+});
+</script>
+
+<style scoped lang="scss">
+.out_box {
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  width: 100%;
+  height: 100%;
+
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    .search {
+      width: 30%;
+      height: 40px;
+      line-height: 40px;
+      background: #F5F5F5;
+      display: flex;
+      flex-direction: row;
+      border-radius: 10px;
+      padding: 2px 5px;
+
+      .search_icon {
+        width: 10%;
+        z-index: 100;
+        background: url("@/assets/images/searchIcon/serc.png") no-repeat 50% 50%;
+      }
+
+      .serach_input {
+        width: 90%;
+        border: none;
+        background-color: #F5F5F5;
+        outline: none;
+        color: #333333;
+        font-size: 20px;
+      }
+    }
+
+    .code {
+      width: 150px;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid #DDDDDD;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px 0 10px;
+      align-items: center;
+
+      .code_imageicon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background: url("@/assets/images/codeImage/code.png") no-repeat 50% 50%;
+      }
+    }
+  }
+
+  main {
+    flex: 1;
+    margin: 20px;
+
+    .list_content {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+
+      .add-card {
+        border-radius: 20px;
+        margin: 10px;
+
+        .content {
+          .el-icon.avatar-uploader-icon {
+            font-size: 50px;
+            color: #8c939d;
+            text-align: center;
+            line-height: 200px;
+          }
+
+          .baseInfo {
+            height: 100%;
+
+            .add_Logo {
+              margin-top: 40px;
+              width: 80%;
+              height: 200px;
+              text-align: center;
+              line-height: 200px;
+              border: 1px dashed #D2D2D2;
+              border-radius: 10px;
+            }
+
+            .add_Name {
+              font-size: 16px;
+              height: 50px;
+              line-height: 50px;
+            }
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+          }
+        }
+      }
+
+      .box-card {
+        border-radius: 20px;
+        margin: 10px;
+
+        .status {
+          width: 100%;
+          display: flex;
+          justify-content: flex-end;
+
+          .green {
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            background-color: green;
+          }
+
+          .red {
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            background-color: red;
+          }
+        }
+
+        .content {
+          .baseInfo {
+            .add_Logo {
+              width: 100%;
+              height: 200px;
+              text-align: center;
+              line-height: 200px;
+              border: 1px dashed #D2D2D2;
+              border-radius: 5px;
+            }
+
+            .add_Name {
+              font-size: 16px;
+            }
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+          }
+
+          .control {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 0 10px;
+            height: 50px;
+            line-height: 50px;
+            border-top: 1px solid #ececec;
+          }
+        }
+      }
+    }
+  }
+;
+
+
+  footer {
+    width: 100%;
+    height: 100px;
+    line-height: 100px;
+    margin-top: 20px;
+
+    .pagination {
+      text-align: center;
+      width: 200px;
+      margin: 0 auto;
+    }
+  }
+}
+</style>
+
+
