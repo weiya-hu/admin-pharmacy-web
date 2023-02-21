@@ -21,11 +21,11 @@ const scrollWrapper = computed(() => proxy.$refs.scrollContainer.$refs.wrap$);
 onMounted(() => {
   nextTick(()=>{
     console.log(scrollWrapper.value)
-    scrollWrapper.value.addEventListener('scroll', emitScroll, true)
+    scrollWrapper.value && scrollWrapper.value.addEventListener('scroll', emitScroll, true)
   })
 })
 onBeforeUnmount(() => {
-  scrollWrapper.value.removeEventListener('scroll', emitScroll)
+  scrollWrapper.value && scrollWrapper.value.removeEventListener('scroll', emitScroll)
 })
 
 function handleScroll(e) {

@@ -68,10 +68,6 @@
           </template>
           <ShpUploadFile v-model="form.activitiesAdditions" :limit="5" :multiple="true" flag="activitiesAdditions"></ShpUploadFile>
         </el-form-item>
-
-<!--        <el-form-item>-->
-<!--          <el-button @click="submit">保存</el-button>-->
-<!--        </el-form-item>-->
       </el-form>
     </el-card>
     <!-- 费率结算规则对照表 -->
@@ -112,12 +108,14 @@
 </template>
 
 <script setup>
-import {onUpdated, reactive, ref} from "vue";
+import {getCurrentInstance, onUpdated, reactive, ref} from "vue";
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {listActivity, listSettlement} from "@/api/insurance/wechatIncoming";
 import ShpUploadFile from './ShpUploadFile.vue';
 
 const { proxy } = getCurrentInstance();
+const emit = defineEmits(["result"]);
+
 const form = ref({
   settlementId: '', //入驻结算规则ID
   qualificationType: null, //所属行业
@@ -126,6 +124,7 @@ const form = ref({
   activitiesRate: '', //优惠费率活动值
   activitiesAdditions: [] //优惠费率活动补充材料
 })
+
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).settlementInfo:null
 wechartDatas && (form.value = wechartDatas)
@@ -172,7 +171,6 @@ const handleChange = (val) => {
   otherAsk.value = obj.otherAsk
 }
 
-const emit = defineEmits(["result"]);
 const submit = () => {
   proxy.$refs["settlementRef"].validate(valid => {
     if (valid) {
@@ -194,6 +192,10 @@ const getList = () => {
   listSettlement({subjectType: wechartDatas && wechartDatas.subjectType}).then(res => {
     if (res.code === 200) {
       typeList.value = res.data
+      let TypeData = res.data.filter(item => item.settlementId == form.value.settlementId)
+      if (TypeData.length === 0) {
+        form.value.qualificationType = null
+      }
     }
   })
   listActivity().then(res => {

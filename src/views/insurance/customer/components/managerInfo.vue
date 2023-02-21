@@ -36,6 +36,7 @@
           <el-select
               v-model="form.contactIdDocType"
               placeholder="请选择超级管理员证件类型"
+              @change="handleChangeType"
               class="form-input"
           >
             <el-option v-for='item in IDtypes' :label="item.label" :value="item.value" :key="item.value"/>
@@ -50,29 +51,9 @@
               </template>
             </labelExplain>
           </template>
-          <el-upload
-              v-model:file-list="zFileList"
-              :action="uploadData.uploadUrl"
-              :headers="{'Authorization':uploadData.token}"
-              method:="POST"
-              accept="image/*"
-              :limit="1"
-              :show-file-list="true"
-              list-type="picture-card"
-              :on-exceed="handleExceed"
-              :on-success="zHandleAvatarSuccess"
-              :on-error="zHandleAvatarError"
-              :on-preview="zhandlePictureCardPreview"
-              :on-remove="zhandleRemove"
-              :before-upload="beforeAvatarUpload"
-          >
-            <el-icon class="form-img" color="#666666">
-              <Plus/>
-            </el-icon>
-          </el-upload>
-          <el-dialog v-model="zDialogVisible">
-            <img :src="zDialogImageUrl" alt="" style="width: 100%;object-fit: contain;"/>
-          </el-dialog>
+          <ShpUploadFile ref="idCardInfo_Instance" @success="(data)=>{uploadIdCardOcr(data, 'positive', 'idCardInfo')}"
+                         v-model="form.contactIdDocCopy" :limit="1" :multiple="false"
+                         flag="contactIdDocCopy"></ShpUploadFile>
         </el-form-item>
 
         <el-form-item prop="contactIdDocCopyBack"
@@ -84,29 +65,10 @@
               </template>
             </labelExplain>
           </template>
-          <el-upload
-              v-model:file-list="fFileList"
-              :action="uploadData.uploadUrl"
-              :headers="{'Authorization':uploadData.token}"
-              method:="POST"
-              accept="image/*"
-              :limit="1"
-              :show-file-list="true"
-              list-type="picture-card"
-              :on-exceed="handleExceed"
-              :on-success="fHandleAvatarSuccess"
-              :on-error="fHandleAvatarError"
-              :on-preview="fhandlePictureCardPreview"
-              :on-remove="fhandleRemove"
-              :before-upload="beforeAvatarUpload"
-          >
-            <el-icon class="form-img" color="#666666">
-              <Plus/>
-            </el-icon>
-          </el-upload>
-          <el-dialog v-model="fDialogVisible">
-            <img :src="fDialogImageUrl" alt="" style="width: 100%;object-fit: contain;"/>
-          </el-dialog>
+          <ShpUploadFile ref="idCardInfoNational_Instance"
+                         @success="(data)=>{uploadIdCardOcr(data, 'opposite', 'idCardInfoNational')}"
+                         v-model="form.contactIdDocCopyBack" :limit="1" :multiple="false"
+                         flag="contactIdDocCopyBack"></ShpUploadFile>
         </el-form-item>
 
         <el-form-item prop="contactName">
@@ -223,25 +185,20 @@
               class="form-input"
           />
         </el-form-item>
-
-<!--        <el-form-item>-->
-<!--          <el-button @click="submit()">保存</el-button>-->
-<!--        </el-form-item>-->
       </el-form>
     </el-card>
   </div>
 </template>
 
 <script setup>
-import {reactive, ref} from "vue";
-import {Plus} from '@element-plus/icons-vue';
+import {getCurrentInstance, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
-import {getToken} from '@/utils/auth';
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {idCardOcr} from "@/api/insurance/wechatIncoming";
 import ShpUploadFile from './ShpUploadFile.vue';
 
 const {proxy} = getCurrentInstance();
+const emit = defineEmits(["result"]);
 
 const form = ref({
   contactType: null, //超级管理员类型
@@ -257,18 +214,13 @@ const form = ref({
   mobilePhone: '', //联系手机
   contactEmail: '' //联系邮箱
 });
-let wechartData = sessionStorage.getItem('wechartFormData')
-let wechartDatas = wechartData?JSON.parse(wechartData).contactInfo:null
-wechartDatas && (form.value = wechartDatas)
-
 const formDateRadio = ref(5);
-const zDialogVisible = ref(false);
-const zDialogImageUrl = ref('');
-const zFileList = ref([])
-const fDialogVisible = ref(false);
-const fDialogImageUrl = ref('');
-const fFileList = ref([]);
-const managerRef = ref()
+const idCardInfo_Instance = ref(null);
+const idCardInfoNational_Instance = ref(null);
+
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData ? JSON.parse(wechartData).contactInfo : null
+wechartDatas && (form.value = wechartDatas)
 
 // 超级管理员证件类型
 const IDtypes = [
@@ -347,7 +299,7 @@ const rules = reactive({
   contactType: [{required: true, message: "请选择超级管理员类型", trigger: "change"}],
   contactName: [{required: true, message: "请输入超级管理员姓名", trigger: "change"}],
   contactIdDocType: [{required: true, message: "请选择超级管理员证件类型", trigger: "change"}],
-  contactIdNumber: [{ required: true, validator: validNumber, trigger: "change" }],
+  contactIdNumber: [{required: true, validator: validNumber, trigger: "change"}],
   contactIdDocCopy: [{required: true, message: "请上传超级管理员证件正面照片", trigger: "change"}],
   contactIdDocCopyBack: [{required: true, message: "请上传超级管理员证件反面照片", trigger: "change"}],
   contactPeriodBegin: [{required: true, message: "请选择超级管理员证件有效期开始时间", trigger: "change"}],
@@ -364,10 +316,17 @@ const handleChange = (val) => {
     form.value.contactIdDocCopyBack = null
     form.value.contactPeriodBegin = ''
     form.value.contactPeriodEnd = ''
-    form.value.businessAuthorizationLetter = null
-    zFileList.value = []
-    fFileList.value = []
   }
+}
+const handleChangeType = (val) => {
+  form.value.contactName = ''
+  form.value.contactIdNumber = ''
+  form.value.contactIdDocCopy = null
+  form.value.contactIdDocCopyBack = null
+  form.value.contactPeriodBegin = ''
+  form.value.contactPeriodEnd = ''
+  idCardInfo_Instance.value.removeFile();
+  idCardInfoNational_Instance.value.removeFile();
 }
 const getStartTime = () => {
   let startTime = form.value.contactPeriodBegin
@@ -383,76 +342,36 @@ const getStartTime = () => {
   }
 }
 
-// 微信图片上传
-let uploadData = reactive({
-  uploadUrl: import.meta.env.VITE_APP_BASE_API + '/pay/media/wxPictureUpload',
-  token: getToken()
-})
+//上传文件失败清除文件的方法
+const uploadInstances = ref({
+  idCardInfoInstance: () => {
+    idCardInfo_Instance.value.removeFile();
+  },
+  idCardInfoNationalInstance: () => {
+    idCardInfoNational_Instance.value.removeFile();
+  },
+});
 
-// 上传验证
-function beforeAvatarUpload(file) {
-  const isPicture = file.type === 'image/jpeg' || file.type === 'image/png'
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isPicture) {
-    ElMessage.error('请上传jepg,png,jpg格式的图片!')
-    return false
-  } else if (!isLt2M) {
-    ElMessage.error('上传图片不能超过2M!')
-    return false
-  }
-  return true
-}
-
-const handleExceed = () => {
-  ElMessage.error(`最多上传1张图片`)
-}
-
-// 身份证正面上传、查看
-const zHandleAvatarSuccess = (res) => {
-  if (res.code === 200) {
-    idCardOcr({url: res.data[0].url}).then(res_id => {
-      if (res_id.code === 200) {
+// 上传成功后回调
+const uploadIdCardOcr = (data, positiveOrOpposite, saveName) => {
+  let name = saveName + "Instance";
+  idCardOcr({url: data.url}).then(res_id => {
+    if (res_id.code === 200) {
+      if (positiveOrOpposite === 'positive') {
         if (res_id.data.authority !== '' || res_id.data.validDate !== '') {
           ElMessage.error('请上传超级管理员证件正面照片')
-          zFileList.value = []
+          uploadInstances.value[name]();
         } else {
-          form.value.contactIdDocCopy = res.data[0]
+          form.value.contactIdDocCopy = data
           form.value.contactIdNumber = res_id.data.idNum
           form.value.contactName = res_id.data.name
         }
-      } else {
-        zFileList.value = []
-      }
-    }).catch(err => {
-      zFileList.value = []
-    })
-  } else {
-    zFileList.value = []
-    ElMessage.error(res.msg)
-  }
-}
-const zHandleAvatarError = (err) => {
-  zFileList.value = []
-}
-const zhandleRemove = () => {
-  form.value.contactIdNumber = ''
-  form.value.contactName = ''
-  form.value.contactIdDocCopy = null
-}
-const zhandlePictureCardPreview = (uploadFile) => {
-  zDialogImageUrl.value = uploadFile.url
-  zDialogVisible.value = true
-}
-// 身份证反面上传、查看
-const fHandleAvatarSuccess = (res) => {
-  if (res.code === 200) {
-    idCardOcr({url: res.data[0].url}).then(res_id => {
-      if (res_id.code === 200) {
+      } else if (positiveOrOpposite === 'opposite') {
         if (res_id.data.authority === '' || res_id.data.validDate === '') {
           ElMessage.error('请上传超级管理员证件反面照片')
-          fFileList.value = []
+          uploadInstances.value[name]();
         } else {
-          form.value.contactIdDocCopyBack = res.data[0]
+          form.value.contactIdDocCopyBack = data
           if (res_id.data.validDate.substring(11) === '长期') {
             formDateRadio.value = -1
             form.value.contactPeriodBegin = res_id.data.validDate.substring(0, 10).replaceAll('.', '-')
@@ -464,34 +383,17 @@ const fHandleAvatarSuccess = (res) => {
             form.value.contactPeriodEnd = res_id.data.validDate.substring(11).replaceAll('.', '-')
           }
         }
-      } else {
-        fFileList.value = []
       }
-    }).catch(err => {
-      fFileList.value = []
-    })
-  } else {
-    fFileList.value = []
-    ElMessage.error(res.msg)
-  }
-}
-const fHandleAvatarError = (err) => {
-  fFileList.value = []
-}
-const fhandleRemove = () => {
-  form.value.contactPeriodBegin = ''
-  form.value.contactPeriodEnd = ''
-  form.value.contactIdDocCopyBack = null
-  formDateRadio.value = 5
-}
-const fhandlePictureCardPreview = (uploadFile) => {
-  fDialogImageUrl.value = uploadFile.url
-  fDialogVisible.value = true
+    } else {
+      uploadInstances.value[name]();
+    }
+  }).catch(err => {
+    uploadInstances.value[name]();
+  })
 }
 
-const emit = defineEmits(["result"]);
 const submit = () => {
-  managerRef.value.validate(valid => {
+  proxy.$refs["managerRef"].validate(valid => {
     if (valid) {
       console.log('超级管理员', form.value)
       emit('result', {contactInfo: form.value})

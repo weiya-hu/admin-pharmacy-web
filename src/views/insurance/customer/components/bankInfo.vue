@@ -165,7 +165,7 @@ const form = ref({
 })
 
 let wechartData = sessionStorage.getItem('wechartFormData')
-let wechartDatas = wechartData?JSON.parse(wechartData).bankAccountInfo:null
+let wechartDatas = wechartData ? JSON.parse(wechartData).bankAccountInfo : null
 wechartDatas && (form.value = wechartDatas)
 
 const accountBankList = ref([])
@@ -204,8 +204,8 @@ const rules = reactive({
   accountName: [{required: true, message: "请输入开户名称", trigger: "blur"}],
   accountBank: [{required: true, message: "请选择开户银行", trigger: "change"}],
   bankAddressCode: [{required: true, message: "请输入开户银行省市编码", trigger: "change"}],
-  bankBranchId: [{ required: true, validator: validBankid, trigger: "blur" }],
-  bankName: [{ required: true, validator: validBankName, trigger: "blur" }],
+  bankBranchId: [{required: true, validator: validBankid, trigger: "blur"}],
+  bankName: [{required: true, validator: validBankName, trigger: "blur"}],
   accountNumber: [{required: true, message: "请输入银行账号", trigger: "blur"}]
 })
 
