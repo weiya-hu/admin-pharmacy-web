@@ -362,7 +362,24 @@
             <template #title>
               <div class="collapseName">经营者/法人身份证件:</div>
             </template>
-            <el-form-item prop="identityInfo.authorizeLetterCopy" style="align-items: center;font-weight: bold">
+            <el-form-item prop="identityInfo.idHolderType">
+              <template #label>
+                <labelExplain label="证件持有人类型">
+                  <template #explain>
+                    <div>
+                      主体类型为政府机关、事业单位时选传
+                      主体类型为企业、个体户、社会组织时，默认为经营者/法人，不需要上传该字段
+                    </div>
+                  </template>
+                </labelExplain>
+              </template>
+              <el-radio-group @change="chooseIdHolderType" v-model="form_Info.identityInfo.idHolderType">
+                <el-radio :disabled="controlIdHolderTypeDisabled" label="LEGAL" size="large">法人</el-radio>
+                <el-radio :disabled="controlIdHolderTypeDisabled" label="SUPER" size="large">经办人</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="isShowAuthorizeLetterCopy" prop="identityInfo.authorizeLetterCopy"
+                          style="align-items: center;font-weight: bold">
               <template #label>
                 <labelExplain label="法定代表人说明函">
                   <template #explain>
@@ -382,22 +399,6 @@
               <ShpUploadFile @success="(data)=>{uploadImageSuccessCallback(data,false,'','','')}"
                              v-model="form_Info.identityInfo.authorizeLetterCopy" :limit="1" :multiple="false"
                              flag="businessAdditionPics"></ShpUploadFile>
-            </el-form-item>
-            <el-form-item prop="identityInfo.idHolderType">
-              <template #label>
-                <labelExplain label="证件持有人类型">
-                  <template #explain>
-                    <div>
-                      主体类型为政府机关、事业单位时选传
-                      主体类型为企业、个体户、社会组织时，默认为经营者/法人，不需要上传该字段
-                    </div>
-                  </template>
-                </labelExplain>
-              </template>
-              <el-radio-group @change="chooseIdHolderType" v-model="form_Info.identityInfo.idHolderType">
-                <el-radio :disabled="controlIdHolderTypeDisabled" label="LEGAL" size="large">法人</el-radio>
-                <el-radio :disabled="controlIdHolderTypeDisabled" label="SUPER" size="large">经办人</el-radio>
-              </el-radio-group>
             </el-form-item>
             <el-form-item prop="identityInfo.idDocInfo.owner">
               <template #label>
@@ -1016,6 +1017,8 @@ const form_Info = ref({
 });
 //经营者/法人身份证件 中证件类型是否展示
 const isShowIdDocType = ref(false);
+//法人代表说明函是否展示
+const isShowAuthorizeLetterCopy = ref(false);
 //取消监听收集器数组
 let clearWatchArray = ref([]);
 //外层折叠面板name数组
@@ -2291,8 +2294,10 @@ watch(() => [form_Info.value.identityInfo.idHolderType, form_Info.value.identity
   let { identityInfo: { idHolderType, idDocType } } = form_Info.value;
   if (idHolderType == "SUPER") {
     isShowIdDocType.value = false;
+    isShowAuthorizeLetterCopy.value = true;
   } else {
     isShowIdDocType.value = true;
+    isShowAuthorizeLetterCopy.value = false;
   }
   if (idHolderType && idDocType) {
     if (idHolderType == "LEGAL" && idDocType == "IDENTIFICATION_TYPE_IDCARD") {
