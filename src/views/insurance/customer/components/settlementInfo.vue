@@ -128,7 +128,7 @@ const form = ref({
 })
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).settlementInfo:null
-// wechartDatas && (form.value = wechartDatas)
+wechartDatas && (form.value = wechartDatas)
 
 const dialogVisibleTable = ref(false)
 const tableData = ref([])

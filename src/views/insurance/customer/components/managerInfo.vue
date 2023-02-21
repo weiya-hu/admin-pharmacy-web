@@ -259,7 +259,7 @@ const form = ref({
 });
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).contactInfo:null
-// wechartDatas && (form.value = wechartDatas)
+wechartDatas && (form.value = wechartDatas)
 
 const formDateRadio = ref(5);
 const zDialogVisible = ref(false);

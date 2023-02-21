@@ -1015,6 +1015,11 @@ const form_Info = ref({
   uboInfoList: []
 
 });
+
+let wechartData = sessionStorage.getItem('wechartFormData')
+let wechartDatas = wechartData ? JSON.parse(wechartData).subjectInfo : null
+wechartDatas && (form_Info.value = wechartDatas)
+
 //经营者/法人身份证件 中证件类型是否展示
 const isShowIdDocType = ref(false);
 //法人代表说明函是否展示

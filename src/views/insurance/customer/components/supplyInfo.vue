@@ -88,7 +88,7 @@ const formValue = ref({
 })
 let wechartData = sessionStorage.getItem('wechartFormData')
 let wechartDatas = wechartData?JSON.parse(wechartData).additionInfo:null
-// wechartDatas && (formValue.value = wechartDatas)
+wechartDatas && (formValue.value = wechartDatas)
 
 const hh=ref()
 const foem =()=>{
