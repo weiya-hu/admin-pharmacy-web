@@ -68,7 +68,7 @@
     </main>
     <footer>
       <div class="pagination">
-        <el-pagination layout="prev, pager, next" :total="total" />
+        <el-pagination @change="changePagination" layout="prev, pager, next" :total="total" />
       </div>
     </footer>
   </div>
@@ -83,18 +83,22 @@ let total = ref(0);
 let listData = ref([]);
 //搜索参数
 let searchParams = ref({
-  isAsc: "",//排序的方向desc或者asc
-  name: "",//医院名称
-  orderByColumn: "",//排序列
+  isAsc: null,//排序的方向desc或者asc
+  name: null,//医院名称
+  orderByColumn: null,//排序列
   pageNum: 10,//当前记录起始索引
   pageSize: 1,//每页显示记录数
-  status: ""//状态
+  status: null//状态
 });
 //改变状态
 const changeStatus = (value, index) => {
   let result = value ? "1" : "0";
   listData.value[index].status = result;
 };
+//改变页
+const changePagination = (value)=>{
+  console.log(value);
+}
 //初始化列表数据
 const innitListData = async () => {
   let resultDataList = await getHospitalList(searchParams.value);
