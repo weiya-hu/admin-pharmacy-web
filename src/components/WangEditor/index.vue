@@ -138,6 +138,7 @@ editorConfig.MENU_CONF["editLink"] = {
 
 // 自定义校验图片
 function customCheckImageFn(src, alt, url) {
+  console.log(src,"src");
   if (!src) {
     return;
   }
@@ -153,7 +154,7 @@ function customCheckImageFn(src, alt, url) {
 }
 
 // 转换图片链接
-function customParseImageSrc(src) {  // TS 语法
+function customParseImageSrc(src) {
   if (src.indexOf("http") !== 0) {
     return `http://${src}`;
   }
@@ -219,6 +220,7 @@ editorConfig.MENU_CONF["uploadImage"] = {
   timeout: 5 * 1000, // 5 秒
   // 上传之前触发
   onBeforeUpload(file) {
+    console.log(file,"files");
     // file 选中的文件，格式如 { key: file }
     let fileObj = Object.values(file)[0].data;
     const isJPG = (fileObj.type == "image/jpg" || fileObj.type == "image/jpeg" || fileObj.type == "image/png");

@@ -47,7 +47,6 @@ let queryParames = ref({
 
   .editor {
 
-
   }
 }
 
