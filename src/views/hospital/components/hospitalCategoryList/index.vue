@@ -37,35 +37,16 @@
   </div>
   <el-dialog
     title="新建内容"
-    width="40%"
+    width="60%"
     append-to-body
     :close-on-click-modal="false"
     draggable
     center
     v-model="isShowArticeDialog"
   >
-    <el-form label-width="180px">
-      <el-form-item label="菜单等级">
-        <el-select @change="changeGrade" v-model="itemAdd.grade">
-          <el-option v-for="(item,index) in categoryGradeOption" :key="index" :value="item.value" :label="item.label">
-            {{ item.label }}
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item v-if="isShowParent" label="上级菜单名">
-        <el-select v-model="itemAdd.pid">
-          <el-option :value="item.value" v-for="(item,index) in parentOptions" :label="item.label" :key="index">
-            {{ item.label }}
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item v-if="isShowParent" label="菜单名称">
-        <el-input v-model="itemAdd.name"></el-input>
-      </el-form-item>
-      <el-form-item v-if="!isShowParent" label="子菜单名称">
-        <el-input v-model="itemAdd.name"></el-input>
-      </el-form-item>
-    </el-form>
+    <createContentDialog>
+
+    </createContentDialog>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="addCategoryArticle" type="primary">确 定</el-button>
@@ -73,13 +54,12 @@
       </div>
     </template>
   </el-dialog>
-
-
 </template>
-
 <script setup name="hospitalCategoryList">
 import publicTable from "@/views/hospital/components/publicComponent/publicTable.vue";
 import hospitalIntroductionConfig from "@/views/hospital/config/hospitalIntroductionConfig";
+import configMap from "@/views/hospital/config";
+import createContentDialog from "@/views/hospital/components/publicComponent/createContentDialog";
 import { computed, ref } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 
