@@ -211,7 +211,7 @@ export const revokeAssignment = (hippId) => {
     url: "/hipp/hipp/applyinfo/essbasicCancelSign",
     method: "get",
     params: {
-      hippId,
+      hippId: hippId,
     },
   });
 };
