@@ -1,5 +1,5 @@
 <template>
-  <div class="out_box">
+  <div class="out_box" v-loading="isLoading" element-loading-text="加载中...">
     <header>
       <div class="search">
         <div @click="innitListData" class="search_icon">
@@ -25,7 +25,7 @@
               </div>
             </template>
             <div class="content">
-              <div class="baseInfo">
+              <div @click="()=>{handleHospital(item)}" class="baseInfo">
                 <div class="Logo">
                   <img :src="item.logo" />
                 </div>
@@ -39,12 +39,11 @@
                   <span v-else style="color: red">禁用</span>
                 </div>
                 <div class="switch">
-                  <el-switch
+                  <customSwitch
                     @change="(value)=>{changeStatus(value,index)}"
                     :model-value="item.status=='1'?true:false"
-                    class="ml-2"
-                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-                  />
+                  >
+                  </customSwitch>
                 </div>
               </div>
             </div>
@@ -77,10 +76,16 @@
 <script setup name="HospitalList">
 import { onMounted, ref } from "vue";
 import { getHospitalList } from "@/api/hospital/hospitalList";
+import { useRouter } from "vue-router";
+import customSwitch from "./components/publicComponent/switch.vue";
+
+const router = useRouter();
 //列表数据条数
 let total = ref(0);
 //列表数据详情
 let listData = ref([]);
+//加载loading效果
+const isLoading = ref(false);
 //搜索参数
 let searchParams = ref({
   isAsc: null,//排序的方向desc或者asc
@@ -96,18 +101,27 @@ const changeStatus = (value, index) => {
   listData.value[index].status = result;
 };
 //改变页
-const changePagination = (value)=>{
+const changePagination = (value) => {
   console.log(value);
-}
+};
+//进入医院
+const handleHospital = (data) => {
+  router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
+};
 //初始化列表数据
 const innitListData = async () => {
-  let resultDataList = await getHospitalList(searchParams.value);
-  if (resultDataList.code == 200) {
-    listData.value = resultDataList.data.list;
-    total.value = Number(resultDataList.data.total);
+  try {
+    let resultDataList = await getHospitalList(searchParams.value);
+    if (resultDataList.code == 200) {
+      listData.value = resultDataList.data.list;
+      total.value = Number(resultDataList.data.total);
+    }
+  } finally {
+    isLoading.value = false;
   }
 };
 onMounted(() => {
+  isLoading.value = true;
   innitListData();
 });
 </script>
