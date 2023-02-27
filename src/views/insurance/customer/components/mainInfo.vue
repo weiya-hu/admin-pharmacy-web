@@ -361,7 +361,7 @@
           <el-collapse-item name="4">
             <template #title>
               <div class="collapseName">经营者/法人身份证件:</div>
-<!--              ？-->
+              <!--              ？-->
             </template>
             <el-form-item prop="identityInfo.idHolderType">
               <template #label>
@@ -2493,13 +2493,13 @@ const innitDataToFormInfo = (wechartDatas) => {
     uboPeriodEnd: null
   };
 //  初始化其他受益人的信息
-  if (wechartDatas.uboInfoList.length !== 0) {
+  if (wechartDatas.uboInfoList?.length !== 0) {
     clearWatchArray.value.forEach(watcherItem => {
       watcherItem();
     });
     clearWatchArray.value = [];
     form_Info.value.uboInfoList = [];
-    wechartDatas.uboInfoList.forEach((item, index) => {
+    wechartDatas.uboInfoList?.forEach((item, index) => {
       form_Info.value.uboInfoList.push(itemObj);
       clearWatchArray.value.push(watch(() => form_Info.value.uboInfoList[index].uboPeriodEnd, () => {
           if (form_Info.value.uboInfoList[index].uboPeriodEnd == "长期") {
