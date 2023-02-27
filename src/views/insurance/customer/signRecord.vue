@@ -81,13 +81,13 @@
               <template
                   v-else-if="scope.row.offLineContractFile[0].ext!='pdf'">
                 <el-image
-                    style="width: 50px; height: 50px"
+                    :preview-src-list="scope.row.offLineContractFile.map((m) =>m.attachUrl)"
                     :src="scope.row.offLineContractFile[0].attachUrl"
                     :zoom-rate="1.2"
-                    :preview-src-list="scope.row.offLineContractFile.map((m) =>m.attachUrl)" fit="cover"
-                    preview-teleported
-                    @switch="setUrl"
+                    fit="cover" preview-teleported
+                    style="width: 50px; height: 50px"
                     @close="urlIndex.value=0"
+                    @switch="setUrl"
                 >
                   <template #viewer>
                     <div class="downLoad-viewer" @click="picdownLoad(scope.row)">下载</div>
@@ -206,11 +206,11 @@
               scope.row.paymentVoucherAttachFile.length > 0
             ">
               <el-image
-                  style="width: 50px; height: 50px"
+                  :preview-src-list="scope.row.paymentVoucherAttachFile.map((m) =>m.attachUrl)"
                   :src="scope.row.paymentVoucherAttachFile[0].attachUrl"
                   :zoom-rate="1.2"
-                  :preview-src-list="scope.row.paymentVoucherAttachFile.map((m) =>m.attachUrl)" fit="cover"
-                  preview-teleported
+                  fit="cover" preview-teleported
+                  style="width: 50px; height: 50px"
               />
             </div>
 
@@ -281,7 +281,7 @@
 
         <el-table-column align="center" fixed="right" label="操作" width="80">
           <template #default="scope">
-            <el-tooltip v-if="scope.row.status==1" content="撤销签约" placement="top-end">
+            <el-tooltip v-if="scope.row.status==1 && roleName=='运营管理'" content="撤销签约" placement="top-end">
               <el-button :icon="Close" text type="danger" @click="revoke(scope.row)"></el-button>
             </el-tooltip>
             <span v-else>--</span>
@@ -344,13 +344,13 @@
 
       <div class="demo-image__lazy">
         <el-image
-            style="width: 50px;height: 50px"
             v-for="attachUrl in paymentVoucherList"
             :key="attachUrl"
             :src="attachUrl"
             fit="cover"
             lazy
             preview-teleported
+            style="width: 50px;height: 50px"
         />
       </div>
     </el-dialog>
@@ -364,6 +364,7 @@ import {ArrowLeft, Close} from "@element-plus/icons-vue";
 import {downloadContract, downLoadFile, getHippList, revokeAssignment} from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
 import {ElMessage} from "element-plus";
+import useUserStore from "@/store/modules/user";
 
 const queryTime = ref([]);
 const router = useRouter();
@@ -419,7 +420,8 @@ const showSearch = ref(true);
 const loading = ref(false);
 const total = ref(0);
 const deptList = ref([]);
-const urlIndex = ref(0)
+const urlIndex = ref(0);
+const roleName = ref('')
 
 // 支付凭证变量
 const paymentVoucherDialog = ref(false);
@@ -516,12 +518,16 @@ const revoke = ({hippId}) => {
         message: '撤销申请成功',
         type: "success"
       })
+      getList()
     }
   })
 }
 
 onMounted(() => {
   getDeptList(defaultParams.value);
+  useUserStore().getInfo().then(res => {
+    roleName.value = res.user.roleName
+  })
 });
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="wechart-coming" v-loading="loading">
+  <div class="wechart-coming" v-loading="loading" v-if="isShow">
     <el-steps :active="active" finish-status="success" class="step">
       <el-step title="步骤 1"></el-step>
       <el-step title="步骤 2"></el-step>
@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from "vue";
-import { addWxpayApplyment_api } from '@/api/insurance/wechatIncoming'
+import { addWxpayApplyment_api, getApplymentDetail_api } from '@/api/insurance/wechatIncoming'
 import ManagerInfo from './components/managerInfo.vue'
 import SettlementInfo from './components/settlementInfo.vue'
 import MainInfo from './components/mainInfo.vue'
@@ -37,6 +37,8 @@ import { ElMessage } from 'element-plus'
 
 const router = useRouter();
 const loading=ref(true)
+const isShow = ref (false)
+const rebackList = ref({})
 const formInfoRef1 = ref()
 const formInfoRef2 = ref()
 const formInfoRef3 = ref()
@@ -65,17 +67,16 @@ const getValue = (val)=>{
     sessionStorage.setItem('wechartFormData',JSON.stringify(wechartDatas))
     if(active.value == 5){
       console.log(wechartDatas)
-      loading.value = true
       addWxpayApplyment_api(wechartDatas).then(res=>{
         console.log(11)
         console.log(res)
-        loading.value = false
+        isShow.value = true
         ElMessage.success(res.msg)//to do 成功后跳转
         router.push('/insurance/wechatIncoming')
       }).catch(res=>{
         console.log(22)
         console.log(res)
-        loading.value = false
+        isShow.value = true
       })
       // const {code, msg} = await addWxpayApplyment_api(wechartDatas)
       // loading.value = false
@@ -97,23 +98,30 @@ const reback = ()=>{
 }
 
 const next =()=>{
-  console.log(formInfoRef1.value);
   list[active.value].todo()
-  // switch(active.value){
-  //   case 0 :formInfoRef1.value.submit();break;
-  //   case 1 :formInfoRef2.value.submit();break;
-  //   case 2 :formInfoRef3.value.submit();break;
-  //   case 3 :formInfoRef4.value.submit();break;
-  //   case 4 :formInfoRef5.value.submit();break;
-  //   case 5 :formInfoRef6.value.submit();break;
-  // }
+}
+
+const getDetail = (id)=>{
+  loading.value = true
+  getApplymentDetail_api(id)
+  .then(({ data })=>{  
+    rebackList.value = data
+    sessionStorage.setItem('wechartFormData',JSON.stringify(data))
+    loading.value = false
+    isShow.value = true
+  })
+  .catch(()=>{
+    loading.value = false
+    isShow.value = true
+  })
 }
 
 onMounted(()=>{
-  console.log(55)
+  const id = router.currentRoute._value.query.applyMentId
+  id && getDetail(id)
+  !id && (isShow.value = true)
 })
 nextTick(()=>{
-  console.log(66)
   loading.value = false
 })
 </script>

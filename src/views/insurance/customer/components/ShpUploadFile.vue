@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <div class="flexl">
+    <!-- <div v-if="showFileList && showFile">
+      <div v-for="(v,i) in rebackFile" class="fleximg img-file">
+        <img :src="v.url" alt="image">
+      </div>
+    </div> -->
     <el-upload
       v-loading="loading"
       ref="upload"
@@ -15,11 +20,11 @@
       :on-success="upSuccess"
       :on-preview="PictureCardPreview"
       :on-remove="onRemove"
-      :show-file-list="showFileList && showFile"
       class="my_upload flexl"
       :class="`my_upload${flag}`"
       :multiple="multiple"
       list-type="picture-card"
+      :file-list="rebackFile"
     >
       <el-icon class="form-img">
         <Plus/>
@@ -40,7 +45,7 @@
  * @params multiple?: boolean //是否支持多文件上传,不传默认不支持
  * @params limit?: number //上传的文件最大数,不传默认上传一张
  */
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
 import {Plus} from '@element-plus/icons-vue';
 
 import {
@@ -77,8 +82,14 @@ const upload = ref() //上传组件ref
 const showFile = ref(true)
 const loading = ref(false)
 
+const rebackFile = computed(()=>{
+  let list = props.modelValue ? [].concat(props.modelValue) :[]
+  return list 
+})
+
 const dialogVisible = ref()
 const dialogImageUrl = ref()
+console.log(props.modelValue);
 
 const hostUrl = ref(`${window.location.protocol}//${window.location.host}${process.env.NODE_ENV === 'development' ? '/dev-api' : '/prod-api'}/pay/media/wxPictureUpload`)
 const upData = ref()
@@ -126,20 +137,29 @@ const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) 
     })() : (() => {
       let urls = []
       uploadFiles.forEach(m => {
-        if (m.response!.code == 200) {
-          urls.push(m.response!.data[0])
-        }else{
-          ElMessage.error(m.response!.msg)
-          // upload.value.handleRemove(m)
-          removeSole(m)
+        //这里面是回显的数据
+        if(m.mediaId){
+          urls.push(m);
+          //这里面是刚刚上传的数据
+        }else if(m.response){
+          if (m.response.code == 200) {
+            urls.push(m.response.data[0])
+          }else{
+            ElMessage.error(m.response.msg)
+            removeSole(m)
+          }
         }
+        
       })
-      emit('update:modelValue', urls)
-      emit('success', urls)
+      //等所有文件都上传成功了才传回数据，不然回传早了会丢失数据
+      if(urls.length == uploadFiles.length){
+        emit('update:modelValue', urls)
+        emit('success', urls)
+      }
+     
     })()
   } else {
     ElMessage.error(res.msg)
-    // upload.value.handleRemove(uploadFile)
     removeSole(uploadFile)
   }
 }
@@ -154,12 +174,15 @@ const onRemove = (uploadFile: UploadFile, uploadFiles: UploadFile[]) => {
   console.log(uploadFile, uploadFiles)
   let urls = []
   uploadFiles.forEach(m => {
-    if (m.response!.code == 200) {
-      urls.push(m.response!.data[0])
-    }else{
-      ElMessage.error(m.response!.msg)
-      // upload.value.handleRemove(m)
-      removeSole(m)
+    if(m.url){
+      urls.push(m)
+    }else if(m.response){
+      if (m.response.code == 200) {
+        urls.push(m.response.data[0])
+      }else{
+        ElMessage.error(m.response.msg)
+        removeSole(m)
+      }
     }
   })
   if (props.multiple) {
@@ -201,6 +224,12 @@ defineExpose({
 
 </script>
 <style scoped lang="scss">
+.img-file{
+  width: 60px;
+    height: 60px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 6px;
+}
 .my_upload {
   .avatar-uploader-icon {
     width: 60px;

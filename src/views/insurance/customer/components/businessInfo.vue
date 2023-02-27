@@ -908,19 +908,37 @@ const areaChange = (val) => {
       = val.toString()
 }
 
-const getBankType = () => {
-
-  listProvince().then(res => {
-    if (res.code == 200) {
-      provinceList.value = res.data
+const writeBack = () => {
+  let provinceData = businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode.substring(0, 2) + '0000'
+  let cityData = businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode.substring(0, 4) + '00'
+  provinceList.value.filter(item => item.id == provinceData).forEach(items => state.value.province = items.id)
+  listCity({pid: state.value.province}).then(res => {
+    if (res.code === 200) {
+      cityList.value = res.data
+      cityList.value.filter(item => item.id == cityData).forEach(items => state.value.city = items.id)
+      listArea({pid: state.value.city}).then(res => {
+        if (res.code === 200) {
+          areaList.value = res.data
+          areaList.value.filter(item => item.id == businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode).forEach(items => state.value.area = items.id)
+        }
+      })
     }
   })
+}
+
+const getBankType = () => {
+  listProvince().then(res => {
+    if (res.code == 200) {
+      provinceList.value = res.data;
+      if (businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode) {
+        writeBack()
+      }
+    }
+  })
+
+
 };
 getBankType()
-
-// const showValue = () => {
-//   console.log(businessInfo.value)
-// }
 
 
 const submit = () => {

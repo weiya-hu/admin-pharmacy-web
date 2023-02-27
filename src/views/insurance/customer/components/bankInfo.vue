@@ -14,7 +14,8 @@
           <template #label>
             <labelExplain label="账户类型">
               <template #explain>
-                <div>1、若主体为企业/政府机关/事业单位/社会组织，可填写：对公银行账户<br/>2、若主体为个体户，可选择填写：对公银行账户或经营者个人银行卡</div>
+                <div>1、若主体为企业/政府机关/事业单位/社会组织，可填写：对公银行账户<br/>2、若主体为个体户，可选择填写：对公银行账户或经营者个人银行卡
+                </div>
               </template>
             </labelExplain>
           </template>
@@ -32,7 +33,8 @@
           <template #label>
             <labelExplain label="开户名称">
               <template #explain>
-                <div>1、选择“经营者个人银行卡”时，开户名称必须与“经营者证件姓名”一致<br/>2、选择“对公银行账户”时，开户名称必须与营业执照上的“商户名称”一致</div>
+                <div>1、选择“经营者个人银行卡”时，开户名称必须与“经营者证件姓名”一致<br/>2、选择“对公银行账户”时，开户名称必须与营业执照上的“商户名称”一致
+                </div>
               </template>
             </labelExplain>
           </template>
@@ -43,11 +45,13 @@
           <template #label>
             <labelExplain label="开户银行">
               <template #explain>
-                <div>1、17家直连银行，请根据开户银行对照表直接填写银行名<br/>2、非17家直连银行，该参数请填写为“其他银行”。</div>
+                <div>1、17家直连银行，请根据开户银行对照表直接填写银行名<br/>2、非17家直连银行，该参数请填写为“其他银行”。
+                </div>
               </template>
             </labelExplain>
           </template>
-          <el-select v-model="form.accountBank" @change="handleChangeBank" placeholder="请选择开户银行" style="width: 100%;">
+          <el-select v-model="form.accountBank" placeholder="请选择开户银行" style="width: 100%;"
+                     @change="handleChangeBank">
             <el-option v-for="item in accountBankList" :key="item.dictValue" :label="item.dictLabel"
                        :value="item.dictValue"/>
           </el-select>
@@ -61,15 +65,16 @@
               </template>
             </label-explain>
           </template>
-          <el-select v-model="state.province" @change="provincChange" placeholder="请选择省份"
-                     style="width: 32%;margin-right: 2%;">
-            <el-option v-for="item in provinceList" :value="item.id" :label="item.name" :key="item.id"/>
+          <el-select v-model="state.province" placeholder="请选择省份" style="width: 32%;margin-right: 2%;"
+                     @change="provincChange">
+            <el-option v-for="item in provinceList" :key="item.id" :label="item.name" :value="item.id"/>
           </el-select>
-          <el-select v-model="state.city" @change="cityChange" placeholder="请选择城市" style="width: 32%;margin-right: 2%;">
-            <el-option v-for="item in cityList" :value="item.id" :label="item.name" :key="item.id"/>
+          <el-select v-model="state.city" placeholder="请选择城市" style="width: 32%;margin-right: 2%;"
+                     @change="cityChange">
+            <el-option v-for="item in cityList" :key="item.id" :label="item.name" :value="item.id"/>
           </el-select>
-          <el-select v-model="state.area" @change="areaChange" placeholder="请选择地区" style="width: 32%;">
-            <el-option v-for="item in areaList" :value="item.id" :label="item.name" :key="item.id"/>
+          <el-select v-model="state.area" placeholder="请选择地区" style="width: 32%;" @change="areaChange">
+            <el-option v-for="item in areaList" :key="item.id" :label="item.name" :value="item.id"/>
           </el-select>
         </el-form-item>
 
@@ -84,7 +89,7 @@
           <el-input v-model="form.bankAddressCode" placeholder="请输入开户银行省市编码"/>
         </el-form-item>
 
-        <el-form-item prop="bankBranchId" v-if="form.accountBank === '其他银行'">
+        <el-form-item v-if="form.accountBank === '其他银行'" prop="bankBranchId">
           <template #label>
             <labelExplain label="开户银行联行号">
               <template #explain>
@@ -97,7 +102,7 @@
           <el-input v-model="form.bankBranchId" placeholder="请输入银行联行号"/>
         </el-form-item>
 
-        <el-form-item prop="bankName" v-if="form.accountBank === '其他银行'">
+        <el-form-item v-if="form.accountBank === '其他银行'" prop="bankName">
           <template #label>
             <labelExplain label="开户银行全称（含支行）">
               <template #explain>
@@ -109,12 +114,12 @@
           </template>
           <el-select
               v-model="form.bankName"
+              :loading="loadingSelect"
+              :remote-method="remoteMethod"
               filterable
+              placeholder="请输入开户银行全称（含支行）"
               remote
               reserve-keyword
-              placeholder="请输入开户银行全称（含支行）"
-              :remote-method="remoteMethod"
-              :loading="loadingSelect"
               style="width: 100%;"
           >
             <el-option
@@ -138,11 +143,11 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="开户银行全称（含支行）对照表" draggable>
+    <el-dialog v-model="dialogVisible" draggable title="开户银行全称（含支行）对照表">
       <el-input v-model="name" placeholder="请输入银行名称" @change="handleChange"></el-input>
-      <el-table :data="tableData" v-loading="loading" height="580" style="margin-top: 20px;">
-        <el-table-column prop="bankBranchId" label="联行号"/>
-        <el-table-column prop="bankName" label="开户银行全称" min-width="270"/>
+      <el-table v-loading="loading" :data="tableData" height="580" style="margin-top: 20px;">
+        <el-table-column label="联行号" prop="bankBranchId"/>
+        <el-table-column label="开户银行全称" min-width="270" prop="bankName"/>
       </el-table>
     </el-dialog>
   </div>

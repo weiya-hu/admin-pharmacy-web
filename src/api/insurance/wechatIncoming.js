@@ -113,3 +113,11 @@ export function getSignUrl(data) {
     method: "get",
   });
 }
+
+// 获取单条进件申请详情
+export function getApplymentDetail_api(data) {
+  return request({
+    url: `/pay/wxpay_applyment/detail?applyMentId=${data}`,
+    method: "get",
+  });
+}
