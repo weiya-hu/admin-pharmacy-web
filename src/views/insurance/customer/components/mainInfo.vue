@@ -361,6 +361,7 @@
           <el-collapse-item name="4">
             <template #title>
               <div class="collapseName">经营者/法人身份证件:</div>
+<!--              ？-->
             </template>
             <el-form-item prop="identityInfo.idHolderType">
               <template #label>
