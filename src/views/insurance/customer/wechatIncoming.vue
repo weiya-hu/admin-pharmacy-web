@@ -5,7 +5,7 @@
       <el-button
           plain
           type="primary"
-          @click="$router.push('/insurance/addWechatIncoming')"
+          @click="toAdd"
       >新增进件
       </el-button
       >
@@ -137,6 +137,7 @@ import wechartIncomingConfig from "./wechartIncomingConfig";
 import WechartIncommingTable from "@/views/insurance/customer/components/wechartIncommingTable";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
+const router = useRouter();
 const params = ref({
   pageSize: 10,
   pageNum: 1
@@ -191,6 +192,11 @@ const getPagination = () => {
     }
   });
 };
+
+const toAdd = () =>{
+  sessionStorage.removeItem('wechartFormData')
+  router.push('/insurance/addWechatIncoming')
+}
 
 onMounted(() => {
   getApplymentList(params.value).then((res) => {

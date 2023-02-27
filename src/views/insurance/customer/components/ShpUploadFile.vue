@@ -137,7 +137,7 @@ const upSuccess = (res: any, uploadFile: UploadFile, uploadFiles: UploadFile[]) 
     })() : (() => {
       let urls = []
       uploadFiles.forEach(m => {
-        //这里面是回显的数据
+        //这里面是之前已有的数据
         if(m.mediaId){
           urls.push(m);
           //这里面是刚刚上传的数据

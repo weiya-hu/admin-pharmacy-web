@@ -67,16 +67,14 @@ const getValue = (val)=>{
     sessionStorage.setItem('wechartFormData',JSON.stringify(wechartDatas))
     if(active.value == 5){
       console.log(wechartDatas)
+      loading.value = true
       addWxpayApplyment_api(wechartDatas).then(res=>{
-        console.log(11)
-        console.log(res)
-        isShow.value = true
+        loading.value = false
         ElMessage.success(res.msg)//to do 成功后跳转
+        sessionStorage.removeItem('wechartFormData')
         router.push('/insurance/wechatIncoming')
       }).catch(res=>{
-        console.log(22)
-        console.log(res)
-        isShow.value = true
+        loading.value = false
       })
       // const {code, msg} = await addWxpayApplyment_api(wechartDatas)
       // loading.value = false
