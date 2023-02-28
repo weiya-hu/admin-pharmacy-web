@@ -71,3 +71,12 @@ export function editorUploadFile(data) {
     data: data
   });
 }
+
+//修改富文本内容
+export function changeEditorItem(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/post/update",
+    method: "put",
+    data: data
+  });
+}
