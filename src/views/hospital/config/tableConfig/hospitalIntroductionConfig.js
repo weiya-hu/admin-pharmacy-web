@@ -2,14 +2,14 @@ const tableConfig = {
   title: "简介列表",
 
   propList: [
-    { prop: "name", label: "标题", minWidth: "100" },
+    { prop: "title", label: "标题", minWidth: "100" },
     {
-      prop: "createAt",
-      label: "创建时间",
+      prop: "updateTime",
+      label: "更新时间",
       minWidth: "250",
-      slotName: "createAt"
+      slotName: "updateTime"
     },
-    { prop: "enable", label: "状态", minWidth: "100", slotName: "status" },
+    { prop: "status", label: "状态", minWidth: "100", slotName: "status" },
 
     { label: "操作", minWidth: "120", slotName: "handler" }
   ],

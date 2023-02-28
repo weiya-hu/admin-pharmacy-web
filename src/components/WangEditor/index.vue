@@ -27,7 +27,12 @@
 import "@wangeditor/editor/dist/css/style.css";
 import { onBeforeUnmount, ref, shallowRef, onMounted } from "vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import { _ } from "lodash";
+import { getToken } from "@/utils/auth";
+import { editorUploadFile } from "@/api/hospital/hospitalConfig";
+import { ElMessage } from "element-plus";
 
+const mode = ref("defualt");
 const { proxy } = getCurrentInstance();
 const props = defineProps({
   modelValue: {
@@ -37,22 +42,25 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  defaultValue: {
+    type: Object,
+    default: {}
   }
 });
 const emit = defineEmits(["update:modelValue"]);
 
 // 编辑器实例，必须用 shallowRef，重要！
 const editorRef = shallowRef();
-
 // const menu = editor.getAllMenuKeys()
 // const bar = toolbar.getConfig().toolbarKeys
 // 内容 HTML
-const valueHtml = ref(props.modelValue);
+const valueHtml = ref(props.defaultValue);
 watch(() => valueHtml.value, newValue => {
   emit("update:modelValue", newValue);
 });
 
-watch(() => props.modelValue, newValue => {
+watch(() => props.defaultValue, newValue => {
   valueHtml.value = newValue;
 });
 // 模拟 ajax 异步获取内容
@@ -138,7 +146,7 @@ editorConfig.MENU_CONF["editLink"] = {
 
 // 自定义校验图片
 function customCheckImageFn(src, alt, url) {
-  console.log(src,"src");
+  console.log(src, "src");
   if (!src) {
     return;
   }
@@ -183,95 +191,115 @@ editorConfig.MENU_CONF["editImage"] = {
   checkImage: customCheckImageFn, // 也支持 async 函数
   parseImageSrc: customParseImageSrc // 也支持 async 函数
 };
-
-
+const uploadInfo = ref({
+  hostUrl: `${window.location.protocol}//${window.location.host}${process.env.NODE_ENV === "development" ? "/dev-api" : "/prod-api"}/file/file/upload`,
+  token: getToken()
+});
 // 上传图片
 editorConfig.MENU_CONF["uploadImage"] = {
-  // 上传图片的接口地址
-  // server: usUploadStore().uploadImage,
-  // form-data fieldName ，默认值 'wangeditor-uploaded-image'
-  fieldName: "file",
-
-  // 单个文件的最大体积限制，默认为 2M
-  maxFileSize: 5 * 1024 * 1024, // 5M
-
-  // 最多可上传几个文件，默认为 100
-  maxNumberOfFiles: 20,
-
-  // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
-  allowedFileTypes: ["image/png,image/jpeg,image/jpg"],
-
-  // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。
-  // meta: {
-  //     token: 'xxx',
-  //     otherKey: 'yyy'
-  // },
-
-  // 将 meta 拼接到 url 参数中，默认 false
-  metaWithUrl: false,
-
-  // 自定义增加 http  header
-  headers: headerObj,
-
-  // 跨域是否传递 cookie ，默认为 false
-  withCredentials: true,
-
-  // 超时时间，默认为 10 秒
-  timeout: 5 * 1000, // 5 秒
-  // 上传之前触发
-  onBeforeUpload(file) {
-    console.log(file,"files");
-    // file 选中的文件，格式如 { key: file }
-    let fileObj = Object.values(file)[0].data;
-    const isJPG = (fileObj.type == "image/jpg" || fileObj.type == "image/jpeg" || fileObj.type == "image/png");
-    if (!isJPG) {
-      proxy.$message.warning("图片只能是 JPG、GIF、PNG 格式!");
-    }
-    // 判断图片宽高
-    // 定义 filereader对象
-
-    // 判断图片大小
-    let isLt = fileObj.size / 1024 / 1024 < 5; // 判断是否小于5M
-    if (!isLt) {
-      proxy.$message.warning("图片大小不能超过5M! 请重新上传");
-    }
-    // console.log(file, 'before')
-    // console.log('isJPG, isSize, sisLt', isJPG, isLt)
-    if (!isJPG) {
-      return false;
-    } else if (!isLt) {
-      return false;
-    } else {
-      return file;
-    }
-    // 可以 return
-    // 1. return file 或者 new 一个 file ，接下来将上传
-    // 2. return false ，不上传这个 file
-  },
-  // 上传进度的回调函数
-  onProgress(progress) {
-    // progress 是 0-100 的数字
-    console.log("progress", progress);
-  },
-  // 单个文件上传成功之后
-  onSuccess(file, res) {
-    console.log(`${file.name} 上传成功`, res);
-  },
-  // 自定义插入图片
-  customInsert(res, insertFn) {
-    // res 即服务端的返回结果
-    // 从 res 中找到 url alt href ，然后插图图片
-    insertFn(res.data.url, "", "");
-  },
-  // 单个文件上传失败
-  // onFailed(file, res) {
-  //     console.log(`${file.name} 上传失败`, res)
-  // },
-  // 上传错误，或者触发 timeout 超时
-  onError(file, err, res) {
-    console.log(`${file.name} 上传出错`, err, res);
+  async customUpload(file, insertFn) {                   // JS 语法
+    // file 即选中的文件
+    // 自己实现上传，并得到图片 url alt href
+    // 最后插入图片
+    let formData = new FormData();
+    formData.append("file", file);
+    formData.append("path", "editor");
+    editorUploadFile(formData).then(res => {
+      if (res.code == 200) {
+        ElMessage.success("上传图片成功");
+        insertFn(res.data.url);
+      }
+    });
   }
 };
+// editorConfig.MENU_CONF["uploadImage"] = {
+//   // 上传图片的接口地址
+//
+//   server: uploadInfo.value.hostUrl,
+//   // form-data fieldName ，默认值 'wangeditor-uploaded-image'
+//   fieldName: "file",
+//
+//   // 单个文件的最大体积限制，默认为 2M
+//   maxFileSize: 5 * 1024 * 1024, // 5M
+//
+//   // 最多可上传几个文件，默认为 100
+//   maxNumberOfFiles: 20,
+//
+//   // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
+//   allowedFileTypes: ["image/png,image/jpeg,image/jpg"],
+//
+//   // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。
+//   meta: {
+//     // token: uploadInfo.value.token
+//     // otherKey: 'yyy'
+//   },
+//
+//   // 将 meta 拼接到 url 参数中，默认 false
+//   metaWithUrl: false,
+//
+//   // 自定义增加 http  header
+//   headers: headerObj,
+//
+//   // 跨域是否传递 cookie ，默认为 false
+//   withCredentials: true,
+//   base64LimitSize: 5 * 1024, // 5kb
+//   // 超时时间，默认为 10 秒
+//   timeout: 5 * 1000, // 5 秒
+//   // 上传之前触发
+//   onBeforeUpload(file) {
+//     console.log(file, "files");
+//     // file 选中的文件，格式如 { key: file }
+//     let fileObj = Object.values(file)[0].data;
+//     const isJPG = (fileObj.type == "image/jpg" || fileObj.type == "image/jpeg" || fileObj.type == "image/png");
+//     if (!isJPG) {
+//       proxy.$message.warning("图片只能是 JPG、GIF、PNG 格式!");
+//     }
+//     // 判断图片宽高
+//     // 定义 filereader对象
+//
+//     // 判断图片大小
+//     let isLt = fileObj.size / 1024 / 1024 < 5; // 判断是否小于5M
+//     if (!isLt) {
+//       proxy.$message.warning("图片大小不能超过5M! 请重新上传");
+//     }
+//     // console.log(file, 'before')
+//     // console.log('isJPG, isSize, sisLt', isJPG, isLt)
+//     if (!isJPG) {
+//       return false;
+//     } else if (!isLt) {
+//       return false;
+//     } else {
+//       return file;
+//     }
+//     // 可以 return
+//     // 1. return file 或者 new 一个 file ，接下来将上传
+//     // 2. return false ，不上传这个 file
+//   },
+//   // 上传进度的回调函数
+//   onProgress(progress) {
+//     // progress 是 0-100 的数字
+//     console.log("progress", progress);
+//   },
+//   // 单个文件上传成功之后
+//   onSuccess(file, res) {
+//     console.log(`${file.name} 上传成功`, res);
+//   },
+//   // 自定义插入图片
+//   customInsert(res, insertFn) {
+//     console.log(res, "res");
+//     // res 即服务端的返回结果
+//     // 从 res 中找到 url alt href ，然后插图图片
+//     insertFn(res.data.url, "", "");
+//   },
+//   // 单个文件上传失败
+//   // onFailed(file, res) {
+//   //     console.log(`${file.name} 上传失败`, res)
+//   // },
+//   // 上传错误，或者触发 timeout 超时
+//   onError(file, err, res) {
+//     console.log(`${file.name} 上传出错`, err, res);
+//   }
+// };
 // 上传视频
 editorConfig.MENU_CONF["uploadVideo"] = {
   // 上传视频接口地址
@@ -358,8 +386,8 @@ const handleCreated = editor => {
   }
 };
 const handleChange = editor => {
-  console.log("change:", editor.getHtml());
-
+  console.log("change:", _.escape(editor.getHtml()));
+  emit("update:modelValue", _.escape(editor.getHtml()));
 };
 const handleDestroyed = editor => {
   console.log("destroyed", editor);

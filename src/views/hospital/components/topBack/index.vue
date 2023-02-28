@@ -7,7 +7,7 @@
       <el-icon size="20" style="color: #337ab7">
         <ArrowLeftBold />
       </el-icon>
-      <el-button type="primary" @click="handleBack" class="back_text">
+      <el-button link type="primary" @click="handleBack" class="back_text">
         返回
       </el-button>
     </div>
@@ -29,6 +29,7 @@ const handleBack = () => {
   height: 150px;
   padding: 20px 15px 0 15px;
   background-color: #304156;
+
   .title {
     font-size: 25px;
     font-weight: 800;

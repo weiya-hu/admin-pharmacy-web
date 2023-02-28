@@ -28,14 +28,16 @@
           <el-table-column align="center" prop="name" label="创建时间" />
           <el-table-column align="center" prop="address" label="菜单等级" />
           <el-table-column align="center" prop="address" label="操作">
-            <el-button link type="primary">启用</el-button>
-            <el-button link type="danger">禁用</el-button>
-            <el-button link type="primary">编辑</el-button>
+            <template #default="scope">
+              <el-button link type="primary">启用</el-button>
+              <el-button link type="danger">禁用</el-button>
+              <el-button link type="primary">编辑</el-button>
+              <el-button @click="()=>{deleteCategory(scope.row)}" link type="primary">删除</el-button>
+            </template>
           </el-table-column>
         </el-table>
       </div>
     </main>
-
     <el-dialog
       title="新建菜单"
       width="40%"
@@ -46,25 +48,34 @@
       v-model="createCategoryShow"
     >
       <el-form label-width="180px">
-        <el-form-item label="菜单等级">
+        <el-form-item label="菜单等级:">
           <el-select @change="changeGrade" v-model="itemAdd.grade">
             <el-option v-for="(item,index) in categoryGradeOption" :key="index" :value="item.value" :label="item.label">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isShowParent" label="上级菜单名">
-          <el-select v-model="itemAdd.pid">
+        <el-form-item v-if="isShowParent" label="上级菜单名:">
+          <el-select @change="chooseParentNode" v-model="itemAdd.pid">
             <el-option :value="item.value" v-for="(item,index) in parentOptions" :label="item.label" :key="index">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isShowParent" label="菜单名称">
+        <el-form-item v-if="isShowParent" label="子菜单名称:">
           <el-input v-model="itemAdd.name"></el-input>
         </el-form-item>
-        <el-form-item v-if="!isShowParent" label="子菜单名称">
+        <el-form-item v-if="isShowParent" label="编码:">
+          <el-input v-model="itemAdd.code"></el-input>
+        </el-form-item>
+        <el-form-item v-if="!isShowParent" label="菜单名称:">
           <el-input v-model="itemAdd.name"></el-input>
+        </el-form-item>
+        <el-form-item label="是否启用:">
+          <el-radio-group v-model="itemAdd.status" class="ml-4">
+            <el-radio :model-value="1" label="1" size="large">是</el-radio>
+            <el-radio :model-value="0" label="0" size="large">否</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -83,20 +94,24 @@ import { computed, onMounted, ref, watch } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { addCategory, getCategoryDetail, getEditorList } from "@/api/hospital/hospitalConfig";
+import { addCategory, deleteCategoryItem, getCategoryDetail, getEditorList } from "@/api/hospital/hospitalConfig";
 
 const router = useRouter();
 const route = useRoute();
 const hospitalConfigStore = useHospitalConfigStore();
+const parentNodeCode = computed(() => hospitalConfigStore.activeParentBarInfo.code);
 const itemAdd = ref({
   grade: "1",
   corpId: "",
   name: "",
-  pid: ""
+  pid: null,
+  status: "0",
+  code: null
 });
 let queryParmas = {
   corpId: route.query?.corpId
 };
+const parentNode = ref(null);
 const navs = computed(() => hospitalConfigStore.navBar);
 const dataList = computed(() => hospitalConfigStore.category);
 const parentOptions = ref([]);
@@ -114,6 +129,11 @@ const categoryGradeOption = [
   }
 
 ];
+const chooseParentNode = ($event) => {
+  parentNode.value = navs.value.filter((item) => {
+    return item.categoryId == $event;
+  })[0];
+};
 const openCreateCategoryDialog = () => {
   createCategoryShow.value = true;
 };
@@ -124,7 +144,8 @@ const changeGrade = () => {
   }
 };
 const createCategoryConfirm = () => {
-  addCategory(Object.assign(itemAdd.value, queryParmas)).then(async res => {
+  console.log(parentNode.value);
+  addCategory({ ...Object.assign(itemAdd.value, queryParmas)}).then(async res => {
     await hospitalConfigStore.generateNavs(queryParmas);
     innitParentOption();
     innitEditorList();
@@ -146,7 +167,23 @@ const innitParentOption = () => {
   });
 };
 const innitEditorList = () => {
+
   tableData.value = dataList.value;
+};
+//删除菜单
+const deleteCategory = ($event) => {
+  try {
+    deleteCategoryItem({ categoryId: $event.categoryId }).then(async res => {
+      if (res.code == 200) {
+        ElMessage.error("菜单删除成功");
+        await hospitalConfigStore.generateNavs(queryParmas);
+        innitParentOption();
+        innitEditorList();
+      }
+    });
+  } catch {
+    ElMessage.error("菜单删除失败");
+  }
 };
 watch(() => itemAdd.value.grade, () => {
   if (itemAdd.value.grade == "1") {
@@ -159,7 +196,8 @@ watch(() => itemAdd.value.grade, () => {
 });
 watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
   if (route.query?.corpId) {
-    hospitalConfigStore.generateNavs(queryParmas).then(res => {
+    hospitalConfigStore.generateNavs(queryParmas).then(async res => {
+      await hospitalConfigStore.generateNavs(queryParmas);
       innitParentOption();
       innitEditorList();
     });
@@ -172,6 +210,53 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
+::v-deep(.el-upload) {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+::v-deep(.el-upload:hover ) {
+  border-color: var(--el-color-primary);
+}
+
+::v-deep(.el-form-item__label) {
+  font-weight: 800;
+  display: flex;
+  justify-content: flex-end;
+}
+
+::v-deep(.el-icon.avatar-uploader-icon) {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
+}
+
+::v-deep(.el-input__wrapper) {
+  box-shadow: none;
+  cursor: default;
+  border-radius: 0;
+  border-bottom: 1px solid #e8e8e8;
+
+  .el-input__inner {
+    cursor: default !important;
+  }
+}
+
+::v-deep(.el-input__inner) {
+
+
+}
+
+::v-deep(.el-input) {
+  width: 400px;
+}
+
 .manage {
   padding: 0 20px;
 

@@ -58,7 +58,7 @@
                 </el-icon>
               </div>
               <div class="add_Name">
-                新建医院信息
+                同步医院信息
               </div>
             </div>
           </div>
@@ -91,8 +91,8 @@ let searchParams = ref({
   isAsc: null,//排序的方向desc或者asc
   name: null,//医院名称
   orderByColumn: null,//排序列
-  pageNum: 10,//当前记录起始索引
-  pageSize: 1,//每页显示记录数
+  pageNum: 1,//当前记录起始索引
+  pageSize: 10,//每页显示记录数
   status: null//状态
 });
 //改变状态
