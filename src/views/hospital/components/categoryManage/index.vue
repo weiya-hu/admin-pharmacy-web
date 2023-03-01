@@ -24,12 +24,12 @@
           :header-cell-style="{ fontSize: '16px'}"
           :tree-props="{children: 'childs'}"
         >
-          <el-table-column align="center" prop="name" label="功能块名称" />
-          <el-table-column align="center" prop="name" label="创建时间" />
-          <el-table-column align="center" prop="address" label="菜单等级">
+          <el-table-column prop="name" label="功能块名称" />
+          <el-table-column prop="code" label="编码" />
+          <el-table-column prop="address" label="菜单等级">
             <template #default="scope">
-              <span v-if="scope.row.pid==null">一级菜单</span>
-              <span v-else>二级菜单</span>
+              <span style="color:#8e8e9d;" v-if="scope.row.pid==null">一级菜单</span>
+              <span style="color:#8e8e9d;" v-else>二级菜单</span>
             </template>
           </el-table-column>
           <el-table-column prop="address" label="操作">
@@ -47,7 +47,7 @@
       </div>
     </main>
     <el-dialog
-      title="新建菜单"
+      :title="addOrEditor?'新建菜单':'修改菜单'"
       width="30%"
       append-to-body
       :close-on-click-modal="false"
@@ -130,6 +130,7 @@ const itemAdd = ref({
 let queryParmas = {
   corpId: route.query?.corpId
 };
+const addOrEditor = ref(true);
 const searchKey = ref("");
 const parentNode = ref(null);
 const navs = computed(() => hospitalConfigStore.navBar);
@@ -174,6 +175,7 @@ const chooseParentNode = ($event) => {
   })[0];
 };
 const openCreateCategoryDialog = () => {
+  addOrEditor.value = true;
   disPid.value = false;
   createCategoryShow.value = true;
 };
@@ -268,6 +270,7 @@ const handleProhibition = (row) => {
 };
 //菜单编辑
 const handleEditor = (row) => {
+  addOrEditor.value = false;
   disPid.value = true;
   resetItemAdd();
   createCategoryShow.value = true;
