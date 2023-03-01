@@ -11,7 +11,7 @@
       :default-config="editorConfig"
       :mode="mode"
       class="editor_custom"
-      style="height: 500px; overflow-y: hidden;"
+      style="height: 500px;width: 1000px; overflow-y: hidden;"
       @onCreated="handleCreated"
       @onChange="handleChange"
       @onDestroyed="handleDestroyed"

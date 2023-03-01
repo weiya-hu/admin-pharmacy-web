@@ -6,7 +6,7 @@
         <div class="search">
           <div @click="searchCategoryByKeyword" class="search_icon">
           </div>
-          <input v-model="keyword" @keyup.enter="searchCategoryByKeyword" placeholder="请输入名称"
+          <input v-model.trim="keyword" @keyup.enter="searchCategoryByKeyword" placeholder="请输入名称"
                  class="serach_input" />
         </div>
         <div class="add">
@@ -29,9 +29,11 @@
           <template #handler="scope">
             <el-button link @click="()=>{handleEditor(scope.row)}" type="primary">编辑</el-button>
             <el-button @click="()=>deleteEditor(scope.row.postId)" link type="primary">删除</el-button>
-            <el-button v-if="scope.row.status=='1'" link @click="()=>handlePosted(scope.row)" type="primary">发布
+            <el-button style="color:green;" v-if="scope.row.status=='1'" link @click="()=>handlePosted(scope.row)"
+                       type="primary">发布
             </el-button>
-            <el-button v-if="scope.row.status=='2'" link @click="()=>handleWithdrawn(scope.row)" type="primary">撤回
+            <el-button style="color:red;" v-if="scope.row.status=='2'" link @click="()=>handleWithdrawn(scope.row)"
+                       type="primary">撤回
             </el-button>
             <el-button @click="()=>handlePreview(scope.row)" link type="primary">预览</el-button>
           </template>
