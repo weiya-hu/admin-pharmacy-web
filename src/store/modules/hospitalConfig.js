@@ -103,7 +103,11 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
     },
     filterCategoryDataList(data) {
       this.publicLoading = true;
-      data = Object.assign(data, { categoryId: this.activeBarInfo.categoryId, corpId: this.activeBarInfo.corpId });
+      data = Object.assign(data, {
+        categoryId: this.activeBarInfo.categoryId,
+        corpId: this.activeBarInfo.corpId,
+        name: this.activeBarInfo.name
+      });
       searchEditorList(data).then(res => {
         this.categoryDataList = res.data.list;
         this.total = Number(res.data.total);
@@ -111,7 +115,11 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
       });
     },
     getCategoryDataList(data) {
-
+      data = Object.assign(data, {
+        categoryId: this.activeBarInfo.categoryId,
+        corpId: this.activeBarInfo.corpId,
+        name: this.activeBarInfo.name
+      });
       this.publicLoading = true;
       try {
         getEditorList(data).then(res => {
