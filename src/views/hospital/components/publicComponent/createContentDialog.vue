@@ -13,20 +13,20 @@
           :action="hostUrl"
           :on-success="upSuccess"
           :on-exceed="exceed"
-          v-model="uploadFile" :limit="1" action="#" list-type="picture-card" :auto-upload="true">
+          :file-list="uploadFile" :limit="1" list-type="picture-card" :auto-upload="true">
           <el-icon>
             <Plus />
           </el-icon>
           <template #file="{ file }">
             <div>
-              <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+              <img class="el-upload-list__item-thumbnail" :src="dialogImageUrl" alt="" />
               <span class="el-upload-list__item-actions">
-          <span
-            class="el-upload-list__item-preview"
-            @click="handlePictureCardPreview(file)"
-          >
-            <el-icon><zoom-in /></el-icon>
-          </span>
+<!--          <span-->
+                <!--            class="el-upload-list__item-preview"-->
+                <!--            @click="handlePictureCardPreview(file)"-->
+                <!--          >-->
+                <!--            <el-icon><zoom-in /></el-icon>-->
+                <!--          </span>-->
           <span
             v-if="!disabled"
             class="el-upload-list__item-delete"
@@ -38,16 +38,16 @@
             </div>
           </template>
         </el-upload>
-        <el-dialog align-center v-model="dialogVisible">
-          <img w-full :src="dialogImageUrl" alt="Preview Image" />
-        </el-dialog>
+        <!--        <el-dialog v-model="dialogVisible">-->
+        <!--          <img :src="dialogImageUrl" alt="Preview Image" />-->
+        <!--        </el-dialog>-->
       </el-form-item>
       <el-form-item label="摘要:">
         <el-input v-model="queryParames.desc"></el-input>
       </el-form-item>
-      <el-form-item label="版本:">
-        <el-input></el-input>
-      </el-form-item>
+      <!--      <el-form-item label="版本:">-->
+      <!--        <el-input></el-input>-->
+      <!--      </el-form-item>-->
       <el-form-item label="正文:">
         <div class="editor">
           <WangEditor
@@ -76,7 +76,7 @@ const data = ref({
 const uploadInstance = ref(null);
 const headers = ref({ Authorization: "Bearer " + getToken() });
 const hostUrl = ref(`${window.location.protocol}//${window.location.host}${process.env.NODE_ENV === "development" ? "/dev-api" : "/prod-api"}/file/file/upload`);
-const uploadFile = ref(null);
+const uploadFile = ref([]);
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const disabled = ref(false);
@@ -108,13 +108,13 @@ const sendQueryParams = () => {
   return { ...queryParames.value, categoryId, corpId };
 };
 const handleRemove = (file) => {
-  uploadFile.value = null;
-  queryParames.value.thumbnail = "";
+  uploadFile.value = [];
+  queryParames.value.thumbnail = null;
+  dialogImageUrl.value = null;
   uploadInstance.value.handleRemove(file);
-  console.log(queryParames.value.thumbnail);
+
 };
 const handlePictureCardPreview = (file) => {
-  dialogImageUrl.value = file.url;
   dialogVisible.value = true;
 };
 //文件上传成功的回调
@@ -122,6 +122,11 @@ const upSuccess = (response) => {
   if (response.code == 200) {
     ElMessage.success("封面图上传成功");
     queryParames.value.thumbnail = response.data.url;
+    dialogImageUrl.value = response.data.url;
+    uploadFile.value = [];
+    if (queryParames.value.thumbnail !== "") {
+      uploadFile.value.push({ url: queryParames.value.thumbnail });
+    }
   }
 };
 const exceed = () => {
@@ -134,13 +139,19 @@ const handleReveal = (receiveData) => {
     thumbnail
   } = receiveData;
   post = _.unescape(post);
-  console.log(post, "post");
+  uploadFile.value = [];
+  if (thumbnail !== "") {
+    uploadFile.value.push({ url: thumbnail });
+  }
   dialogImageUrl.value = thumbnail;
   queryParames.value.thumbnail = thumbnail;
   hospitalConfigStore.publicEditorDefault = post;
   queryParames.value = Object.assign(queryParames.value, receiveData);
-  console.log(queryParames.value);
 };
+const emit = defineEmits(["backToPhone"]);
+watch(() => queryParames.value.post, () => {
+  emit("backToPhone", _.unescape(queryParames.value.post));
+});
 defineExpose({
   sendQueryParams,
   clearForm,
@@ -182,7 +193,7 @@ defineExpose({
 }
 
 ::v-deep(.el-input) {
-  width: 910px;
+  width: 1000px;
 }
 
 .dialog_form {

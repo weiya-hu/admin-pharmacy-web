@@ -123,7 +123,6 @@
           v-model:page="params.pageNum"
           :total="total"
           @pagination="getPagination"
-
       ></Pagination>
     </div>
   </div>
@@ -193,7 +192,7 @@ const getPagination = () => {
   });
 };
 
-const toAdd = () =>{
+const toAdd = () => {
   sessionStorage.removeItem('wechartFormData')
   router.push('/insurance/addWechatIncoming')
 }

@@ -55,6 +55,7 @@
       <el-row :gutter="10" class="mb8">
         <right-toolbar
             v-model:showSearch="showSearch"
+            show-loading
             @queryTable="getList"
         ></right-toolbar>
         <el-button
@@ -325,7 +326,7 @@ import {
   returnUrl,
 } from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
-import {ElMessage} from "element-plus";
+import {ElLoading, ElMessage} from "element-plus";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const router = useRouter();
@@ -599,8 +600,12 @@ const getDeptList = (params) => {
   });
 };
 
-const getList = () => {
-  getDeptList(queryParams.value);
+const getList = async (e) => {
+  console.log(e)
+  await getDeptList(queryParams.value);
+  if (e.isLoading) {
+    e.instance.close()
+  }
 };
 
 const getPagination = (e) => {

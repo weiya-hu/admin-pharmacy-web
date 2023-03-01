@@ -22,7 +22,8 @@
       >
         <template #default="scope">
           <div style="display: flex; justify-content: center">
-            <el-button v-if="scope.row.status>2" text type="primary" @click="showQrCode(scope.row)"
+            <el-button v-if="scope.row.status>2 && scope.row.status!=4 && scope.row.status!=9" text type="primary"
+                       @click="showQrCode(scope.row)"
             >查看授权码
             </el-button>
             <el-button v-if="scope.row.status==4" text type="danger"
@@ -45,7 +46,8 @@
     >
       <h2 style="text-align: center">商户授权码</h2>
       <div class="qr-wrapper">
-        <iframe id="iframe" :src="signUrl" scrolling="no"></iframe>
+        <!--        <el-link :herf="signUrl">{{ signUrl }}</el-link>-->
+        <iframe id="iframe" :src="signUrl"></iframe>
       </div>
     </el-dialog>
   </div>
@@ -89,8 +91,8 @@ const showQrCode = async (row) => {
     justify-content: center;
 
     iframe {
-      width: 30vmax;
-      height: 30vmax;
+      width: 430px;
+      height: 430px;
       border: none;
     }
   }

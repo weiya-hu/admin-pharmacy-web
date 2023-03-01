@@ -909,8 +909,9 @@ const areaChange = (val) => {
 }
 
 const writeBack = () => {
-  let provinceData = businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode.substring(0, 2) + '0000'
-  let cityData = businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode.substring(0, 4) + '00'
+  let code = String(businessInfo.value.salesInfo.bizStoreInfo.bizAddressCode)
+  let provinceData = code.substring(0, 2) + '0000'
+  let cityData = code.substring(0, 4) + '00'
   provinceList.value.filter(item => item.id == provinceData).forEach(items => state.value.province = items.id)
   listCity({pid: state.value.province}).then(res => {
     if (res.code === 200) {

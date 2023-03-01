@@ -1,28 +1,31 @@
 <template>
   <div class="top-right-btn">
     <el-row>
-      <el-tooltip class="item" effect="dark" :content="showSearch ? '隐藏搜索' : '显示搜索'" placement="top">
-        <el-button circle icon="Search" @click="toggleSearch()" />
+      <el-tooltip :content="showSearch ? '隐藏搜索' : '显示搜索'" class="item" effect="dark" placement="top">
+        <el-button circle icon="Search" @click="toggleSearch()"/>
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-        <el-button circle icon="Refresh" @click="refresh()" />
+      <el-tooltip class="item" content="刷新" effect="dark" placement="top">
+        <el-button circle icon="Refresh" @click="refresh(props.showLoading)"/>
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-button circle icon="Menu" @click="showColumn()" />
+      <el-tooltip v-if="columns" class="item" content="显隐列" effect="dark" placement="top">
+        <el-button circle icon="Menu" @click="showColumn()"/>
       </el-tooltip>
     </el-row>
-    <el-dialog :title="title" v-model="open" append-to-body>
+    <el-dialog v-model="open" :title="title" append-to-body>
       <el-transfer
-        :titles="['显示', '隐藏']"
-        v-model="value"
-        :data="columns"
-        @change="dataChange"
+          v-model="value"
+          :data="columns"
+          :titles="['显示', '隐藏']"
+          @change="dataChange"
       ></el-transfer>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
+
+import {ElLoading} from 'element-plus'
+
 const props = defineProps({
   showSearch: {
     type: Boolean,
@@ -31,6 +34,10 @@ const props = defineProps({
   columns: {
     type: Array,
   },
+  showLoading: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const emits = defineEmits(['update:showSearch', 'queryTable']);
@@ -48,8 +55,20 @@ function toggleSearch() {
 }
 
 // 刷新
-function refresh() {
-  emits("queryTable");
+function refresh(showLoading = false) {
+  const options = {
+    text: '加载中'
+  }
+  if (props.showLoading) {
+    const instance = ElLoading.service(options)
+    emits("queryTable", {
+      isLoading: props.showLoading,
+      instance
+    });
+  } else {
+    emits('queryTable')
+  }
+
 }
 
 // 右侧列表元素变化
@@ -79,6 +98,7 @@ for (let item in props.columns) {
   display: block;
   margin-left: 0px;
 }
+
 :deep(.el-transfer__button:first-child) {
   margin-bottom: 10px;
 }

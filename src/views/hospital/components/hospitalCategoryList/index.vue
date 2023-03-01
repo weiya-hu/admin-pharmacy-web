@@ -6,7 +6,7 @@
         <div class="search">
           <div @click="searchCategoryByKeyword" class="search_icon">
           </div>
-          <input v-model="keyword" @keyup.enter="searchCategoryByKeyword" placeholder="请输入名称"
+          <input v-model.trim="keyword" @keyup.enter="searchCategoryByKeyword" placeholder="请输入名称"
                  class="serach_input" />
         </div>
         <div class="add">
@@ -29,40 +29,76 @@
           <template #handler="scope">
             <el-button link @click="()=>{handleEditor(scope.row)}" type="primary">编辑</el-button>
             <el-button @click="()=>deleteEditor(scope.row.postId)" link type="primary">删除</el-button>
-            <el-button v-if="scope.row.status=='1'" link @click="()=>handlePosted(scope.row)" type="primary">发布
+            <el-button style="color:green;" v-if="scope.row.status=='1'" link @click="()=>handlePosted(scope.row)"
+                       type="primary">发布
             </el-button>
-            <el-button v-if="scope.row.status=='2'" link @click="()=>handleWithdrawn(scope.row)" type="primary">撤回
+            <el-button style="color:red;" v-if="scope.row.status=='2'" link @click="()=>handleWithdrawn(scope.row)"
+                       type="primary">撤回
             </el-button>
-            <el-button link type="primary">预览</el-button>
+            <el-button @click="()=>handlePreview(scope.row)" link type="primary">预览</el-button>
           </template>
         </publicTable>
       </div>
     </main>
     <footer>
       <div class="pagination">
-        <!--        {{Number(total)}}-->
-        <el-pagination layout="prev, pager, next" :total="Number(total)" />
+        <Pagination
+          v-show="Number(allTotal) > 0"
+          v-model:limit="params.pageSize"
+          v-model:page="params.pageNum"
+          :total="Number(allTotal)"
+          @pagination="getPagination"
+        ></Pagination>
       </div>
     </footer>
   </div>
   <el-dialog
     title="新建内容"
-    width="50%"
+    width="60%"
     append-to-body
     :close-on-click-modal="false"
     draggable
     center
     v-model="isShowArticeDialog"
   >
-    <createContentDialog
-      ref="formInstance"
-    >
-    </createContentDialog>
+    <div style="display: flex;justify-content: space-evenly">
+      <div>
+        <createContentDialog
+          @backToPhone="handleBackToPhone"
+          ref="formInstance"
+        >
+        </createContentDialog>
+      </div>
+      <!--         实时预览-->
+      <div class="phone">
+        <img class="phoneImg" src="@/assets/images/hospitalImage/Phone2X.png">
+        <div class="content" v-html="previewPost"></div>
+      </div>
+    </div>
     <template #footer>
       <div class="dialog-footer">
         <el-button v-if="!isAddOrPut" @click="handlePut" type="primary">修改</el-button>
         <el-button v-if="isAddOrPut" @click="addCategoryArticle" type="primary">确 定</el-button>
         <el-button @click="isShowArticeDialog= false">取 消</el-button>
+      </div>
+    </template>
+  </el-dialog>
+  <el-dialog
+    title="预览"
+    width="30%"
+    append-to-body
+    :close-on-click-modal="false"
+    draggable
+    center
+    v-model="isShowPreview"
+  >
+    <div class="phone">
+      <img class="phoneImg" src="@/assets/images/hospitalImage/Phone2X.png">
+      <div class="content" v-html="previewPost"></div>
+    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="isShowPreview= false">关闭</el-button>
       </div>
     </template>
   </el-dialog>
@@ -78,21 +114,45 @@ import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospita
 import { ElMessage } from "element-plus";
 import { _ } from "lodash";
 
+const params = ref({
+  pageSize: 10,
+  pageNum: 1
+});
 const keyword = ref("");
 const isAddOrPut = ref(true);
 const formInstance = ref(null);
 const hospitalConfigStore = useHospitalConfigStore();
 let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
-let total = computed(() => hospitalConfigStore.total);
+let allTotal = computed(() => hospitalConfigStore.total);
 const isShowArticeDialog = ref(false);
+const isShowPreview = ref(false);
+let previewPost = ref(null);
+const getPagination = (value) => {
+  if (keyword.value == "") {
+    hospitalConfigStore.getCategoryDataList(params.value);
+  } else {
+    hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value, ...params.value });
+  }
+};
 //新建文章
 const createArticle = () => {
   isAddOrPut.value = true;
   isShowArticeDialog.value = true;
-  hospitalConfigStore.innitShowConfig();
+  nextTick(() => {
+    formInstance.value.clearForm();
+    hospitalConfigStore.innitShowConfig();
+  });
 };
 const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig);
+//手机预览
+const handlePreview = ($event) => {
+  isShowPreview.value = true;
+  previewPost.value = _.unescape($event.post);
+};
+const handleBackToPhone = (value) => {
+  previewPost.value = value;
+};
 //新增内容
 const addCategoryArticle = () => {
   try {
@@ -116,9 +176,9 @@ const addCategoryArticle = () => {
 const filterPubliceTableDataList = () => {
   if (keyword.value == "") {
     let { categoryId, corpId, name } = hospitalConfigStore.activeBarInfo;
-    hospitalConfigStore.getCategoryDataList({ categoryId, corpId, name });
+    hospitalConfigStore.getCategoryDataList(params.value);
   } else {
-    hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+    hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value, ...params.value });
   }
 };
 //条件搜索
@@ -190,7 +250,6 @@ const handleWithdrawn = (row) => {
 const handleEditor = (row) => {
   isAddOrPut.value = false;
   isShowArticeDialog.value = true;
-  console.log(row);
   nextTick(() => {
     formInstance.value.handleReveal(row);
   });
@@ -260,10 +319,31 @@ const handleEditor = (row) => {
     align-self: flex-end;
 
     .pagination {
-      text-align: center;
-      width: 200px;
-      margin: 0 auto;
+      display: flex;
+      justify-content: flex-end;
     }
+  }
+
+}
+
+.phone {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-top: 40px;
+
+  .phoneImg {
+    display: inline-block;
+    height: 840px;
+    width: 415px;
+  }
+
+  .content {
+    margin-top: 50px;
+    position: absolute;
+    height: 750px;
+    width: 350px;
+    overflow-y: auto;
   }
 }
 

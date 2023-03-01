@@ -5,14 +5,14 @@
         <div class="search_icon" @click="innitListData">
         </div>
         <input v-model="searchParams.name" class="serach_input" placeholder="请输入医院名称"
-               @keyup.enter="innitListData" />
+               @keyup.enter="innitListData"/>
       </div>
-      <div class="code">
-        <span class="code_imageicon"></span>
-        <span>
-          授权二维码
-        </span>
-      </div>
+      <!--      <div class="code">-->
+      <!--        <span class="code_imageicon"></span>-->
+      <!--        <span>-->
+      <!--          授权二维码-->
+      <!--        </span>-->
+      <!--      </div>-->
     </header>
     <main>
       <div class="list_content">
@@ -27,7 +27,7 @@
             <div class="content">
               <div class="baseInfo" @click="()=>{handleHospital(item)}">
                 <div class="Logo">
-                  <img :src="item.logo" />
+                  <img :src="item.logo"/>
                 </div>
                 <div class="name">
                   {{ item.fullname }}
@@ -40,8 +40,8 @@
                 </div>
                 <div class="switch">
                   <customSwitch
-                    :model-value="item.status=='1'?true:false"
-                    @change="(value)=>{changeStatus(value,index)}"
+                      :model-value="item.status=='1'?true:false"
+                      @change="(value)=>{changeStatus(value,index)}"
                   >
                   </customSwitch>
                 </div>
@@ -50,19 +50,26 @@
           </el-card>
         </template>
       </div>
+      <el-empty v-show="listData.length==0" description="暂无医疗机构"/>
     </main>
     <footer>
       <div class="pagination">
-        <el-pagination :total="total" layout="prev, pager, next" @change="changePagination" />
+        <Pagination
+            v-show="total > 0"
+            v-model:limit="searchParams.pageSize"
+            v-model:page="searchParams.pageNum"
+            :total="total"
+            @pagination="getPagination"
+        ></Pagination>
       </div>
     </footer>
   </div>
 </template>
 
 <script name="HospitalList" setup>
-import { onMounted, ref } from "vue";
-import { banHospital, getHospitalList } from "@/api/hospital/hospitalList";
-import { useRouter } from "vue-router";
+import {onMounted, ref} from "vue";
+import {banHospital, getHospitalList} from "@/api/hospital/hospitalList";
+import {useRouter} from "vue-router";
 import customSwitch from "./components/publicComponent/switch.vue";
 import modal from "@/plugins/modal";
 
@@ -105,7 +112,6 @@ const changePagination = (value) => {
 };
 //进入医院
 const handleHospital = (data) => {
-  console.log(data, "data");
   router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
 };
 //初始化列表数据
@@ -120,6 +126,20 @@ const innitListData = async () => {
     isLoading.value = false;
   }
 };
+
+const getPagination = async () => {
+  try {
+    let res = await getHospitalList(searchParams.value)
+    if (res.code == 200) {
+      listData.value = res.data.list
+      total.value = Number(res.data.total)
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+
 onMounted(() => {
   isLoading.value = true;
   innitListData();

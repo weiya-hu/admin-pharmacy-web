@@ -7,7 +7,7 @@ const tableConfig = {
       prop: "createTime",
       label: "创建时间",
       minWidth: "250",
-      slotName: "createTime"
+      slotName: "updateTime"
     },
     {
       prop: "updateTime",
@@ -15,13 +15,7 @@ const tableConfig = {
       minWidth: "250",
       slotName: "updateTime"
     },
-    {
-      prop: "version",
-      label: "版本",
-      minWidth: "250",
-      slotName: "version"
-    },
-    { prop: "enable", label: "状态", minWidth: "100", slotName: "status" },
+    { prop: "status", label: "状态", minWidth: "100", slotName: "status" },
 
     { label: "操作", minWidth: "120", slotName: "handler" }
   ],
