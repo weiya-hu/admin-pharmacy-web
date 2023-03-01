@@ -42,6 +42,7 @@
     <el-row :gutter="10" class="mb8">
       <right-toolbar
           v-model:showSearch="showSearch"
+          show-loading
           @queryTable="getList"
       ></right-toolbar>
     </el-row>
@@ -473,7 +474,9 @@ const resetQuery = () => {
 };
 
 const getList = () => {
+
   getDeptList(queryParams.value);
+
 };
 
 const getPagination = (e) => {
