@@ -242,8 +242,9 @@ const areaChange = (val) => {
 }
 
 const getBankAddressCode = () => {
-  let provinceData = form.value.bankAddressCode.substring(0, 2) + '0000'
-  let cityData = form.value.bankAddressCode.substring(0, 4) + '00'
+  let bankAddressCode = String(form.value.bankAddressCode)
+  let provinceData = bankAddressCode.substring(0, 2) + '0000'
+  let cityData = bankAddressCode.substring(0, 4) + '00'
   provinceList.value.filter(item => item.id == provinceData).forEach(items => state.value.province = items.id)
   listCity({pid: state.value.province}).then(res => {
     if (res.code === 200) {
@@ -294,7 +295,6 @@ const submit = () => {
   proxy.$refs["bankRef"].validate(valid => {
     if (valid) {
       emit('result', {bankAccountInfo: form.value})
-      console.log('银行账户', form.value)
     } else {
       emit('result', false)
     }

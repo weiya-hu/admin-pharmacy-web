@@ -191,7 +191,7 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, reactive, ref} from "vue";
+import {getCurrentInstance, onMounted, reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import LabelExplain from "@/views/insurance/customer/components/labelExplain";
 import {idCardOcr} from "@/api/insurance/wechatIncoming";
@@ -375,6 +375,7 @@ const uploadIdCardOcr = (data, positiveOrOpposite, saveName) => {
           if (res_id.data.validDate.substring(11) === '长期') {
             formDateRadio.value = -1
             form.value.contactPeriodBegin = res_id.data.validDate.substring(0, 10).replaceAll('.', '-')
+            form.value.contactPeriodEnd = '长期'
           } else {
             let startYear = res_id.data.validDate.substring(0, 4)
             let endYear = res_id.data.validDate.substring(11, 15)
@@ -395,13 +396,23 @@ const uploadIdCardOcr = (data, positiveOrOpposite, saveName) => {
 const submit = () => {
   proxy.$refs["managerRef"].validate(valid => {
     if (valid) {
-      console.log('超级管理员', form.value)
       emit('result', {contactInfo: form.value})
     } else {
       emit('result', false)
     }
   })
 }
+
+const setData = () => {
+  if (form.value.contactPeriodEnd === '长期') formDateRadio.value = -1
+  else formDateRadio.value = Number(form.value.contactPeriodEnd.substring(0, 4) - form.value.contactPeriodBegin.substring(0, 4))
+}
+
+onMounted(() => {
+  if (form.value.contactPeriodBegin && form.value.contactPeriodEnd) {
+    setData()
+  }
+})
 
 defineExpose({
   submit,
