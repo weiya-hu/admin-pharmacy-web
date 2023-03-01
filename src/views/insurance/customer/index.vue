@@ -73,6 +73,7 @@
             () => {
               addDialog = true;
               isSave = true;
+              form={}
             }
           "
         >新建企业
@@ -169,28 +170,32 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="编辑" prop="pay">
+        <el-table-column align="center" label="编辑" prop="pay" width="180">
           <template #default="scope">
-            <el-tooltip content="编辑信息">
-              <el-button
-                  :icon="Edit"
-                  size="large"
-                  text
-                  type="primary"
-                  @click="editCorpInfo(scope.row)"
-              >
-              </el-button>
-            </el-tooltip>
-            <el-tooltip content="企业二维码">
-              <el-button
-                  :icon="Open"
-                  size="large"
-                  text
-                  type="primary"
-                  @click="activeCorp(scope.row)"
-              >
-              </el-button>
-            </el-tooltip>
+            <!--            <el-tooltip content="编辑信息">-->
+            <!--              <el-button-->
+            <!--                  :icon="Edit"-->
+            <!--                  size="large"-->
+            <!--                  text-->
+            <!--                  type="primary"-->
+            <!--                  @click="editCorpInfo(scope.row)"-->
+            <!--              >-->
+            <!--              </el-button>-->
+            <!--            </el-tooltip>-->
+            <span style="cursor: pointer;color:#409EFF;margin-right: 20px" @click="editCorpInfo(scope.row)">编辑</span>
+
+            <!--            <el-tooltip content="企业二维码">-->
+            <!--              <el-button-->
+            <!--                  :icon="Open"-->
+            <!--                  size="large"-->
+            <!--                  text-->
+            <!--                  type="primary"-->
+            <!--                  @click="activeCorp(scope.row)"-->
+            <!--              >-->
+            <!--              </el-button>-->
+            <!--            </el-tooltip>-->
+            <span style="cursor: pointer;color:#409EFF" @click="activeCorp(scope.row)">企业二维码</span>
+
           </template>
         </el-table-column>
 
@@ -377,7 +382,7 @@ const rules = {
       trigger: "blur",
     },
   ],
-  corpType: [{required: true, message: "必填", trigger: "change"}],
+  corpType: [{required: true, message: "必填", trigger: "blur"}],
   authCode: [{required: true, trigger: "blur"}],
   createUserName: [{required: true, message: "必填", trigger: "blur"}],
   mobile: [{required: true, message: "必填", trigger: "blur"}],

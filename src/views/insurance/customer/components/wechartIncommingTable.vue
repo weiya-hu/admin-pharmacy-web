@@ -89,8 +89,8 @@ const showQrCode = async (row) => {
     justify-content: center;
 
     iframe {
-      width: 280px;
-      height: 280px;
+      width: 30vmax;
+      height: 30vmax;
       border: none;
     }
   }
