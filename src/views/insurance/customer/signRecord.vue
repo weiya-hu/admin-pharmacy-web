@@ -443,7 +443,6 @@ const handleQuery = () => {
     queryParams.value.querySignTimeStart = "";
     queryParams.value.querySignTimeEnd = "";
   }
-
   getDeptList(queryParams.value);
 };
 

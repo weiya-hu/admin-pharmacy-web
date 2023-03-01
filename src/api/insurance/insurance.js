@@ -215,3 +215,29 @@ export const revokeAssignment = (hippId) => {
     },
   });
 };
+
+//销售注册企业
+export const registCorp = function (data) {
+  return request({
+    url: "/wecom/corpinfo/info/registerCorpToTenantWithoutLogin",
+    method: "post",
+    data,
+  });
+};
+
+//销售修改企业信息
+export const editCorp = function (data) {
+  return request({
+    url: "/wecom/corpinfo/info",
+    method: "put",
+    data,
+  });
+};
+
+//查询公司信息
+export const queryCorp = function (corpId) {
+  return request({
+    url: `/wecom/corpinfo/info/${corpId}`,
+    method: "get",
+  });
+};

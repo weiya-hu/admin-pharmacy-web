@@ -5,6 +5,15 @@ export function getHospitalList(data) {
   return request({
     url: "/hipp/hipp/admin/hospital/list",
     method: "get",
-    params: data
+    params: data,
+  });
+}
+
+//修改医院公众号管理状态
+export function banHospital(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/update",
+    method: "put",
+    data,
   });
 }

@@ -1,11 +1,11 @@
 <template>
-  <div class="out_box" v-loading="isLoading" element-loading-text="加载中...">
+  <div v-loading="isLoading" class="out_box" element-loading-text="加载中...">
     <header>
       <div class="search">
-        <div @click="innitListData" class="search_icon">
+        <div class="search_icon" @click="innitListData">
         </div>
-        <input @keyup.enter="innitListData" v-model="searchParams.name" placeholder="请输入医院名称"
-               class="serach_input" />
+        <input v-model="searchParams.name" class="serach_input" placeholder="请输入医院名称"
+               @keyup.enter="innitListData"/>
       </div>
       <div class="code">
         <span class="code_imageicon"></span>
@@ -17,7 +17,7 @@
     <main>
       <div class="list_content">
         <template v-for="(item,index) in listData" :key="index">
-          <el-card shadow="always" style="width:260pt;height: 235pt" class="box-card">
+          <el-card class="box-card" shadow="always" style="width:260pt;height: 235pt">
             <template #header>
               <div class="status">
                 <span v-if="item.status=='1'" class="green"></span>
@@ -25,9 +25,9 @@
               </div>
             </template>
             <div class="content">
-              <div @click="()=>{handleHospital(item)}" class="baseInfo">
+              <div class="baseInfo" @click="()=>{handleHospital(item)}">
                 <div class="Logo">
-                  <img :src="item.logo" />
+                  <img :src="item.logo"/>
                 </div>
                 <div class="name">
                   {{ item.fullname }}
@@ -40,8 +40,8 @@
                 </div>
                 <div class="switch">
                   <customSwitch
-                    @change="(value)=>{changeStatus(value,index)}"
-                    :model-value="item.status=='1'?true:false"
+                      :model-value="item.status=='1'?true:false"
+                      @change="(value)=>{changeStatus(value,index)}"
                   >
                   </customSwitch>
                 </div>
@@ -49,35 +49,22 @@
             </div>
           </el-card>
         </template>
-        <el-card shadow="always" style="width:260pt;height: 235pt" class="add-card">
-          <div class="content">
-            <div class="baseInfo">
-              <div class="add_Logo">
-                <el-icon class="avatar-uploader-icon">
-                  <Plus />
-                </el-icon>
-              </div>
-              <div class="add_Name">
-                同步医院信息
-              </div>
-            </div>
-          </div>
-        </el-card>
       </div>
     </main>
     <footer>
       <div class="pagination">
-        <el-pagination @change="changePagination" layout="prev, pager, next" :total="total" />
+        <el-pagination :total="total" layout="prev, pager, next" @change="changePagination"/>
       </div>
     </footer>
   </div>
 </template>
 
-<script setup name="HospitalList">
-import { onMounted, ref } from "vue";
-import { getHospitalList } from "@/api/hospital/hospitalList";
-import { useRouter } from "vue-router";
+<script name="HospitalList" setup>
+import {onMounted, ref} from "vue";
+import {banHospital, getHospitalList} from "@/api/hospital/hospitalList";
+import {useRouter} from "vue-router";
 import customSwitch from "./components/publicComponent/switch.vue";
+import modal from "@/plugins/modal";
 
 const router = useRouter();
 //列表数据条数
@@ -98,7 +85,19 @@ let searchParams = ref({
 //改变状态
 const changeStatus = (value, index) => {
   let result = value ? "1" : "0";
+  let data = {
+    status: result,
+    corpId: listData.value[index].corpId
+  }
   listData.value[index].status = result;
+
+  banHospital(data).then(res => {
+    if (res.code == 200) {
+      modal.msgSuccess({
+        message: result == '1' ? '已启用' : '已禁用'
+      })
+    }
+  })
 };
 //改变页
 const changePagination = (value) => {
@@ -126,7 +125,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .out_box {
   padding: 50px;
   display: flex;
@@ -187,21 +186,29 @@ onMounted(() => {
     }
   }
 
+
   main {
     flex: 1;
     margin: 20px;
 
     .list_content {
+      padding: 20px;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      justify-content: space-evenly;
+      //justify-content: space-between;
+
+      //.box-card:not(:nth-child(4n)) {
+      //  margin-right: calc(4% / 3);
+      //}
 
       .add-card {
         border-radius: 20px;
         margin: 10px;
 
         .content {
+          width: 25vw;
+
           .el-icon.avatar-uploader-icon {
             font-size: 50px;
             color: #8c939d;

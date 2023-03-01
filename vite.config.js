@@ -35,8 +35,8 @@ export default defineConfig(({ mode, command }) => {
         "/dev-api": {
           // target: 'http://192.168.1.200:8080/', //程
           // target: 'http://192.168.1.100:8080/', //向
-          // target: 'http://192.168.1.85:8080/', //游
-          target: 'https://test.api.shanhaiping.com',
+          // target: "http://192.168.1.37:8080/", //游
+          target: "https://test.api.shanhaiping.com",
           // target: 'http://testv2.api.shanhaiping.com/',
           // target: "http://api.sp.shanhaiping.com",
           changeOrigin: true,
