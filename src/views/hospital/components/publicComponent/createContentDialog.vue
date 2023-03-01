@@ -193,7 +193,7 @@ defineExpose({
 }
 
 ::v-deep(.el-input) {
-  width: 910px;
+  width: 1000px;
 }
 
 .dialog_form {
