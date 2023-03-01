@@ -59,19 +59,19 @@
     center
     v-model="isShowArticeDialog"
   >
-    <div style="display: flex">
-      <div style="margin-right: 100px">
+    <div style="display: flex;justify-content: space-evenly">
+      <div>
         <createContentDialog
           @backToPhone="handleBackToPhone"
           ref="formInstance"
         >
         </createContentDialog>
       </div>
-<!--         实时预览-->
-            <div class="phone">
-              <img class="phoneImg" src="@/assets/images/hospitalImage/Phone2X.png">
-              <div class="content" v-html="previewPost"></div>
-            </div>
+      <!--         实时预览-->
+      <div class="phone">
+        <img class="phoneImg" src="@/assets/images/hospitalImage/Phone2X.png">
+        <div class="content" v-html="previewPost"></div>
+      </div>
     </div>
     <template #footer>
       <div class="dialog-footer">
@@ -248,7 +248,6 @@ const handleWithdrawn = (row) => {
 const handleEditor = (row) => {
   isAddOrPut.value = false;
   isShowArticeDialog.value = true;
-  console.log(row);
   nextTick(() => {
     formInstance.value.handleReveal(row);
   });
