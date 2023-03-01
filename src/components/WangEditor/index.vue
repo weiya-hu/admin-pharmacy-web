@@ -11,7 +11,7 @@
       :default-config="editorConfig"
       :mode="mode"
       class="editor_custom"
-      style="height: 455px; overflow-y: hidden;"
+      style="height: 500px; overflow-y: hidden;"
       @onCreated="handleCreated"
       @onChange="handleChange"
       @onDestroyed="handleDestroyed"
@@ -391,6 +391,7 @@ const handleCreated = editor => {
   }
 };
 const handleChange = editor => {
+  console.log(1);
   emit("update:modelValue", editor.getHtml());
 };
 const handleDestroyed = editor => {

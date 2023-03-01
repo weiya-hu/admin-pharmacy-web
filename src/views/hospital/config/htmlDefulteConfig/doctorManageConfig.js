@@ -123,11 +123,5 @@ const doctorManageConfig =
   "\t</p>\n" +
   "\t<p>\n" +
   "\t\t<br/>\n" +
-  "\t</p>\n" +
-  "\t<section class=\"_135editor\" data-role=\"paragraph\">\n" +
-  "\t\t<p>\n" +
-  "\t\t\t<br/>\n" +
-  "\t\t</p>\n" +
-  "\t</section>\n";
-
+  "\t</p>\n";
 export default doctorManageConfig;

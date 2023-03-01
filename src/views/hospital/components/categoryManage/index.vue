@@ -40,7 +40,7 @@
               </el-button>
               <el-button v-if="scope.row.pid!==null" @click="()=>handleEditor(scope.row)" link type="primary">编辑
               </el-button>
-              <el-button @click="()=>{deleteCategory(scope.row)}" link type="primary">删除</el-button>
+              <!--              <el-button @click="()=>{deleteCategory(scope.row)}" link type="primary">删除</el-button>-->
             </template>
           </el-table-column>
         </el-table>
@@ -53,32 +53,36 @@
       :close-on-click-modal="false"
       draggable
       center
+      top="60vh"
       v-model="createCategoryShow"
     >
       <el-form label-width="180px">
         <el-form-item label="菜单等级:">
           <el-select @change="changeGrade" v-model="itemAdd.grade">
-            <el-option v-for="(item,index) in categoryGradeOption" :key="index" :value="item.value" :label="item.label">
+            <el-option :disabled="index==0?true:false" v-for="(item,index) in categoryGradeOption" :key="index"
+                       :value="item.value" :label="item.label">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="isShowParent" label="上级菜单名:">
           <el-select @change="chooseParentNode" v-model="itemAdd.pid">
-            <el-option :value="item.value" v-for="(item,index) in parentOptions" :label="item.label" :key="index">
+            <el-option :disabled="disPid" :value="item.value" v-for="(item,index) in parentOptions"
+                       :label="item.label" :key="index">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="isShowParent" label="子菜单名称:">
-          <el-input v-model="itemAdd.name"></el-input>
+          <el-input class="label" v-model="itemAdd.name"></el-input>
         </el-form-item>
         <el-form-item v-if="isShowParent" label="编码:">
-          <el-input v-model="itemAdd.code"></el-input>
+          <el-input class="label" v-model="itemAdd.code"></el-input>
         </el-form-item>
         <el-form-item v-if="!isShowParent" label="菜单名称:">
-          <el-input v-model="itemAdd.name"></el-input>
+          <el-input class="label" v-model="itemAdd.name"></el-input>
         </el-form-item>
+
         <el-form-item label="是否启用:">
           <el-radio-group v-model="itemAdd.status" class="ml-4">
             <el-radio :model-value="1" :label="1" size="large">是</el-radio>
@@ -110,12 +114,13 @@ import {
   getEditorList
 } from "@/api/hospital/hospitalConfig";
 
+const disPid = ref(false);
 const router = useRouter();
 const route = useRoute();
 const hospitalConfigStore = useHospitalConfigStore();
 const parentNodeCode = computed(() => hospitalConfigStore.activeParentBarInfo.code);
 const itemAdd = ref({
-  grade: "1",
+  grade: "2",
   corpId: "",
   name: "",
   pid: null,
@@ -146,7 +151,7 @@ const categoryGradeOption = [
 ];
 const resetItemAdd = () => {
   itemAdd.value = {
-    grade: "1",
+    grade: "2",
     corpId: "",
     name: "",
     pid: null,
@@ -154,8 +159,9 @@ const resetItemAdd = () => {
     code: null
   };
 };
+//关键字搜索
 const searchCategoryByName = () => {
-  hospitalConfigStore.filterCategory({ name: searchKey.value });
+  // hospitalConfigStore.filterCategory({ name: searchKey.value });
 };
 
 const handleCancel = () => {
@@ -168,6 +174,7 @@ const chooseParentNode = ($event) => {
   })[0];
 };
 const openCreateCategoryDialog = () => {
+  disPid.value = false;
   createCategoryShow.value = true;
 };
 const changeGrade = () => {
@@ -261,6 +268,7 @@ const handleProhibition = (row) => {
 };
 //菜单编辑
 const handleEditor = (row) => {
+  disPid.value = true;
   resetItemAdd();
   createCategoryShow.value = true;
   itemAdd.value = row;
@@ -347,7 +355,7 @@ onMounted(() => {
   text-align: center;
 }
 
-::v-deep(.el-input__wrapper) {
+.label::v-deep(.el-input__wrapper) {
   box-shadow: none;
   cursor: default;
   border-radius: 0;
@@ -358,13 +366,14 @@ onMounted(() => {
   }
 }
 
-::v-deep(.el-input__inner) {
-
-
+.label::v-deep(.el-select-dropdown__item) {
+  &:hover {
+    border-color: red;
+  }
 }
 
 ::v-deep(.el-input) {
-  width: 400px;
+  width: 500px !important;
 }
 
 .manage {
