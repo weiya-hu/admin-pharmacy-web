@@ -64,6 +64,7 @@
 </template>
 <script setup>
 import { computed, ref, shallowRef, watch } from "vue";
+import { _ } from "lodash";
 import WangEditor from "@/components/WangEditor/index";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { getToken } from "@/utils/auth";
@@ -127,10 +128,19 @@ const upSuccess = (response) => {
 const exceed = () => {
   ElMessage.error("最多上传一张封面图");
 };
-
+//处理回显数据
+const handleReveal = (receiveData) => {
+  let {
+    post
+  } = receiveData;
+  post = _.unescape(post);
+  hospitalConfigStore.publicEditorDefault = post;
+  queryParames.value = Object.assign(queryParames.value, receiveData);
+};
 defineExpose({
   sendQueryParams,
-  clearForm
+  clearForm,
+  handleReveal
 });
 </script>
 

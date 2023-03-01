@@ -56,7 +56,6 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
       this.innitShowConfig();
     },
     innitShowConfig() {
-      console.log("code");
       switch (this.activeParentBarInfo.code) {
         case "HOSPITAL_PROFILE":
           this.publicTableConfig = configTableMap.get("HOSPITAL_PROFILE");

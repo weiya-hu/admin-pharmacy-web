@@ -1,5 +1,5 @@
 <template>
-  <div class="hy-table">
+  <div>
     <el-table
       :data="listData"
       style="width: 100%;font-size: 16px"

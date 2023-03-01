@@ -27,8 +27,10 @@
           </template>
 
           <template #handler="scope">
-            <el-button link type="primary">编辑</el-button>
+            <el-button link @click="()=>{handleEditor(scope.row)}" type="primary">编辑</el-button>
             <el-button @click="()=>deleteEditor(scope.row.postId)" link type="primary">删除</el-button>
+            <el-button type="primary">发布</el-button>
+            <el-button type="primary">撤回</el-button>
             <el-button link type="primary">预览</el-button>
           </template>
         </publicTable>
@@ -55,7 +57,8 @@
     </createContentDialog>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="addCategoryArticle" type="primary">确 定</el-button>
+        <el-button v-if="!isAddOrPut" @click="handlePut" type="primary">修改</el-button>
+        <el-button v-if="isAddOrPut" @click="addCategoryArticle" type="primary">确 定</el-button>
         <el-button @click="isShowArticeDialog= false">取 消</el-button>
       </div>
     </template>
@@ -66,21 +69,25 @@ import publicTable from "@/views/hospital/components/publicComponent/publicTable
 import hospitalIntroductionConfig from "@/views/hospital/config/tableConfig/hospitalIntroductionConfig";
 import configMap from "@/views/hospital/config/tableConfig";
 import createContentDialog from "@/views/hospital/components/publicComponent/createContentDialog";
-import { computed, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
-import { addEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
+import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
 import { ElMessage } from "element-plus";
 
+const isAddOrPut = ref(true);
 const formInstance = ref(null);
 const hospitalConfigStore = useHospitalConfigStore();
 let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
 const isShowArticeDialog = ref(false);
+//新建文章
 const createArticle = () => {
+  isAddOrPut.value = true;
   isShowArticeDialog.value = true;
+  hospitalConfigStore.innitShowConfig();
 };
 const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig);
-
+//新增内容
 const addCategoryArticle = () => {
   try {
     addEditorItem({ ...formInstance.value.sendQueryParams() }).then(res => {
@@ -92,6 +99,23 @@ const addCategoryArticle = () => {
     isShowArticeDialog.value = false;
   } catch {
     ElMessage.error("新增异常");
+    isShowArticeDialog.value = false;
+  } finally {
+    formInstance.value.clearForm();
+  }
+};
+//修改内容
+const handlePut = () => {
+  try {
+    changeEditorItem({ ...formInstance.value.sendQueryParams() }).then(res => {
+      if (res.code == 200) {
+        ElMessage.success("修改内容成功");
+        hospitalConfigStore.getCategoryDataList(hospitalConfigStore.activeBarInfo);
+      }
+    });
+    isShowArticeDialog.value = false;
+  } catch {
+    ElMessage.error("修改异常");
     isShowArticeDialog.value = false;
   } finally {
     formInstance.value.clearForm();
@@ -110,6 +134,16 @@ const deleteEditor = (id) => {
     ElMessage.error("删除失败");
   }
 };
+//点击编辑
+const handleEditor = (row) => {
+  isAddOrPut.value = false;
+  isShowArticeDialog.value = true;
+  console.log(row);
+  nextTick(() => {
+    formInstance.value.handleReveal(row);
+  });
+};
+
 </script>
 
 <style scoped lang="scss">
