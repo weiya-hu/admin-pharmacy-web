@@ -1,19 +1,15 @@
 const tableConfig = {
   title: "指南列表",
+  createTitle: "新建指南",
   propList: [
-    { prop: "name", label: "标题", minWidth: "100" },
+    { prop: "title", label: "标题", minWidth: "100" },
     {
-      prop: "createAt",
+      prop: "createTime",
       label: "创建时间",
       minWidth: "250",
       slotName: "createAt"
     },
-    {
-      prop: "depart",
-      label: "科室",
-      minWidth: "250",
-      slotName: "depart"
-    },
+
     {
       prop: "version",
       label: "版本",

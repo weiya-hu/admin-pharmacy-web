@@ -25,7 +25,7 @@
 
 <script setup>
 import "@wangeditor/editor/dist/css/style.css";
-import { onBeforeUnmount, ref, shallowRef, onMounted } from "vue";
+import { onBeforeUnmount, ref, shallowRef, onMounted, watch } from "vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { _ } from "lodash";
 import { getToken } from "@/utils/auth";
@@ -58,10 +58,14 @@ const editorRef = shallowRef();
 const valueHtml = ref(props.defaultValue);
 watch(() => valueHtml.value, newValue => {
   emit("update:modelValue", newValue);
+}, {
+  immediate: true
 });
 
 watch(() => props.defaultValue, newValue => {
   valueHtml.value = newValue;
+}, {
+  immediate: true
 });
 // 模拟 ajax 异步获取内容
 onMounted(() => {
@@ -208,6 +212,7 @@ editorConfig.MENU_CONF["uploadImage"] = {
       if (res.code == 200) {
         ElMessage.success("上传图片成功");
         insertFn(res.data.url);
+        handleChange();
       }
     });
   }
@@ -386,8 +391,7 @@ const handleCreated = editor => {
   }
 };
 const handleChange = editor => {
-  console.log("change:", _.escape(editor.getHtml()));
-  emit("update:modelValue", _.escape(editor.getHtml()));
+  emit("update:modelValue", editor.getHtml());
 };
 const handleDestroyed = editor => {
   console.log("destroyed", editor);
@@ -411,7 +415,12 @@ const customPaste = (editor, event, callback) => {
   // callback(false) // 返回 false ，阻止默认粘贴行为
   callback(true); // 返回 true ，继续默认的粘贴行为
 };
-
+const getHtml = () => {
+  _.escape(editorRef.value.getHtml());
+};
+defineExpose({
+  getHtml
+});
 </script>
 
 

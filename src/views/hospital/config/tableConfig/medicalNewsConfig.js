@@ -1,5 +1,6 @@
 const tableConfig = {
-  title: "文章列表",
+  title: "医疗动态",
+  createTitle: "新建医疗动态",
   propList: [
     { prop: "name", label: "标题", minWidth: "100" },
     {

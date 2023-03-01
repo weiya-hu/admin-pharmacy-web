@@ -1,7 +1,8 @@
 const tableConfig = {
-  title: "简介列表",
+  title: "医生列表",
+  createTitle: "新建医生简介",
   propList: [
-    { prop: "name", label: "标题", minWidth: "100" },
+    { prop: "title", label: "标题", minWidth: "100" },
     {
       prop: "createAt",
       label: "创建时间",

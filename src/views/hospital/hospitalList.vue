@@ -5,7 +5,7 @@
         <div class="search_icon" @click="innitListData">
         </div>
         <input v-model="searchParams.name" class="serach_input" placeholder="请输入医院名称"
-               @keyup.enter="innitListData"/>
+               @keyup.enter="innitListData" />
       </div>
       <div class="code">
         <span class="code_imageicon"></span>
@@ -27,7 +27,7 @@
             <div class="content">
               <div class="baseInfo" @click="()=>{handleHospital(item)}">
                 <div class="Logo">
-                  <img :src="item.logo"/>
+                  <img :src="item.logo" />
                 </div>
                 <div class="name">
                   {{ item.fullname }}
@@ -40,8 +40,8 @@
                 </div>
                 <div class="switch">
                   <customSwitch
-                      :model-value="item.status=='1'?true:false"
-                      @change="(value)=>{changeStatus(value,index)}"
+                    :model-value="item.status=='1'?true:false"
+                    @change="(value)=>{changeStatus(value,index)}"
                   >
                   </customSwitch>
                 </div>
@@ -53,16 +53,16 @@
     </main>
     <footer>
       <div class="pagination">
-        <el-pagination :total="total" layout="prev, pager, next" @change="changePagination"/>
+        <el-pagination :total="total" layout="prev, pager, next" @change="changePagination" />
       </div>
     </footer>
   </div>
 </template>
 
 <script name="HospitalList" setup>
-import {onMounted, ref} from "vue";
-import {banHospital, getHospitalList} from "@/api/hospital/hospitalList";
-import {useRouter} from "vue-router";
+import { onMounted, ref } from "vue";
+import { banHospital, getHospitalList } from "@/api/hospital/hospitalList";
+import { useRouter } from "vue-router";
 import customSwitch from "./components/publicComponent/switch.vue";
 import modal from "@/plugins/modal";
 
@@ -88,16 +88,16 @@ const changeStatus = (value, index) => {
   let data = {
     status: result,
     corpId: listData.value[index].corpId
-  }
+  };
   listData.value[index].status = result;
 
   banHospital(data).then(res => {
     if (res.code == 200) {
       modal.msgSuccess({
-        message: result == '1' ? '已启用' : '已禁用'
-      })
+        message: result == "1" ? "已启用" : "已禁用"
+      });
     }
-  })
+  });
 };
 //改变页
 const changePagination = (value) => {
@@ -105,6 +105,7 @@ const changePagination = (value) => {
 };
 //进入医院
 const handleHospital = (data) => {
+  console.log(data, "data");
   router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
 };
 //初始化列表数据

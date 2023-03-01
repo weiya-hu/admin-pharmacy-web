@@ -122,7 +122,6 @@ const upSuccess = (response) => {
   if (response.code == 200) {
     ElMessage.success("封面图上传成功");
     queryParames.value.thumbnail = response.data.url;
-    console.log(queryParames.value.thumbnail);
   }
 };
 const exceed = () => {
@@ -131,11 +130,16 @@ const exceed = () => {
 //处理回显数据
 const handleReveal = (receiveData) => {
   let {
-    post
+    post,
+    thumbnail
   } = receiveData;
   post = _.unescape(post);
+  console.log(post, "post");
+  dialogImageUrl.value = thumbnail;
+  queryParames.value.thumbnail = thumbnail;
   hospitalConfigStore.publicEditorDefault = post;
   queryParames.value = Object.assign(queryParames.value, receiveData);
+  console.log(queryParames.value);
 };
 defineExpose({
   sendQueryParams,

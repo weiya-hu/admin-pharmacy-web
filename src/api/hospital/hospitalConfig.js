@@ -18,6 +18,24 @@ export function addCategory(data) {
   });
 }
 
+//修改菜单
+export function changeCategoryItem(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/category/update",
+    method: "put",
+    data: data
+  });
+}
+
+//通过名称查菜单
+export function searchCategory(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/category/list",
+    method: "get",
+    params: data
+  });
+}
+
 //删除菜单
 export function deleteCategoryItem(data) {
   return request({
@@ -29,6 +47,15 @@ export function deleteCategoryItem(data) {
 
 //查询富文本信息列表
 export function getEditorList(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/post/list",
+    method: "get",
+    params: data
+  });
+}
+
+//条件搜索富文本信息列表
+export function searchEditorList(data) {
   return request({
     url: "/hipp/hipp/admin/hospital/post/list",
     method: "get",

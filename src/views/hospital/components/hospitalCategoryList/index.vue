@@ -2,15 +2,15 @@
   <div class="categoryList_outBox" v-loading="publicLoading" element-loading-text="加载中...">
     <header>
       <div class="head">
-        <span class="title">简介列表</span>
+        <span class="title">{{ defaultTableConfig.title }}</span>
         <div class="search">
-          <div class="search_icon">
+          <div @click="searchCategoryByKeyword" class="search_icon">
           </div>
-          <input placeholder="请输入名称"
+          <input v-model="keyword" @keyup.enter="searchCategoryByKeyword" placeholder="请输入名称"
                  class="serach_input" />
         </div>
         <div class="add">
-          <el-button @click="createArticle" size="large" type="primary">新建</el-button>
+          <el-button @click="createArticle" size="large" type="primary">{{ defaultTableConfig.createTitle }}</el-button>
         </div>
       </div>
     </header>
@@ -29,8 +29,10 @@
           <template #handler="scope">
             <el-button link @click="()=>{handleEditor(scope.row)}" type="primary">编辑</el-button>
             <el-button @click="()=>deleteEditor(scope.row.postId)" link type="primary">删除</el-button>
-            <el-button type="primary">发布</el-button>
-            <el-button type="primary">撤回</el-button>
+            <el-button v-if="scope.row.status=='1'" link @click="()=>handlePosted(scope.row)" type="primary">发布
+            </el-button>
+            <el-button v-if="scope.row.status=='2'" link @click="()=>handleWithdrawn(scope.row)" type="primary">撤回
+            </el-button>
             <el-button link type="primary">预览</el-button>
           </template>
         </publicTable>
@@ -38,7 +40,8 @@
     </main>
     <footer>
       <div class="pagination">
-        <el-pagination layout="prev, pager, next" :total="100" />
+        <!--        {{Number(total)}}-->
+        <el-pagination layout="prev, pager, next" :total="Number(total)" />
       </div>
     </footer>
   </div>
@@ -73,12 +76,15 @@ import { computed, nextTick, ref } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
 import { ElMessage } from "element-plus";
+import { _ } from "lodash";
 
+const keyword = ref("");
 const isAddOrPut = ref(true);
 const formInstance = ref(null);
 const hospitalConfigStore = useHospitalConfigStore();
 let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
+let total = computed(() => hospitalConfigStore.total);
 const isShowArticeDialog = ref(false);
 //新建文章
 const createArticle = () => {
@@ -90,10 +96,12 @@ const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig)
 //新增内容
 const addCategoryArticle = () => {
   try {
-    addEditorItem({ ...formInstance.value.sendQueryParams() }).then(res => {
+    let result = formInstance.value.sendQueryParams();
+    result.post = _.escape(result.post);
+    addEditorItem({ ...result }).then(res => {
       if (res.code == 200) {
         ElMessage.success("新增内容成功");
-        hospitalConfigStore.getCategoryDataList(hospitalConfigStore.activeBarInfo);
+        filterPubliceTableDataList();
       }
     });
     isShowArticeDialog.value = false;
@@ -104,13 +112,29 @@ const addCategoryArticle = () => {
     formInstance.value.clearForm();
   }
 };
+//过滤列表数据
+const filterPubliceTableDataList = () => {
+  if (keyword.value == "") {
+    let { categoryId, corpId, name } = hospitalConfigStore.activeBarInfo;
+    hospitalConfigStore.getCategoryDataList({ categoryId, corpId, name });
+  } else {
+    hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+  }
+};
+//条件搜索
+const searchCategoryByKeyword = () => {
+  hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+};
+
 //修改内容
 const handlePut = () => {
   try {
-    changeEditorItem({ ...formInstance.value.sendQueryParams() }).then(res => {
+    let result = formInstance.value.sendQueryParams();
+    result.post = _.escape(result.post);
+    changeEditorItem({ ...result }).then(res => {
       if (res.code == 200) {
         ElMessage.success("修改内容成功");
-        hospitalConfigStore.getCategoryDataList(hospitalConfigStore.activeBarInfo);
+        filterPubliceTableDataList();
       }
     });
     isShowArticeDialog.value = false;
@@ -127,11 +151,39 @@ const deleteEditor = (id) => {
     deleteEditorItem({ postId: id }).then(res => {
       if (res.code == 200) {
         ElMessage.success("删除成功");
-        hospitalConfigStore.getCategoryDataList(hospitalConfigStore.activeBarInfo);
+        filterPubliceTableDataList();
       }
     });
   } catch {
     ElMessage.error("删除失败");
+  }
+};
+//发布富文本内容
+const handlePosted = (row) => {
+  row.status = 2;
+  try {
+    changeEditorItem({ ...row }).then(res => {
+      if (res.code == 200) {
+        ElMessage.success("发布内容成功");
+        filterPubliceTableDataList();
+      }
+    });
+  } catch {
+    ElMessage.error("发布异常");
+  }
+};
+//撤回富文本内容
+const handleWithdrawn = (row) => {
+  row.status = 1;
+  try {
+    changeEditorItem({ ...row }).then(res => {
+      if (res.code == 200) {
+        ElMessage.success("撤回内容成功");
+        filterPubliceTableDataList();
+      }
+    });
+  } catch {
+    ElMessage.error("撤回异常");
   }
 };
 //点击编辑

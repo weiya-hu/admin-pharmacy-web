@@ -4,9 +4,9 @@
       <div class="head">
         <span class="title">功能列表</span>
         <div class="search">
-          <div class="search_icon">
+          <div @click="searchCategoryByName" class="search_icon">
           </div>
-          <input placeholder="请输入名称"
+          <input @keyup.enter="searchCategoryByName" v-model="searchKey" placeholder="请输入名称"
                  class="serach_input" />
         </div>
         <div class="add">
@@ -26,12 +26,20 @@
         >
           <el-table-column align="center" prop="name" label="功能块名称" />
           <el-table-column align="center" prop="name" label="创建时间" />
-          <el-table-column align="center" prop="address" label="菜单等级" />
-          <el-table-column align="center" prop="address" label="操作">
+          <el-table-column align="center" prop="address" label="菜单等级">
             <template #default="scope">
-              <el-button link type="primary">启用</el-button>
-              <el-button link type="danger">禁用</el-button>
-              <el-button link type="primary">编辑</el-button>
+              <span v-if="scope.row.pid==null">一级菜单</span>
+              <span v-else>二级菜单</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="address" label="操作">
+            <template #default="scope">
+              <el-button v-if="scope.row.status=='0'" @click="()=>handleEnable(scope.row)" link type="primary">启用
+              </el-button>
+              <el-button v-if="scope.row.status=='1'" @click="()=>handleProhibition(scope.row)" link type="danger">禁用
+              </el-button>
+              <el-button v-if="scope.row.pid!==null" @click="()=>handleEditor(scope.row)" link type="primary">编辑
+              </el-button>
               <el-button @click="()=>{deleteCategory(scope.row)}" link type="primary">删除</el-button>
             </template>
           </el-table-column>
@@ -40,7 +48,7 @@
     </main>
     <el-dialog
       title="新建菜单"
-      width="40%"
+      width="30%"
       append-to-body
       :close-on-click-modal="false"
       draggable
@@ -73,15 +81,15 @@
         </el-form-item>
         <el-form-item label="是否启用:">
           <el-radio-group v-model="itemAdd.status" class="ml-4">
-            <el-radio :model-value="1" label="1" size="large">是</el-radio>
-            <el-radio :model-value="0" label="0" size="large">否</el-radio>
+            <el-radio :model-value="1" :label="1" size="large">是</el-radio>
+            <el-radio :model-value="0" :label="0" size="large">否</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="createCategoryConfirm" type="primary">确 定</el-button>
-          <el-button @click="createCategoryShow = false">取 消</el-button>
+          <el-button @click="handleCancel">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -94,7 +102,13 @@ import { computed, onMounted, ref, watch } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-import { addCategory, deleteCategoryItem, getCategoryDetail, getEditorList } from "@/api/hospital/hospitalConfig";
+import {
+  addCategory,
+  changeCategoryItem,
+  deleteCategoryItem,
+  getCategoryDetail,
+  getEditorList
+} from "@/api/hospital/hospitalConfig";
 
 const router = useRouter();
 const route = useRoute();
@@ -111,6 +125,7 @@ const itemAdd = ref({
 let queryParmas = {
   corpId: route.query?.corpId
 };
+const searchKey = ref("");
 const parentNode = ref(null);
 const navs = computed(() => hospitalConfigStore.navBar);
 const dataList = computed(() => hospitalConfigStore.category);
@@ -129,6 +144,24 @@ const categoryGradeOption = [
   }
 
 ];
+const resetItemAdd = () => {
+  itemAdd.value = {
+    grade: "1",
+    corpId: "",
+    name: "",
+    pid: null,
+    status: "0",
+    code: null
+  };
+};
+const searchCategoryByName = () => {
+  hospitalConfigStore.filterCategory({ name: searchKey.value });
+};
+
+const handleCancel = () => {
+  createCategoryShow.value = false;
+  resetItemAdd();
+};
 const chooseParentNode = ($event) => {
   parentNode.value = navs.value.filter((item) => {
     return item.categoryId == $event;
@@ -144,13 +177,38 @@ const changeGrade = () => {
   }
 };
 const createCategoryConfirm = () => {
-  console.log(parentNode.value);
-  addCategory({ ...Object.assign(itemAdd.value, queryParmas)}).then(async res => {
-    await hospitalConfigStore.generateNavs(queryParmas);
-    innitParentOption();
-    innitEditorList();
-    createCategoryShow.value = false;
-  });
+  if (itemAdd.value?.categoryId == undefined) {
+    //新建菜单
+    addCategory({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
+      if (res.code == 200) {
+        ElMessage.success("新增菜单成功");
+        await hospitalConfigStore.generateNavs(queryParmas);
+        innitParentOption();
+        innitEditorList();
+        createCategoryShow.value = false;
+      }
+    }).catch(rej => {
+      ElMessage.error("新增失败");
+    }).finally(() => {
+      createCategoryShow.value = false;
+      resetItemAdd();
+    });
+  } else {
+    changeCategoryItem({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
+      if (res.code == 200) {
+        ElMessage.success("修改菜单成功");
+        await hospitalConfigStore.generateNavs(queryParmas);
+        innitParentOption();
+        innitEditorList();
+        createCategoryShow.value = false;
+      }
+    }).catch(rej => {
+      ElMessage.error("修改失败");
+    }).finally(() => {
+      createCategoryShow.value = false;
+      resetItemAdd();
+    });
+  }
 };
 const innitParentOption = () => {
   parentOptions.value = (navs.value.filter(item => {
@@ -167,8 +225,59 @@ const innitParentOption = () => {
   });
 };
 const innitEditorList = () => {
-
   tableData.value = dataList.value;
+};
+//菜单启用
+const handleEnable = (row) => {
+  row.status = "1";
+  try {
+    changeCategoryItem({ ...row }).then(async res => {
+      if (res.code == 200) {
+        ElMessage.success("菜单启用成功");
+        await hospitalConfigStore.generateNavs(queryParmas);
+        innitParentOption();
+        innitEditorList();
+      }
+    });
+  } catch {
+    ElMessage.error("菜单启用失败");
+  }
+};
+//菜单禁用
+const handleProhibition = (row) => {
+  row.status = "0";
+  try {
+    changeCategoryItem({ ...row }).then(async res => {
+      if (res.code == 200) {
+        ElMessage.success("菜单禁用成功");
+        await hospitalConfigStore.generateNavs(queryParmas);
+        innitParentOption();
+        innitEditorList();
+      }
+    });
+  } catch {
+    ElMessage.error("菜单禁用失败");
+  }
+};
+//菜单编辑
+const handleEditor = (row) => {
+  resetItemAdd();
+  createCategoryShow.value = true;
+  itemAdd.value = row;
+  console.log(row, "row");
+  let { pid } = row;
+  if (pid !== null) {
+    isShowParent.value = true;
+    itemAdd.value.grade = "2";
+  } else {
+    isShowParent.value = false;
+    itemAdd.value.grade = "1";
+  }
+};
+//菜单编辑修改
+const changeCategoryConfirm = () => {
+
+
 };
 //删除菜单
 const deleteCategory = ($event) => {
@@ -196,6 +305,7 @@ watch(() => itemAdd.value.grade, () => {
 });
 watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
   if (route.query?.corpId) {
+    queryParmas.corpId = route.query?.corpId;
     hospitalConfigStore.generateNavs(queryParmas).then(async res => {
       await hospitalConfigStore.generateNavs(queryParmas);
       innitParentOption();

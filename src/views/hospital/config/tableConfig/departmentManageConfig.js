@@ -1,18 +1,19 @@
 const tableConfig = {
-  title: "医生列表",
+  title: "部门管理",
+  createTitle: "新建部门简介",
   propList: [
-    { prop: "name", label: "标题", minWidth: "100" },
+    { prop: "title", label: "标题", minWidth: "100" },
     {
-      prop: "createAt",
+      prop: "createTime",
       label: "创建时间",
       minWidth: "250",
-      slotName: "createAt"
+      slotName: "createTime"
     },
     {
-      prop: "depart",
-      label: "科室",
+      prop: "updateTime",
+      label: "更新时间",
       minWidth: "250",
-      slotName: "depart"
+      slotName: "updateTime"
     },
     {
       prop: "version",
