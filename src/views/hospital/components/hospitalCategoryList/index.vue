@@ -53,7 +53,7 @@
     </footer>
   </div>
   <el-dialog
-    title="新建内容"
+    :title="isAddOrPut?'新建内容':'修改内容'"
     width="60%"
     append-to-body
     :close-on-click-modal="false"
