@@ -57,7 +57,7 @@
       v-model="createCategoryShow"
       width="20%"
     >
-      <el-form label-width="180px">
+      <el-form label-width="100px">
         <el-form-item label="菜单等级:">
           <el-select @change="changeGrade" v-model="itemAdd.grade">
             <el-option :disabled="index==0?true:false" v-for="(item,index) in categoryGradeOption" :key="index"
