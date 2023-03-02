@@ -63,7 +63,7 @@
 
 </template>
 <script setup>
-import { computed, ref, shallowRef, watch } from "vue";
+import { computed, nextTick, onMounted, ref, shallowRef, watch } from "vue";
 import { _ } from "lodash";
 import WangEditor from "@/components/WangEditor/index";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
@@ -92,6 +92,8 @@ let queryParames = ref({
   top: ""//是否置顶;1：是；2：否
 });
 const clearForm = () => {
+  uploadFile.value = [];
+  dialogImageUrl.value = null;
   queryParames.value = {
     categoryId: "",//类型主键
     corpId: "",//企业ID
@@ -151,6 +153,8 @@ const handleReveal = (receiveData) => {
 const emit = defineEmits(["backToPhone"]);
 watch(() => queryParames.value.post, () => {
   emit("backToPhone", _.unescape(queryParames.value.post));
+}, {
+  immediate: true
 });
 defineExpose({
   sendQueryParams,

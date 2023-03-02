@@ -54,7 +54,7 @@
   </div>
   <el-dialog
     :title="isAddOrPut?'新建内容':'修改内容'"
-    width="60%"
+    width="70%"
     append-to-body
     :close-on-click-modal="false"
     draggable
