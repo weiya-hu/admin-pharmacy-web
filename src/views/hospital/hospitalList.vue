@@ -267,7 +267,7 @@ onMounted(() => {
 
       .box-card {
         border-radius: 20px;
-        margin: 10px;
+        margin: 40px;
 
         .status {
           width: 100%;
