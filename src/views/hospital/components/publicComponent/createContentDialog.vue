@@ -164,8 +164,6 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-
-
 ::v-deep(.el-form-item__label) {
   font-weight: 800;
   display: flex;
@@ -197,11 +195,11 @@ defineExpose({
 }
 
 ::v-deep(.el-input) {
-  width: 1000px;
+  width: 100%;
 }
 
 .dialog_form {
-
+  width: 100%;
 
   .editor {
 

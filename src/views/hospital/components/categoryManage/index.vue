@@ -40,14 +40,15 @@
               </el-button>
               <el-button v-if="scope.row.pid!==null" @click="()=>handleEditor(scope.row)" link type="primary">编辑
               </el-button>
-              <el-button v-if="scope.row.pid!==null" @click="()=>{deleteCategory(scope.row)}" link type="primary">删除
-              </el-button>
+              <!--              <el-button v-if="scope.row.pid!==null" @click="()=>{deleteCategory(scope.row)}" link type="primary">删除-->
+              <!--              </el-button>-->
             </template>
           </el-table-column>
         </el-table>
       </div>
     </main>
     <el-dialog
+      @close="handleCancel"
       :title="addOrEditor?'新建菜单':'修改菜单'"
       append-to-body
       :close-on-click-modal="false"
@@ -57,7 +58,7 @@
       v-model="createCategoryShow"
       width="20%"
     >
-      <el-form label-width="100px">
+      <el-form :rules="categoryFormRuler" :model="itemAdd" ref="categoryFormInstance" label-width="100px">
         <el-form-item label="菜单等级:">
           <el-select @change="changeGrade" v-model="itemAdd.grade">
             <el-option :disabled="index==0?true:false" v-for="(item,index) in categoryGradeOption" :key="index"
@@ -66,30 +67,29 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isShowParent" label="上级菜单名:">
+        <el-form-item v-if="isShowParent" label="上级菜单名:" prop="pid">
           <el-select @change="chooseParentNode" v-model="itemAdd.pid">
-            <el-option :disabled="disPid" :value="item.value" v-for="(item,index) in parentOptions"
+            <el-option :value="item.value" v-for="(item,index) in parentOptions"
                        :label="item.label" :key="index">
               {{ item.label }}
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="isShowParent" label="子菜单名称:">
+        <el-form-item v-if="isShowParent" label="子菜单名称:" prop="name">
           <el-input class="label" v-model="itemAdd.name"></el-input>
         </el-form-item>
-        <el-form-item v-if="isShowParent" label="编码:">
+        <el-form-item v-if="isShowParent" label="编码:" prop="code">
           <el-input class="label" v-model="itemAdd.code"></el-input>
         </el-form-item>
         <el-form-item v-if="!isShowParent" label="菜单名称:">
           <el-input class="label" v-model="itemAdd.name"></el-input>
         </el-form-item>
-
-        <el-form-item label="是否启用:">
-          <el-radio-group v-model="itemAdd.status" class="ml-4">
-            <el-radio :model-value="1" :label="1" size="large">是</el-radio>
-            <el-radio :model-value="0" :label="0" size="large">否</el-radio>
-          </el-radio-group>
-        </el-form-item>
+        <!--        <el-form-item label="是否启用:">-->
+        <!--          <el-radio-group v-model="itemAdd.status" class="ml-4">-->
+        <!--            <el-radio :model-value="1" :label="1" size="large">是</el-radio>-->
+        <!--            <el-radio :model-value="0" :label="0" size="large">否</el-radio>-->
+        <!--          </el-radio-group>-->
+        <!--        </el-form-item>-->
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -115,6 +115,30 @@ import {
   getEditorList
 } from "@/api/hospital/hospitalConfig";
 
+let categoryFormInstance = ref(null);
+const categoryFormRuler = ref({
+  name: [
+    {
+      required: true,
+      message: "请输入菜单名称",
+      trigger: "blur"
+    }
+  ],
+  pid: [
+    {
+      required: true,
+      message: "请选择上级菜单名称",
+      trigger: "change"
+    }
+  ],
+  code: [
+    {
+      required: true,
+      message: "请编写菜单编码",
+      trigger: "blur"
+    }
+  ]
+});
 const disPid = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -125,7 +149,7 @@ const itemAdd = ref({
   corpId: "",
   name: "",
   pid: null,
-  status: "0",
+  status: "1",
   code: null
 });
 let queryParmas = {
@@ -166,7 +190,8 @@ const searchCategoryByName = () => {
   // hospitalConfigStore.filterCategory({ name: searchKey.value });
 };
 
-const handleCancel = () => {
+const handleCancel = async () => {
+  categoryFormInstance.value.resetFields();
   createCategoryShow.value = false;
   resetItemAdd();
 };
@@ -186,39 +211,42 @@ const changeGrade = () => {
     itemAdd.value.grade = "1";
   }
 };
-const createCategoryConfirm = () => {
-  if (itemAdd.value?.categoryId == undefined) {
-    //新建菜单
-    addCategory({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
-      if (res.code == 200) {
-        ElMessage.success("新增菜单成功");
-        await hospitalConfigStore.generateNavs(queryParmas);
-        innitParentOption();
-        innitEditorList();
+const createCategoryConfirm = async () => {
+  let result = await categoryFormInstance.value.validate();
+  result && (function() {
+    if (itemAdd.value?.categoryId == undefined) {
+      //新建菜单
+      addCategory({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
+        if (res.code == 200) {
+          ElMessage.success("新增菜单成功");
+          await hospitalConfigStore.generateNavs(queryParmas);
+          innitParentOption();
+          innitEditorList();
+          createCategoryShow.value = false;
+        }
+      }).catch(rej => {
+        ElMessage.error("新增失败");
+      }).finally(() => {
         createCategoryShow.value = false;
-      }
-    }).catch(rej => {
-      ElMessage.error("新增失败");
-    }).finally(() => {
-      createCategoryShow.value = false;
-      resetItemAdd();
-    });
-  } else {
-    changeCategoryItem({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
-      if (res.code == 200) {
-        ElMessage.success("修改菜单成功");
-        await hospitalConfigStore.generateNavs(queryParmas);
-        innitParentOption();
-        innitEditorList();
+        resetItemAdd();
+      });
+    } else {
+      changeCategoryItem({ ...Object.assign(itemAdd.value, queryParmas) }).then(async res => {
+        if (res.code == 200) {
+          ElMessage.success("修改菜单成功");
+          await hospitalConfigStore.generateNavs(queryParmas);
+          innitParentOption();
+          innitEditorList();
+          createCategoryShow.value = false;
+        }
+      }).catch(rej => {
+        ElMessage.error("修改失败");
+      }).finally(() => {
         createCategoryShow.value = false;
-      }
-    }).catch(rej => {
-      ElMessage.error("修改失败");
-    }).finally(() => {
-      createCategoryShow.value = false;
-      resetItemAdd();
-    });
-  }
+        resetItemAdd();
+      });
+    }
+  })();
 };
 const innitParentOption = () => {
   parentOptions.value = (navs.value.filter(item => {
@@ -275,8 +303,7 @@ const handleEditor = (row) => {
   disPid.value = true;
   resetItemAdd();
   createCategoryShow.value = true;
-  itemAdd.value = row;
-  console.log(row, "row");
+  itemAdd.value = { ...row };
   let { pid } = row;
   if (pid !== null) {
     isShowParent.value = true;
@@ -324,7 +351,6 @@ watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
     });
   }
 }, { immediate: true });
-
 onMounted(() => {
 });
 </script>

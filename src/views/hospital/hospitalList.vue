@@ -73,7 +73,9 @@ import { useRouter } from "vue-router";
 import customSwitch from "./components/publicComponent/switch.vue";
 import modal from "@/plugins/modal";
 import { ElMessage } from "element-plus";
+import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 
+const hospitalConfigStore = useHospitalConfigStore();
 const router = useRouter();
 //列表数据条数
 let total = ref(0);
@@ -116,6 +118,7 @@ const handleHospital = (data) => {
   if (data.status == "0") {
     ElMessage.error("当前医院为禁用状态");
   } else {
+    hospitalConfigStore.isShowComponent = true;
     router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
   }
 };

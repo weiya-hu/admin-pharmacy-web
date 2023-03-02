@@ -62,7 +62,7 @@
     v-model="isShowArticeDialog"
   >
     <div style="display: flex;justify-content: space-evenly">
-      <div>
+      <div style="padding-right: 50px;flex: 1">
         <createContentDialog
           @backToPhone="handleBackToPhone"
           ref="formInstance"
@@ -113,6 +113,7 @@ import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
 import { ElMessage } from "element-plus";
 import { _ } from "lodash";
+import { watch } from "vue";
 
 const params = ref({
   pageSize: 10,
@@ -125,6 +126,7 @@ const hospitalConfigStore = useHospitalConfigStore();
 let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
 let allTotal = computed(() => hospitalConfigStore.total);
+const activeBar = computed(() => hospitalConfigStore.activeBarInfo);
 const isShowArticeDialog = ref(false);
 const isShowPreview = ref(false);
 let previewPost = ref(null);
@@ -254,9 +256,13 @@ const handleEditor = (row) => {
     formInstance.value.handleReveal(row);
   });
 };
-
+watch(() => activeBar.value, () => {
+  keyword.value = "";
+}, {
+  immediate: true,
+  deep: true
+});
 </script>
-
 <style scoped lang="scss">
 .categoryList_outBox {
   padding: 0 20px;
