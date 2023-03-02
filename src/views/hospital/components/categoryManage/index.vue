@@ -25,7 +25,7 @@
           :tree-props="{children: 'childs'}"
         >
           <el-table-column prop="name" label="功能块名称" />
-          <el-table-column prop="code" label="编码" />
+          <el-table-column prop="createTime" label="创建时间" />
           <el-table-column prop="address" label="菜单等级">
             <template #default="scope">
               <span style="color:#8e8e9d;" v-if="scope.row.pid==null">一级菜单</span>
@@ -40,7 +40,8 @@
               </el-button>
               <el-button v-if="scope.row.pid!==null" @click="()=>handleEditor(scope.row)" link type="primary">编辑
               </el-button>
-              <!--              <el-button @click="()=>{deleteCategory(scope.row)}" link type="primary">删除</el-button>-->
+              <el-button v-if="scope.row.pid!==null" @click="()=>{deleteCategory(scope.row)}" link type="primary">删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -48,13 +49,13 @@
     </main>
     <el-dialog
       :title="addOrEditor?'新建菜单':'修改菜单'"
-      width="30%"
       append-to-body
       :close-on-click-modal="false"
       draggable
       center
       top="60vh"
       v-model="createCategoryShow"
+      width="20%"
     >
       <el-form label-width="180px">
         <el-form-item label="菜单等级:">
@@ -326,7 +327,6 @@ watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
 
 onMounted(() => {
 });
-
 </script>
 
 <style scoped lang="scss">
@@ -369,13 +369,14 @@ onMounted(() => {
 }
 
 .label::v-deep(.el-select-dropdown__item) {
-  &:hover {
-    border-color: red;
-  }
 }
 
 ::v-deep(.el-input) {
-  width: 500px !important;
+  width: 100% !important;
+}
+
+::v-deep(.el-select) {
+  width: 100% !important;
 }
 
 .manage {

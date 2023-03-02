@@ -30,7 +30,7 @@
                   <img :src="item.logo" />
                 </div>
                 <div class="name">
-                  {{ item.fullname }}
+                  {{ item.name }}
                 </div>
               </div>
               <div class="control">
@@ -72,6 +72,7 @@ import { banHospital, getHospitalList } from "@/api/hospital/hospitalList";
 import { useRouter } from "vue-router";
 import customSwitch from "./components/publicComponent/switch.vue";
 import modal from "@/plugins/modal";
+import { ElMessage } from "element-plus";
 
 const router = useRouter();
 //列表数据条数
@@ -112,7 +113,11 @@ const changePagination = (value) => {
 };
 //进入医院
 const handleHospital = (data) => {
-  router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
+  if (data.status == "0") {
+    ElMessage.error("当前医院为禁用状态");
+  } else {
+    router.push(`/hospital/hospitalConfig?corpId=${data.corpId}`);
+  }
 };
 //初始化列表数据
 const innitListData = async () => {
