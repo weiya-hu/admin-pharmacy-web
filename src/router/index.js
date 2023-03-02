@@ -58,26 +58,26 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: "/hospital",
-    component: Layout,
-    redirect: "/hospitalList",
-    meta: { title: "医院", icon: "dashboard" },
-    children: [
-      {
-        path: "hospitalList",
-        component: () => import("@/views/hospital/hospitalList"),
-        meta: { title: "医院列表", icon: "dashboard" },
-        name: "HospitalList"
-      },
-      {
-        path: "hospitalConfig",
-        component: () => import("@/views/hospital/hospitalConfig"),
-        name: "HospitalConfig",
-        hidden: true
-      }
-    ]
-  },
+  // {
+  //   path: "/hospital",
+  //   component: Layout,
+  //   redirect: "/hospitalList",
+  //   meta: { title: "医院", icon: "dashboard" },
+  //   children: [
+  //     {
+  //       path: "hospitalList",
+  //       component: () => import("@/views/hospital/hospitalList"),
+  //       meta: { title: "医院列表", icon: "dashboard" },
+  //       name: "HospitalList"
+  //     },
+  //     {
+  //       path: "hospitalConfig",
+  //       component: () => import("@/views/hospital/hospitalConfig"),
+  //       name: "HospitalConfig",
+  //       hidden: true
+  //     }
+  //   ]
+  // },
   {
     path: "/user",
     component: Layout,
