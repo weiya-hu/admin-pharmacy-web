@@ -131,7 +131,9 @@ const rules = reactive({
 })
 
 const handleChange = (val) => {
-  otherAsk.value = typeList.value.filter(item => item.qualificationType == val)[0].otherAsk
+  let filterData = typeList.value.filter(item => item.qualificationType == val)[0]
+  otherAsk.value = filterData.otherAsk
+  form.value.settlementId = filterData.settlementId
   if (otherAsk.value === 0) form.value.qualifications = []
 }
 
@@ -158,6 +160,7 @@ const getList = () => {
       let TypeData = res.data.filter(item => item.settlementId == form.value.settlementId)
       if (TypeData.length === 0) {
         form.value.qualificationType = null
+        form.value.qualifications = []
       }
     }
   })
