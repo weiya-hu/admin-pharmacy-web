@@ -19,7 +19,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const handleBack = () => {
-  router.replace("/hospital/hospitalList");
+  router.replace("/hospitalList");
 };
 </script>
 
