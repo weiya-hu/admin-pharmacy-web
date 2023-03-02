@@ -3,45 +3,45 @@
     <!--  筛选-->
     <div class="search-container">
       <el-form
-          v-show="showSearch"
-          ref="queryRef"
-          :inline="true"
-          :model="queryParams"
+        v-show="showSearch"
+        ref="queryRef"
+        :inline="true"
+        :model="queryParams"
       >
         <el-form-item label="签约日期">
           <el-date-picker
-              v-model="queryTime"
-              :shortcuts="shortcuts"
-              end-placeholder="结束日期"
-              range-separator="至"
-              start-placeholder="加入日期"
-              type="daterange"
-              value-format="YYYY-MM-DD"
-              @change="dateChange"
+            v-model="queryTime"
+            :shortcuts="shortcuts"
+            end-placeholder="结束日期"
+            range-separator="至"
+            start-placeholder="加入日期"
+            type="daterange"
+            value-format="YYYY-MM-DD"
+            @change="dateChange"
           />
         </el-form-item>
 
         <el-form-item>
           <el-select
-              v-model="queryParams.region"
-              class="m-2"
-              placeholder="所属区域"
-              @change="selectChange"
+            v-model="queryParams.region"
+            class="m-2"
+            placeholder="所属区域"
+            @change="selectChange"
           >
             <el-option
-                v-for="(item, index) in area"
-                :key="index"
-                :value="item"
+              v-for="(item, index) in area"
+              :key="index"
+              :value="item"
             />
           </el-select>
         </el-form-item>
 
         <el-form-item>
           <el-input
-              v-model="queryParams.queryQuickSearch"
-              placeholder="搜企业名称/联系人/联系电话"
-              style="width: 250px"
-              @change="inputChange"
+            v-model="queryParams.queryQuickSearch"
+            placeholder="搜企业名称/联系人/联系电话"
+            style="width: 250px"
+            @change="inputChange"
           />
         </el-form-item>
         <el-form-item>
@@ -54,23 +54,23 @@
       </el-form>
       <el-row :gutter="10" class="mb8">
         <right-toolbar
-            v-model:showSearch="showSearch"
-            show-loading
-            @queryTable="getList"
+          v-model:showSearch="showSearch"
+          show-loading
+          @queryTable="getList"
         ></right-toolbar>
         <el-button
-            icon="View"
-            style="margin-left: 20px"
-            type="warning"
-            @click="handleShare"
+          icon="View"
+          style="margin-left: 20px"
+          type="warning"
+          @click="handleShare"
         >分享
         </el-button>
 
         <el-button
-            icon="Plus"
-            style="margin-left: 20px"
-            type="primary"
-            @click="
+          icon="Plus"
+          style="margin-left: 20px"
+          type="primary"
+          @click="
             () => {
               addDialog = true;
               isSave = true;
@@ -86,74 +86,74 @@
     <div class="table-container">
       <el-table :data="deptList" stripe>
         <el-table-column
-            align="center"
-            label="企业名称"
-            prop="orgName"
-            show-overflow-tooltip
+          align="center"
+          label="企业名称"
+          prop="orgName"
+          show-overflow-tooltip
         >
           <template #default="scope">
             {{ scope.row.orgName ? scope.row.orgName : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="联系人"
-            prop="orgContactUser"
-            show-overflow-tooltip
+          align="center"
+          label="联系人"
+          prop="orgContactUser"
+          show-overflow-tooltip
         >
           <template #default="scope">
             {{ scope.row.orgContactUser ? scope.row.orgContactUser : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="联系电话"
-            prop="orgContactTel"
-            show-overflow-tooltip
+          align="center"
+          label="联系电话"
+          prop="orgContactTel"
+          show-overflow-tooltip
         >
           <template #default="scope">
             {{ scope.row.orgContactTel ? scope.row.orgContactTel : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="所属区域"
-            prop="orgRegion"
-            show-overflow-tooltip
+          align="center"
+          label="所属区域"
+          prop="orgRegion"
+          show-overflow-tooltip
         >
           <template #default="scope">
             {{ scope.row.orgRegion ? scope.row.orgRegion : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="详细地址"
-            prop="orgAddress"
-            show-overflow-tooltip
-            width="300"
+          align="center"
+          label="详细地址"
+          prop="orgAddress"
+          show-overflow-tooltip
+          width="300"
         >
           <template #default="scope">
             {{ scope.row.orgAddress ? scope.row.orgAddress : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="加入日期"
-            prop="joinDate"
-            show-overflow-tooltip
-            sortable
+          align="center"
+          label="加入日期"
+          prop="joinDate"
+          show-overflow-tooltip
+          sortable
         >
           <template #default="scope">
             {{ scope.row.joinDate ? scope.row.joinDate : "--" }}
           </template>
         </el-table-column>
         <el-table-column
-            align="center"
-            label="状态"
-            show-overflow-tooltip
+          align="center"
+          label="状态"
+          show-overflow-tooltip
         >
           <template #default="scope">
-            {{ scope.row.state == 'draft' ? '待激活' : scope.row.state == 'active' ? '启用' : '禁用' }}
+            {{ scope.row.state == "draft" ? "待激活" : scope.row.state == "active" ? "启用" : "禁用" }}
           </template>
         </el-table-column>
 
@@ -161,17 +161,17 @@
           <template #default="scope">
             <el-tooltip content="查看">
               <el-button
-                  :icon="View"
-                  size="large"
-                  text
-                  type="primary"
-                  @click="goSignRecord(scope.row)"
+                :icon="View"
+                size="large"
+                text
+                type="primary"
+                @click="goSignRecord(scope.row)"
               >
               </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="编辑" prop="pay" width="180">
+        <el-table-column align="center" label="编辑" prop="pay" width="240">
           <template #default="scope">
             <!--            <el-tooltip content="编辑信息">-->
             <!--              <el-button-->
@@ -195,7 +195,9 @@
             <!--              >-->
             <!--              </el-button>-->
             <!--            </el-tooltip>-->
-            <span style="cursor: pointer;color:#409EFF" @click="activeCorp(scope.row)">企业二维码</span>
+            <span style="cursor: pointer;color:#409EFF;margin-right: 20px"
+                  @click="activeCorp(scope.row)">企业二维码</span>
+            <span style="cursor: pointer;color:#409EFF" @click="()=>{importToHospital(scope.row)}">导入到医院</span>
 
           </template>
         </el-table-column>
@@ -205,11 +207,11 @@
 
     <!--    连接-->
     <el-dialog
-        v-model="dialogVisible"
-        :close-on-click-modal="true"
-        append-to-body
-        draggable
-        width="750px"
+      v-model="dialogVisible"
+      :close-on-click-modal="true"
+      append-to-body
+      draggable
+      width="750px"
     >
       <template #header>
         <span
@@ -224,11 +226,11 @@
 
     <!--    新建企业-->
     <el-dialog
-        v-model="addDialog"
-        :close-on-click-modal="true"
-        align-center
-        append-to-body
-        center
+      v-model="addDialog"
+      :close-on-click-modal="true"
+      align-center
+      append-to-body
+      center
     >
       <!--      表单-->
       <el-form ref="newCorp" :model="form" :rules="rules">
@@ -238,41 +240,41 @@
 
         <el-form-item label="统一社会信用代码" prop="creditCode">
           <el-input
-              v-model="form.creditCode"
-              placeholder="请输入统一社会信用代码"
+            v-model="form.creditCode"
+            placeholder="请输入统一社会信用代码"
           ></el-input>
         </el-form-item>
 
         <el-form-item label="企业类型" prop="corpType">
           <el-select v-model="form.corpType" placeholder="请选择企业类型">
             <el-option
-                v-for="item in corpType"
-                :label="item.label"
-                :value="item.value"
+              v-for="item in corpType"
+              :label="item.label"
+              :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="负责人" prop="createUserName">
           <el-input
-              v-model="form.createUserName"
-              placeholder="请输入负责人姓名"
+            v-model="form.createUserName"
+            placeholder="请输入负责人姓名"
           ></el-input>
         </el-form-item>
 
         <el-form-item label="负责人电话" prop="mobile">
           <el-input
-              v-model="form.mobile"
-              placeholder="请输入负责人电话"
-              @input="xxx"
+            v-model="form.mobile"
+            placeholder="请输入负责人电话"
+            @input="xxx"
           ></el-input>
         </el-form-item>
 
         <el-form-item prop="agree">
           <el-checkbox
-              v-model="agree"
-              label="请务必确认以上信息完全正确，错误信息会导致后续工作展开不便"
-              @change="handleAgree"
+            v-model="agree"
+            label="请务必确认以上信息完全正确，错误信息会导致后续工作展开不便"
+            @change="handleAgree"
           ></el-checkbox>
         </el-form-item>
       </el-form>
@@ -286,11 +288,11 @@
 
     <!--    激活码-->
     <el-dialog
-        v-model="showActive"
-        :close-on-click-modal="true"
-        align-center
-        append-to-body
-        center
+      v-model="showActive"
+      :close-on-click-modal="true"
+      align-center
+      append-to-body
+      center
     >
       <template #header
       >请将以下二维码截图发给客户，让客户激活系统权限
@@ -305,33 +307,33 @@
     </el-dialog>
 
     <pagination
-        v-show="total > 0"
-        v-model:limit="queryParams.pageSize"
-        v-model:page="queryParams.pageNum"
-        :total="total"
-        @pagination="getPagination"
+      v-show="total > 0"
+      v-model:limit="queryParams.pageSize"
+      v-model:page="queryParams.pageNum"
+      :total="total"
+      @pagination="getPagination"
     />
   </div>
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from "vue";
-import {View, Plus, Edit, Open} from "@element-plus/icons-vue";
-import {useRouter} from "vue-router";
+import { onMounted, reactive, ref } from "vue";
+import { View, Plus, Edit, Open } from "@element-plus/icons-vue";
+import { useRouter } from "vue-router";
 import {
   editCorp,
-  getMyCustomer,
+  getMyCustomer, importCorpToHospital,
   queryCorp,
   registCorp,
-  returnUrl,
+  returnUrl
 } from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
-import {ElLoading, ElMessage} from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const router = useRouter();
 const state = reactive({
-  url: "",
+  url: ""
 });
 
 const dialogVisible = ref(false);
@@ -342,16 +344,16 @@ const area = ref(["重庆", "北京", "成都", "陕西"]);
 const newCorp = ref(null);
 const form = ref({});
 const activeCorpId = ref("");
-const currentCorpId = ref('')
+const currentCorpId = ref("");
 const xxx = (val) => {
   form.value.mobile = val.replace(/[^0-9.]/g, "");
 };
-const oldPhone = ref('')
+const oldPhone = ref("");
 
 const corpType = [
-  {value: 3, label: "连锁药房"},
-  {value: 4, label: "药店"},
-  {value: 6, label: "定点医疗机构"},
+  { value: 3, label: "连锁药房" },
+  { value: 4, label: "药店" },
+  { value: 6, label: "定点医疗机构" }
 ];
 
 //自定义规则
@@ -372,24 +374,24 @@ const vaildators = {
     } else {
       cb();
     }
-  },
+  }
 };
 const rules = {
-  name: [{required: true, message: "必填", trigger: "blur"}],
+  name: [{ required: true, message: "必填", trigger: "blur" }],
   creditCode: [
     {
       required: true,
       validator: vaildators.validSocialCredit,
-      trigger: "blur",
-    },
+      trigger: "blur"
+    }
   ],
-  corpType: [{required: true, message: "必填", trigger: "blur"}],
-  authCode: [{required: true, trigger: "blur"}],
-  createUserName: [{required: true, message: "必填", trigger: "blur"}],
-  mobile: [{required: true, message: "必填", trigger: "blur"}],
+  corpType: [{ required: true, message: "必填", trigger: "blur" }],
+  authCode: [{ required: true, trigger: "blur" }],
+  createUserName: [{ required: true, message: "必填", trigger: "blur" }],
+  mobile: [{ required: true, message: "必填", trigger: "blur" }],
   agree: [
-    {required: true, trigger: "change", validator: vaildators.validAgree},
-  ],
+    { required: true, trigger: "change", validator: vaildators.validAgree }
+  ]
 };
 const agree = ref(false);
 //新增还是编辑
@@ -402,79 +404,79 @@ const handleAgree = (e) => {
 const save = () => {
   if (isSave.value) {
     newCorp.value
-        .validate()
-        .then((res) => {
-          registCorp(form.value).then((res) => {
-            if (res.code == 200) {
-              modal.msgSuccess({
-                message: "新建企业成功",
-              });
-              getDeptList(queryParams.value);
-              addDialog.value = false;
-              form.value = {};
-            }
-          });
-        })
-        .catch((err) => {
-          modal.msgError({
-            message: "请按红字提示排除错误",
-          });
+      .validate()
+      .then((res) => {
+        registCorp(form.value).then((res) => {
+          if (res.code == 200) {
+            modal.msgSuccess({
+              message: "新建企业成功"
+            });
+            getDeptList(queryParams.value);
+            addDialog.value = false;
+            form.value = {};
+          }
         });
+      })
+      .catch((err) => {
+        modal.msgError({
+          message: "请按红字提示排除错误"
+        });
+      });
   } else {
     newCorp.value
-        .validate()
-        .then(() => {
-          form.value.phone = form.value.mobile;
-          form.value.legalPerson = form.value.createUserName;
-          form.value.oldPhone = oldPhone.value;
-          form.value.corpId = currentCorpId.value
+      .validate()
+      .then(() => {
+        form.value.phone = form.value.mobile;
+        form.value.legalPerson = form.value.createUserName;
+        form.value.oldPhone = oldPhone.value;
+        form.value.corpId = currentCorpId.value;
 
-          editCorp(form.value)
-              .then((res) => {
-                if (res.code == 200) {
-                  modal.msgSuccess({
-                    message: "修改公司信息成功",
-                  });
-                  addDialog.value = false;
-                  getDeptList(queryParams.value);
-                  form.value = {};
-                }
-              })
-              .catch();
+        editCorp(form.value)
+          .then((res) => {
+            if (res.code == 200) {
+              modal.msgSuccess({
+                message: "修改公司信息成功"
+              });
+              addDialog.value = false;
+              getDeptList(queryParams.value);
+              form.value = {};
+            }
+          })
+          .catch();
+      })
+      .catch((err) =>
+        modal.msgError({
+          message: "请按红字提示排除错误"
         })
-        .catch((err) =>
-            modal.msgError({
-              message: "请按红字提示排除错误",
-            })
-        );
+      );
   }
 };
 
 //编辑公司(回填公司信息)
 const editCorpInfo = (row) => {
   isSave.value = false;
-  let {orgId} = row;
+  let { orgId } = row;
   currentCorpId.value = orgId;
   queryCorp(orgId)
-      .then((res) => {
-        if (res.code == 200) {
-          form.value = {
-            name: res.data.name,
-            creditCode: res.data.creditCode,
-            corpType: res.data.corpType,
-            createUserName: res.data.legalPerson,
-            mobile: res.data.phone,
-          };
-          oldPhone.value = res.data.phone
-          addDialog.value = true;
-        }
-      })
-      .catch();
+    .then((res) => {
+      if (res.code == 200) {
+        form.value = {
+          name: res.data.name,
+          creditCode: res.data.creditCode,
+          corpType: res.data.corpType,
+          createUserName: res.data.legalPerson,
+          mobile: res.data.phone
+        };
+        oldPhone.value = res.data.phone;
+        addDialog.value = true;
+      }
+    })
+    .catch();
 };
 
 //激活二维码
 const activeCorp = (row) => {
-  let {orgId} = row;
+  let { orgId } = row;
   queryCorp(orgId).then((res) => {
     if (res.code == 200) {
       if (res.data.state == "draft") {
@@ -482,13 +484,28 @@ const activeCorp = (row) => {
         activeCorpId.value = `http://db.yb.shanhaiping.com/empower?corpId=${orgId}`;
       } else {
         modal.msgWarning({
-          message: "该企业不能激活",
+          message: "该企业不能激活"
         });
       }
     }
   });
 };
+//导入企业到公众号后台医院列表当中
+const importToHospital = (row) => {
+  console.log(row);
+  let queryParams = { corpId: row.orgId };
+  console.log(queryParams);
+  try {
+    importCorpToHospital(queryParams).then(res => {
+      if (res.code == 200) {
+        ElMessage.success("导入成功");
+      }
+    });
+  } catch (error) {
+    ElMessage.error(error);
+  }
 
+};
 //快速切换时间
 const shortcuts = [
   {
@@ -498,7 +515,7 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
       return [start, end];
-    },
+    }
   },
   {
     text: "前一月",
@@ -507,7 +524,7 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
       return [start, end];
-    },
+    }
   },
   {
     text: "前一季度",
@@ -516,18 +533,18 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
       return [start, end];
-    },
-  },
+    }
+  }
 ];
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType: 2,
+  userType: 2
 });
 const defaultParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType: 2,
+  userType: 2
 });
 const showSearch = ref(true);
 const loading = ref(false);
@@ -548,21 +565,21 @@ const resetQuery = () => {
 };
 
 const goSignRecord = (row) => {
-  let {saleUserName, orgName, orgId} = row;
+  let { saleUserName, orgName, orgId } = row;
   router.push({
     path: "/insurance/customer/signRecord",
     query: {
       saleUserName,
       orgId,
-      orgName,
-    },
+      orgName
+    }
   });
 };
 
 // 分享
 const handleShare = () => {
   dialogVisible.value = true;
-  returnUrl({productId: "admin"}).then((res) => {
+  returnUrl({ productId: "admin" }).then((res) => {
     state.url = res.data;
   });
 };
@@ -594,22 +611,22 @@ const getDeptList = (params) => {
       modal.msgError({
         message: "获取客户失败",
         type: "error",
-        center: true,
+        center: true
       });
     }
   });
 };
 
 const getList = async (e) => {
-  console.log(e)
+  console.log(e);
   await getDeptList(queryParams.value);
   if (e.isLoading) {
-    e.instance.close()
+    e.instance.close();
   }
 };
 
 const getPagination = (e) => {
-  let {limit, page} = e;
+  let { limit, page } = e;
   queryParams.value.pageNum = page;
   queryParams.value.pageSize = limit;
   getDeptList(queryParams.value);

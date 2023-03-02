@@ -7,7 +7,7 @@ export function returnUrl(data) {
   return request({
     url: "/wecom/refereeRegister/returnUrl",
     method: "get",
-    params: data,
+    params: data
   });
 }
 
@@ -19,15 +19,15 @@ export function downLoadFile(file, type = "合同照片") {
     text: "下载中",
     lock: true,
     target: ".el-image-viewer__wrapper",
-    background: "rgba(0,0,0,0.8)",
+    background: "rgba(0,0,0,0.8)"
   });
   request({
     url: "/file/file/downloadFileByUrl",
     params: {
-      url: btoa(attachUrl),
+      url: btoa(attachUrl)
     },
     method: "get",
-    responseType: "blob",
+    responseType: "blob"
   })
     .then((res) => {
       const blobUrl = window.URL.createObjectURL(new Blob([res]));
@@ -53,23 +53,23 @@ export function downloadContract(file, offline = true) {
       fullscreen: true,
       text: "下载中，文件较大可能有延迟，请不要重复点击",
       lock: true,
-      background: "rgba(0,0,0,0.8)",
+      background: "rgba(0,0,0,0.8)"
     });
     request({
       url: "/hipp/hipp/applyinfo/download",
       method: "get",
       params: {
-        hippId: file.hippId,
-      },
+        hippId: file.hippId
+      }
     }).then((res) => {
       if (res.code == 200) {
         request({
           url: "/file/file/downloadFileByUrl",
           params: {
-            url: btoa(res.data),
+            url: btoa(res.data)
           },
           method: "get",
-          responseType: "blob",
+          responseType: "blob"
         })
           .then((res) => {
             const blobUrl = window.URL.createObjectURL(new Blob([res]));
@@ -93,17 +93,17 @@ export function downloadContract(file, offline = true) {
       fullscreen: true,
       text: "下载中",
       lock: true,
-      background: "rgba(0,0,0,0.8)",
+      background: "rgba(0,0,0,0.8)"
     });
     let arr = [];
     for (let i = 0; i < file.offLineContractFile.length; i++) {
       let promise = request({
         url: "/file/file/downloadFileByUrl",
         params: {
-          url: btoa(file.offLineContractFile[i].attachUrl),
+          url: btoa(file.offLineContractFile[i].attachUrl)
         },
         method: "get",
-        responseType: "blob",
+        responseType: "blob"
       });
       arr.push(promise);
     }
@@ -141,7 +141,7 @@ export const getMyCustomer = (params) => {
   return request({
     url: "/hipp/hipp/rel/getMyCustomer",
     method: "get",
-    params: params,
+    params: params
   });
 };
 
@@ -150,7 +150,7 @@ export const getHippList = (params) => {
   return request({
     url: "/hipp/admin/hipp/applyinfo/list",
     method: "get",
-    params: params,
+    params: params
   });
 };
 
@@ -159,7 +159,7 @@ export const getHippDetailList = (params) => {
   return request({
     url: "/hipp/admin/hipp/detail/list",
     method: "get",
-    params: params,
+    params: params
   });
 };
 
@@ -171,8 +171,8 @@ export const changeDetailStatus = (detailId, status, errReason = null) => {
     params: {
       detailId,
       status,
-      errReason,
-    },
+      errReason
+    }
   });
 };
 
@@ -181,7 +181,7 @@ export const getAuditHippList = (params) => {
   return request({
     url: "/hipp/admin/payOrderList",
     method: "get",
-    params,
+    params
   });
 };
 
@@ -192,8 +192,8 @@ export const auditPayment = (hippId, operation, errReason = null) => {
     params: {
       hippId,
       operation,
-      errReason,
-    },
+      errReason
+    }
   });
 };
 
@@ -201,7 +201,7 @@ export const auditPayment = (hippId, operation, errReason = null) => {
 export const getEssbasicOrg = () => {
   return request({
     url: "/hipp/hipp/applyinfo/initEssbasicOrg",
-    method: "get",
+    method: "get"
   });
 };
 
@@ -211,33 +211,41 @@ export const revokeAssignment = (hippId) => {
     url: "/hipp/hipp/applyinfo/essbasicCancelSign",
     method: "get",
     params: {
-      hippId: hippId,
-    },
+      hippId: hippId
+    }
   });
 };
 
 //销售注册企业
-export const registCorp = function (data) {
+export const registCorp = function(data) {
   return request({
     url: "/wecom/corpinfo/info/registerCorpToTenantWithoutLogin",
     method: "post",
-    data,
+    data
   });
 };
 
 //销售修改企业信息
-export const editCorp = function (data) {
+export const editCorp = function(data) {
   return request({
     url: "/wecom/corpinfo/info",
     method: "put",
-    data,
+    data
   });
 };
 
 //查询公司信息
-export const queryCorp = function (corpId) {
+export const queryCorp = function(corpId) {
   return request({
     url: `/wecom/corpinfo/info/${corpId}`,
+    method: "get"
+  });
+};
+//导入企业到医院
+export const importCorpToHospital = function(data) {
+  return request({
+    url: `/hipp/hipp/admin/hospital/defined/post/importMsg`,
     method: "get",
+    params: data
   });
 };
