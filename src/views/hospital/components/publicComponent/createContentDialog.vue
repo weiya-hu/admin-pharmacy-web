@@ -179,7 +179,7 @@ const handleReveal = (receiveData) => {
     post,
     thumbnail
   } = receiveData;
-  post = _.unescape(post);
+  post = _.unescape(_.unescape(post));
   uploadFile.value = [];
   if (thumbnail !== "") {
     uploadFile.value.push({ url: thumbnail });

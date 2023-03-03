@@ -155,7 +155,7 @@ const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig)
 //手机预览
 const handlePreview = ($event) => {
   isShowPreview.value = true;
-  previewPost.value = _.unescape($event.post);
+  previewPost.value = _.unescape(_.unescape($event.post));
 };
 const handleBackToPhone = (value) => {
   previewPost.value = value;
