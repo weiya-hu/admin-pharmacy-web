@@ -150,7 +150,7 @@ const validateForm = async () => {
 };
 const handleRemove = (file) => {
   uploadFile.value = [];
-  queryParames.value.thumbnail = null;
+  queryParames.value.thumbnail = "";
   dialogImageUrl.value = null;
   uploadInstance.value.handleRemove(file);
 

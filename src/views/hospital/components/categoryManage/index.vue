@@ -446,6 +446,7 @@ onMounted(() => {
 
 .manage {
   padding: 0 20px;
+  width: calc(100% - 200px);
 
   .head {
     display: flex;
