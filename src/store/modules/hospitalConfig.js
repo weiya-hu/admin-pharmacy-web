@@ -86,34 +86,64 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
       //  初始化列表展示配置和富文本默认展示
       this.innitShowConfig();
     },
-    innitShowConfig() {
-      switch (this.activeParentBarInfo.code) {
-        case "HOSPITAL_PROFILE":
-          this.publicTableConfig = configTableMap.get("HOSPITAL_PROFILE");
-          this.publicEditorDefault = configHtmlMap.get("HOSPITAL_PROFILE");
-          break;
-        case "DEPARTMENT_MANAGEMENT":
-          this.publicTableConfig = configTableMap.get("DEPARTMENT_MANAGEMENT");
-          this.publicEditorDefault = configHtmlMap.get("DEPARTMENT_MANAGEMENT");
-          break;
-        case "PHYSICIAN_MANAGEMENT":
-          this.publicTableConfig = configTableMap.get("PHYSICIAN_MANAGEMENT");
-          this.publicEditorDefault = configHtmlMap.get("PHYSICIAN_MANAGEMENT");
-          break;
-        case "MEDICAL_INSURANCE":
-          this.publicTableConfig = configTableMap.get("MEDICAL_INSURANCE");
-          this.publicEditorDefault = configHtmlMap.get("MEDICAL_INSURANCE");
-          break;
-        case "MEDICAL_GUIDE":
-          this.publicTableConfig = configTableMap.get("MEDICAL_GUIDE");
-          this.publicEditorDefault = configHtmlMap.get("MEDICAL_GUIDE");
-          break;
-        case "MEDICAL_TRENDS":
-          this.publicTableConfig = configTableMap.get("MEDICAL_TRENDS");
-          this.publicEditorDefault = configHtmlMap.get("MEDICAL_TRENDS");
-          break;
+    innitShowConfig(code = null) {
+      if (code == null) {
+        switch (this.activeParentBarInfo.code) {
+          case "HOSPITAL_PROFILE":
+            this.publicTableConfig = configTableMap.get("HOSPITAL_PROFILE");
+            this.publicEditorDefault = configHtmlMap.get("HOSPITAL_PROFILE");
+            break;
+          case "DEPARTMENT_MANAGEMENT":
+            this.publicTableConfig = configTableMap.get("DEPARTMENT_MANAGEMENT");
+            this.publicEditorDefault = configHtmlMap.get("DEPARTMENT_MANAGEMENT");
+            break;
+          case "PHYSICIAN_MANAGEMENT":
+            this.publicTableConfig = configTableMap.get("PHYSICIAN_MANAGEMENT");
+            this.publicEditorDefault = configHtmlMap.get("PHYSICIAN_MANAGEMENT");
+            break;
+          case "MEDICAL_INSURANCE":
+            this.publicTableConfig = configTableMap.get("MEDICAL_INSURANCE");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_INSURANCE");
+            break;
+          case "MEDICAL_GUIDE":
+            this.publicTableConfig = configTableMap.get("MEDICAL_GUIDE");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_GUIDE");
+            break;
+          case "MEDICAL_TRENDS":
+            this.publicTableConfig = configTableMap.get("MEDICAL_TRENDS");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_TRENDS");
+            break;
+        }
+      } else {
+        switch (code) {
+          case "HOSPITAL_PROFILE":
+            this.publicTableConfig = configTableMap.get("HOSPITAL_PROFILE");
+            this.publicEditorDefault = configHtmlMap.get("HOSPITAL_PROFILE");
+            break;
+          case "DEPARTMENT_MANAGEMENT":
+            this.publicTableConfig = configTableMap.get("DEPARTMENT_MANAGEMENT");
+            this.publicEditorDefault = configHtmlMap.get("DEPARTMENT_MANAGEMENT");
+            break;
+          case "PHYSICIAN_MANAGEMENT":
+            this.publicTableConfig = configTableMap.get("PHYSICIAN_MANAGEMENT");
+            this.publicEditorDefault = configHtmlMap.get("PHYSICIAN_MANAGEMENT");
+            break;
+          case "MEDICAL_INSURANCE":
+            this.publicTableConfig = configTableMap.get("MEDICAL_INSURANCE");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_INSURANCE");
+            break;
+          case "MEDICAL_GUIDE":
+            this.publicTableConfig = configTableMap.get("MEDICAL_GUIDE");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_GUIDE");
+            break;
+          case "MEDICAL_TRENDS":
+            this.publicTableConfig = configTableMap.get("MEDICAL_TRENDS");
+            this.publicEditorDefault = configHtmlMap.get("MEDICAL_TRENDS");
+            break;
+        }
       }
-    },
+    }
+    ,
     filterCategory(data) {
       searchCategory(data).then(res => {
         if (res.code == 200) {

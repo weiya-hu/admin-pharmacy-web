@@ -234,8 +234,8 @@
     >
       <!--      表单-->
       <el-form ref="newCorp" :model="form" :rules="rules">
-        <el-form-item label="企业全程" prop="name">
-          <el-input v-model="form.name" placeholder="请输入企业全程"></el-input>
+        <el-form-item label="企业全称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入企业全称"></el-input>
         </el-form-item>
 
         <el-form-item label="统一社会信用代码" prop="creditCode">

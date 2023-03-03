@@ -107,3 +107,12 @@ export function changeEditorItem(data) {
     data: data
   });
 }
+
+//获取富文本详细信息
+export function geteEditorDetail(data) {
+  return request({
+    url: "/hipp/hipp/admin/hospital/post/detail",
+    method: "get",
+    params: data
+  });
+}

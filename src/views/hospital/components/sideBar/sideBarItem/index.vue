@@ -36,7 +36,6 @@ const changeCategory = ($event, nav) => {
   }
   hospitalConfigStore.changeActiveBarInfo(props.nav);
 };
-
 </script>
 
 <style scoped lang="scss">

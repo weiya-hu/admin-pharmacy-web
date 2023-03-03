@@ -114,7 +114,10 @@ import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospita
 import { ElMessage } from "element-plus";
 import { _ } from "lodash";
 import { watch } from "vue";
+import router from "@/router";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const params = ref({
   pageSize: 10,
   pageNum: 1
@@ -127,6 +130,7 @@ let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
 let allTotal = computed(() => hospitalConfigStore.total);
 const activeBar = computed(() => hospitalConfigStore.activeBarInfo);
+let activeParentBarInfo = computed(() => hospitalConfigStore.activeParentBarInfo);
 const isShowArticeDialog = ref(false);
 const isShowPreview = ref(false);
 let previewPost = ref(null);
@@ -139,12 +143,13 @@ const getPagination = (value) => {
 };
 //新建文章
 const createArticle = () => {
-  isAddOrPut.value = true;
-  isShowArticeDialog.value = true;
-  nextTick(() => {
-    formInstance.value.clearForm();
-    hospitalConfigStore.innitShowConfig();
-  });
+  router.push(`/hospital/articledetail?code=${activeParentBarInfo.value.code}&corpId=${route.query.corpId}`);
+  // isAddOrPut.value = true;
+  // isShowArticeDialog.value = true;
+  // nextTick(() => {
+  //   formInstance.value.clearForm();
+  //   hospitalConfigStore.innitShowConfig();
+  // });
 };
 const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig);
 //手机预览
@@ -252,11 +257,14 @@ const handleWithdrawn = (row) => {
 };
 //点击编辑
 const handleEditor = (row) => {
-  isAddOrPut.value = false;
-  isShowArticeDialog.value = true;
-  nextTick(() => {
-    formInstance.value.handleReveal(_.cloneDeep(row));
-  });
+  // isAddOrPut.value = false;
+  // isShowArticeDialog.value = true;
+  // nextTick(() => {
+  //   formInstance.value.handleReveal(_.cloneDeep(row));
+  // });
+
+  router.push(`/hospital/articledetail?postId=${row.postId}&corpId=${route.query.corpId}`);
+
 };
 watch(() => activeBar.value, () => {
   keyword.value = "";
