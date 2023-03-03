@@ -7,7 +7,9 @@
       :unique-opened="true"
       active-text-color="#409EFF"
       :collapse-transition="false"
+      :default-active="activeCategoryId"
       mode="vertical"
+      @open="handleActiveBar"
     >
       <template v-for="nav in navs">
         <sideBarItem
@@ -26,7 +28,7 @@ import useAppStore from "@/store/modules/app";
 import useSettingsStore from "@/store/modules/settings";
 import usePermissionStore from "@/store/modules/permission";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
-import { computed, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -36,12 +38,28 @@ const hospitalConfigStore = useHospitalConfigStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);
 const navs = computed(() => hospitalConfigStore.allActiveNav);
-const activeMenu = computed(() => {
-  const { meta, path } = route;
-  if (meta.activeMenu) {
-    return meta.activeMenu;
+const responseNav = computed(() => hospitalConfigStore.category);
+const activeCategoryId = ref(null);
+const handleActiveBar = () => {
+  activeCategoryId.value = JSON.parse(sessionStorage.getItem("activeBar")).categoryId;
+  let categoryIdArray = responseNav.value.map(item => {
+    return item.categoryId;
+  });
+  !categoryIdArray.includes(activeCategoryId.value) && (function() {
+    if (activeCategoryId.value == "01") {
+      hospitalConfigStore.changeComponentShow(true);
+    } else {
+      hospitalConfigStore.changeComponentShow(false);
+      hospitalConfigStore.changeActiveBarInfo(JSON.parse(sessionStorage.getItem("activeBar")));
+    }
+  })();
+};
+onMounted(() => {
+  if (JSON.parse(sessionStorage.getItem("activeBar"))?.categoryId) {
+    activeCategoryId.value = JSON.parse(sessionStorage.getItem("activeBar")).categoryId;
+  } else {
+    activeCategoryId.value = null;
   }
-  return path;
 });
 </script>
 

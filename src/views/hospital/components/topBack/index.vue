@@ -19,6 +19,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 const handleBack = () => {
+  sessionStorage.removeItem("activeBar");
   router.replace("/hospitalList");
 };
 </script>

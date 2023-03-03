@@ -31,10 +31,11 @@ const props = defineProps({
 const changeCategory = ($event, nav) => {
   if (props.nav.name !== "栏目管理") {
     hospitalConfigStore.changeComponentShow(false);
+    hospitalConfigStore.changeActiveBarInfo(props.nav);
   } else {
     hospitalConfigStore.changeComponentShow(true);
   }
-  hospitalConfigStore.changeActiveBarInfo(props.nav);
+  sessionStorage.setItem("activeBar", JSON.stringify(props.nav));
 };
 </script>
 
