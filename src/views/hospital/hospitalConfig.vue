@@ -32,7 +32,6 @@ let isShowComponent = computed(() => hospitalConfigStore.isShowComponent);
 .config_box {
   padding: 0 10px;
   width: 100%;
-  height: 100vh;
   display: flex;
 
   .header {
@@ -40,7 +39,6 @@ let isShowComponent = computed(() => hospitalConfigStore.isShowComponent);
 
   .content {
     flex: 1;
-    height: 100%;
     display: flex;
     flex-direction: column;
 
