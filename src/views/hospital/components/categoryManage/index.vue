@@ -26,6 +26,7 @@
         >
           <el-table-column prop="name" label="功能块名称" />
           <el-table-column prop="createTime" label="创建时间" />
+          <el-table-column prop="code" label="编码" />
           <el-table-column prop="address" label="菜单等级">
             <template #default="scope">
               <span style="color:#8e8e9d;" v-if="scope.row.pid==null">一级菜单</span>
