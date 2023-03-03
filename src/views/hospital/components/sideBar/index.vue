@@ -48,7 +48,9 @@ const activeMenu = computed(() => {
 <style scoped lang="scss">
 .navbar {
   width: 200px;
-  height: 100%;
+  height: 100vh;
+  background-color: #f9f9f9;
+  overflow: auto;
 }
 
 </style>
