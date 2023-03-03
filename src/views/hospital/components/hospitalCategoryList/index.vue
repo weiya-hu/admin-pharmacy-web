@@ -276,7 +276,7 @@ watch(() => activeBar.value, () => {
 <style scoped lang="scss">
 .categoryList_outBox {
   padding: 0 20px;
-  width: calc(100% - 200px);
+  width: calc(100% - 20px);
 
   .head {
     display: flex;
