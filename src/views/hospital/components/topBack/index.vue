@@ -25,10 +25,8 @@ const handleBack = () => {
 
 <style scoped lang="scss">
 .back_box {
+  background-color: #ffffff;
   width: 100%;
-  height: 150px;
-  padding: 20px 15px 0 15px;
-  background-color: #304156;
 
   .title {
     font-size: 25px;

@@ -1,12 +1,11 @@
 <template>
   <div class="navbar">
     <el-menu
-      style="height: 100%"
-      :default-active="activeMenu"
-      :background-color="sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground"
-      :text-color="sideTheme === 'theme-dark' ? variables.menuColor : variables.menuLightColor"
+      style="height: 100%;font-weight: 600;font-size: 14pt"
+      background-color="#f9f9f9"
+      text-color="#333333"
       :unique-opened="true"
-      :active-text-color="theme"
+      active-text-color="#409EFF"
       :collapse-transition="false"
       mode="vertical"
     >

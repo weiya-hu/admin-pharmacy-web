@@ -1,11 +1,11 @@
 <template>
   <div class="config_box">
-    <div class="header">
-      <topBack />
+    <div class="sideBar">
+      <sideBar></sideBar>
     </div>
     <div class="content">
-      <div class="sideBar">
-        <sideBar></sideBar>
+      <div class="back">
+        <topBack />
       </div>
       <div class="main">
         <component :is="isShowComponent?categoryManage:hospitalCategoryList">
@@ -34,7 +34,6 @@ let isShowComponent = computed(() => hospitalConfigStore.isShowComponent);
   width: 100%;
   height: 100vh;
   display: flex;
-  flex-direction: column;
 
   .header {
   }
@@ -43,7 +42,7 @@ let isShowComponent = computed(() => hospitalConfigStore.isShowComponent);
     flex: 1;
     height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
     .sideBar {
       height: 100%;
