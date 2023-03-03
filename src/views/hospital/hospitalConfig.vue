@@ -46,13 +46,11 @@ let isShowComponent = computed(() => hospitalConfigStore.isShowComponent);
 
     .sideBar {
       height: 100%;
-      flex: 1;
     }
 
     .main {
       width: 100%;
       height: 100%;
-      flex: 9
     }
   }
 }
