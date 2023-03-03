@@ -156,23 +156,25 @@ const handleBackToPhone = (value) => {
   previewPost.value = value;
 };
 //新增内容
-const addCategoryArticle = () => {
-  try {
-    let result = formInstance.value.sendQueryParams();
-    result.post = _.escape(result.post);
-    addEditorItem({ ...result }).then(res => {
-      if (res.code == 200) {
-        ElMessage.success("新增内容成功");
-        filterPubliceTableDataList();
-      }
-    });
-    isShowArticeDialog.value = false;
-  } catch {
-    ElMessage.error("新增异常");
-    isShowArticeDialog.value = false;
-  } finally {
-    formInstance.value.clearForm();
-  }
+const addCategoryArticle = async () => {
+  await formInstance.value.validateForm() && (function() {
+    try {
+      let result = formInstance.value.sendQueryParams();
+      result.post = _.escape(result.post);
+      addEditorItem({ ...result }).then(res => {
+        if (res.code == 200) {
+          ElMessage.success("新增内容成功");
+          filterPubliceTableDataList();
+        }
+      });
+      isShowArticeDialog.value = false;
+    } catch (error) {
+      ElMessage.error(error);
+      isShowArticeDialog.value = false;
+    } finally {
+      formInstance.value.clearForm();
+    }
+  })();
 };
 //过滤列表数据
 const filterPubliceTableDataList = () => {
@@ -253,7 +255,7 @@ const handleEditor = (row) => {
   isAddOrPut.value = false;
   isShowArticeDialog.value = true;
   nextTick(() => {
-    formInstance.value.handleReveal(row);
+    formInstance.value.handleReveal(_.cloneDeep(row));
   });
 };
 watch(() => activeBar.value, () => {
@@ -266,6 +268,7 @@ watch(() => activeBar.value, () => {
 <style scoped lang="scss">
 .categoryList_outBox {
   padding: 0 20px;
+  width: 100%;
 
   .head {
     display: flex;

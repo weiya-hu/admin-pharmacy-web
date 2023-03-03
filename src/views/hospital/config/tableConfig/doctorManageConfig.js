@@ -17,7 +17,7 @@ const tableConfig = {
     },
     { prop: "status", label: "状态", minWidth: "100", slotName: "status" },
 
-    { label: "操作", minWidth: "120", slotName: "handler" }
+    { label: "操作", minWidth: "120", slotName: "handler" ,fixed: "right"}
   ],
   showIndexColumn: true
 

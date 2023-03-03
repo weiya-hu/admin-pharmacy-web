@@ -36,7 +36,7 @@ const settingsStore = useSettingsStore();
 const hospitalConfigStore = useHospitalConfigStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);
-const navs = computed(() => hospitalConfigStore.navBar);
+const navs = computed(() => hospitalConfigStore.allActiveNav);
 const activeMenu = computed(() => {
   const { meta, path } = route;
   if (meta.activeMenu) {

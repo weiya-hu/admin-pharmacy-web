@@ -32,12 +32,27 @@
               <span style="color:#8e8e9d;" v-else>二级菜单</span>
             </template>
           </el-table-column>
+          <el-table-column prop="status" label="状态">
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.status"
+                @change="(value)=>{changeStatus(value,scope.row)}"
+                style="--el-switch-off-color: #ff4949;--el-switch-on-color: #13ce66"
+                size="small"
+                inline-prompt
+                :active-value="1"
+                :inactive-value="0"
+                active-text="启用"
+                inactive-text="禁用"
+              />
+            </template>
+          </el-table-column>
           <el-table-column prop="address" label="操作">
             <template #default="scope">
-              <el-button v-if="scope.row.status=='0'" @click="()=>handleEnable(scope.row)" link type="primary">启用
-              </el-button>
-              <el-button v-if="scope.row.status=='1'" @click="()=>handleProhibition(scope.row)" link type="danger">禁用
-              </el-button>
+              <!--              <el-button v-if="scope.row.status=='0'" @click="()=>handleEnable(scope.row)" link type="primary">启用-->
+              <!--              </el-button>-->
+              <!--              <el-button v-if="scope.row.status=='1'" @click="()=>handleProhibition(scope.row)" link type="danger">禁用-->
+              <!--              </el-button>-->
               <el-button v-if="scope.row.pid!==null" @click="()=>handleEditor(scope.row)" link type="primary">编辑
               </el-button>
               <!--              <el-button v-if="scope.row.pid!==null" @click="()=>{deleteCategory(scope.row)}" link type="primary">删除-->
@@ -265,20 +280,43 @@ const innitParentOption = () => {
 const innitEditorList = () => {
   tableData.value = dataList.value;
 };
+const changeStatus = (status, row) => {
+  if (row.pid == null && row.childs?.length !== 0) {
+    if (status == 1) {
+      handleEnable(row);
+      row.childs.forEach(item => {
+        handleEnable(item);
+      });
+    } else {
+      handleProhibition(row);
+      row.childs.forEach(item => {
+        handleProhibition(item);
+      });
+    }
+  } else {
+    if (status == 1) {
+      handleEnable(row);
+    } else {
+      handleProhibition(row);
+    }
+  }
+
+
+};
 //菜单启用
 const handleEnable = (row) => {
   row.status = "1";
   try {
     changeCategoryItem({ ...row }).then(async res => {
       if (res.code == 200) {
-        ElMessage.success("菜单启用成功");
+        // ElMessage.success("菜单启用成功");
         await hospitalConfigStore.generateNavs(queryParmas);
         innitParentOption();
         innitEditorList();
       }
     });
   } catch {
-    ElMessage.error("菜单启用失败");
+    // ElMessage.error("菜单启用失败");
   }
 };
 //菜单禁用
@@ -287,14 +325,14 @@ const handleProhibition = (row) => {
   try {
     changeCategoryItem({ ...row }).then(async res => {
       if (res.code == 200) {
-        ElMessage.success("菜单禁用成功");
+        // ElMessage.success("菜单禁用成功");
         await hospitalConfigStore.generateNavs(queryParmas);
         innitParentOption();
         innitEditorList();
       }
     });
   } catch {
-    ElMessage.error("菜单禁用失败");
+    // ElMessage.error("菜单禁用失败");
   }
 };
 //菜单编辑

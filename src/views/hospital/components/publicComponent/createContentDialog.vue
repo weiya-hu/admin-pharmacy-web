@@ -1,17 +1,19 @@
 <template>
   <!--  新增二级菜单下的内容选项  -->
   <div class="dialog_form">
-    <el-form label-width="100px">
-      <el-form-item label="标题:">
+    <el-form :rules="categoryArticleRuler" ref="categoryArticleInstance" :model="queryParames" label-width="100px">
+      <el-form-item label="标题:" prop="title">
         <el-input placeholder="64字以内" v-model="queryParames.title"></el-input>
       </el-form-item>
       <el-form-item label="封面图:">
         <el-upload
+          accept="image/jpeg,image/png,image/bmp,image/jpg,image/jif"
           ref="uploadInstance"
           :data="data"
           :headers="headers"
           :action="hostUrl"
           :on-success="upSuccess"
+          :on-change="upChange"
           :on-exceed="exceed"
           :file-list="uploadFile" :limit="1" list-type="picture-card" :auto-upload="true">
           <el-icon>
@@ -48,7 +50,7 @@
       <!--      <el-form-item label="版本:">-->
       <!--        <el-input></el-input>-->
       <!--      </el-form-item>-->
-      <el-form-item label="正文:">
+      <el-form-item label="正文:" prop="post">
         <div class="editor">
           <WangEditor
             v-model="queryParames.post"
@@ -82,6 +84,7 @@ const dialogVisible = ref(false);
 const disabled = ref(false);
 const hospitalConfigStore = useHospitalConfigStore();
 const defaultHtml = computed(() => hospitalConfigStore.publicEditorDefault);
+const categoryArticleInstance = ref();
 let queryParames = ref({
   categoryId: "",//类型主键
   corpId: "",//企业ID
@@ -90,6 +93,22 @@ let queryParames = ref({
   thumbnail: "",//缩略图
   title: "",//标题
   top: ""//是否置顶;1：是；2：否
+});
+const categoryArticleRuler = ref({
+  title: [
+    {
+      required: true,
+      message: "请输入标题名称",
+      trigger: "blur"
+    }
+  ],
+  post: [
+    {
+      required: true,
+      message: "请填写文章内容",
+      trigger: "blur"
+    }
+  ]
 });
 const clearForm = () => {
   uploadFile.value = [];
@@ -105,9 +124,29 @@ const clearForm = () => {
   };
 };
 const wangEditorInstance = shallowRef(null);
+const upChange = async (file, list) => {
+  if (!file.name || file.status === "fail") {
+    return;
+  }
+  const tmpcnt = file.name.lastIndexOf(".");
+  const exname = file.name.substring(tmpcnt);
+  const names = [".jpeg", ".png", ".bmp", ".jpg", ".jif"];
+  if (!names.includes(exname)) {
+    ElMessage.error(`请上传${names.join(",")}格式的文件`);
+    uploadInstance.value.handleRemove(file);
+  } else if (file.size && file.size / 1024 / 1024 > 5) {
+    ElMessage.error(`请上传小于5M的文件`);
+    uploadInstance.value.handleRemove(file);
+  } else {
+    return;
+  }
+};
 const sendQueryParams = () => {
   let { categoryId, corpId } = hospitalConfigStore.activeBarInfo;
   return { ...queryParames.value, categoryId, corpId };
+};
+const validateForm = async () => {
+  return await categoryArticleInstance.value.validate();
 };
 const handleRemove = (file) => {
   uploadFile.value = [];
@@ -157,6 +196,7 @@ watch(() => queryParames.value.post, () => {
   immediate: true
 });
 defineExpose({
+  validateForm,
   sendQueryParams,
   clearForm,
   handleReveal

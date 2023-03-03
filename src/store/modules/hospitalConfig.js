@@ -10,6 +10,7 @@ const modules = import.meta.glob("./../../views/**/*.vue");
 import configHtmlMap from "@/views/hospital/config/htmlDefulteConfig";
 import configTableMap from "@/views/hospital/config/tableConfig";
 import { useRouter } from "vue-router";
+import { _ } from "lodash";
 
 const useHospitalConfigStore = defineStore("hospitalConfig", {
   state: () => ({
@@ -27,14 +28,33 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
     categoryDataList: [],
     publicTableConfig: {},
     publicEditorDefault: "",
+    allActiveNav: [],
     total: 0
   }), actions: {
+    filterNavStatusBar(nav) {
+      let cloneNav = _.cloneDeep(nav);
+      let newNav = [];
+      cloneNav.map(item => {
+        if (item.status !== 0) {
+          if (item.hasOwnProperty("childs")) {
+            item.childs = item.childs.filter(nextItem => {
+              return nextItem.status !== 0;
+            });
+          }
+          newNav.push(item);
+        }
+      });
+      return newNav;
+    },
     //获取功能导航
     generateNavs(query) {
       return new Promise((resolve, reject) => {
         try {
           getHospitalCategoryTree(query).then(res => {
             if (res.code == 200) {
+              this.allActiveNav = [];
+              this.allActiveNav = this.hasCategory.concat(this.filterNavStatusBar(res.data));
+              console.log(this.allActiveNav);
               this.category = res.data;
               this.navBar = this.hasCategory.concat(res.data);
               resolve(true);
@@ -44,7 +64,8 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
           reject(new Error("请求失败"));
         }
       });
-    }, //  改变组件展示
+    },
+    //  改变组件展示
     changeComponentShow(isShow) {
       this.isShowComponent = isShow;
     }, //  选中bar的基本信息
