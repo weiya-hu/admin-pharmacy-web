@@ -47,7 +47,7 @@
         <el-form-item>
           <div class="search-item"></div>
           <el-button icon="Search" type="primary" @click="handleQuery"
-          >搜索
+            >搜索
           </el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
@@ -63,7 +63,7 @@
           style="margin-left: 20px"
           type="warning"
           @click="handleShare"
-        >分享
+          >分享
         </el-button>
 
         <el-button
@@ -74,10 +74,10 @@
             () => {
               addDialog = true;
               isSave = true;
-              form={}
+              form = {};
             }
           "
-        >新建企业
+          >新建企业
         </el-button>
       </el-row>
     </div>
@@ -147,13 +147,15 @@
             {{ scope.row.joinDate ? scope.row.joinDate : "--" }}
           </template>
         </el-table-column>
-        <el-table-column
-          align="center"
-          label="状态"
-          show-overflow-tooltip
-        >
+        <el-table-column align="center" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            {{ scope.row.state == "draft" ? "待激活" : scope.row.state == "active" ? "启用" : "禁用" }}
+            {{
+              scope.row.state == "draft"
+                ? "待激活"
+                : scope.row.state == "active"
+                ? "启用"
+                : "禁用"
+            }}
           </template>
         </el-table-column>
 
@@ -169,8 +171,12 @@
             <!--              >-->
             <!--              </el-button>-->
             <!--            </el-tooltip>-->
-            <span v-if="scope.row.state=='active'" style="cursor: pointer;color:#409EFF"
-                  @click="goSignRecord(scope.row)">查看</span>
+            <span
+              v-if="scope.row.state == 'active'"
+              style="cursor: pointer; color: #409eff"
+              @click="goSignRecord(scope.row)"
+              >查看</span
+            >
             <span v-else>--</span>
           </template>
         </el-table-column>
@@ -186,7 +192,11 @@
             <!--              >-->
             <!--              </el-button>-->
             <!--            </el-tooltip>-->
-            <span style="cursor: pointer;color:#409EFF;margin-right: 20px" @click="editCorpInfo(scope.row)">编辑</span>
+            <span
+              style="cursor: pointer; color: #409eff; margin-right: 20px"
+              @click="editCorpInfo(scope.row)"
+              >编辑</span
+            >
 
             <!--            <el-tooltip content="企业二维码">-->
             <!--              <el-button-->
@@ -198,13 +208,22 @@
             <!--              >-->
             <!--              </el-button>-->
             <!--            </el-tooltip>-->
-            <span style="cursor: pointer;color:#409EFF;margin-right: 20px"
-                  @click="activeCorp(scope.row)">企业二维码</span>
-            <span style="cursor: pointer;color:#409EFF" @click="()=>{importToHospital(scope.row)}">导入到医院</span>
-
+            <span
+              style="cursor: pointer; color: #409eff; margin-right: 20px"
+              @click="activeCorp(scope.row)"
+              >企业二维码</span
+            >
+            <span
+              style="cursor: pointer; color: #409eff"
+              @click="
+                () => {
+                  importToHospital(scope.row);
+                }
+              "
+              >导入到医院</span
+            >
           </template>
         </el-table-column>
-
       </el-table>
     </div>
 
@@ -218,7 +237,7 @@
     >
       <template #header>
         <span
-        >下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span
+          >下方是您的专属邀请链接，复制并分享给客户，客户通过此链接进行申请，即为您的业绩</span
         >
       </template>
       <div>
@@ -259,7 +278,11 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="form.corpType===6" label="企业类型" prop="orgLevel">
+        <el-form-item
+          v-if="form.corpType === 6"
+          label="企业类型"
+          prop="orgLevel"
+        >
           <el-select v-model="form.orgLevel" placeholder="请选择医疗机构等级">
             <el-option
               v-for="item in orgLevel"
@@ -268,7 +291,6 @@
             ></el-option>
           </el-select>
         </el-form-item>
-
 
         <el-form-item label="负责人" prop="createUserName">
           <el-input
@@ -297,7 +319,7 @@
 
       <div style="display: flex; justify-content: center">
         <el-button style="text-align: center" type="primary" @click="save"
-        >保存
+          >保存
         </el-button>
       </div>
     </el-dialog>
@@ -311,9 +333,8 @@
       center
     >
       <template #header
-      >请将以下二维码截图发给客户，让客户激活系统权限
-      </template
-      >
+        >请将以下二维码截图发给客户，让客户激活系统权限
+      </template>
       <div style="display: flex; justify-content: center">
         <vue-qr :size="200" :text="activeCorpId"></vue-qr>
       </div>
@@ -338,10 +359,11 @@ import { View, Plus, Edit, Open } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import {
   editCorp,
-  getMyCustomer, importCorpToHospital,
+  getMyCustomer,
+  importCorpToHospital,
   queryCorp,
   registCorp,
-  returnUrl
+  returnUrl,
 } from "@/api/insurance/insurance";
 import modal from "@/plugins/modal";
 import { ElLoading, ElMessage } from "element-plus";
@@ -349,7 +371,7 @@ import vueQr from "vue-qr/src/packages/vue-qr.vue";
 
 const router = useRouter();
 const state = reactive({
-  url: ""
+  url: "",
 });
 
 const dialogVisible = ref(false);
@@ -369,14 +391,14 @@ const oldPhone = ref("");
 const corpType = [
   { value: 3, label: "连锁药房" },
   { value: 4, label: "药店" },
-  { value: 6, label: "定点医疗机构" }
+  { value: 6, label: "定点医疗机构" },
 ];
 
 const orgLevel = [
   { value: 1, label: "一级" },
   { value: 2, label: "二级" },
   { value: 3, label: "三级" },
-  { value: 4, label: "未定级" }
+  { value: 4, label: "未定级" },
 ];
 
 //自定义规则
@@ -397,7 +419,7 @@ const vaildators = {
     } else {
       cb();
     }
-  }
+  },
 };
 const rules = {
   name: [{ required: true, message: "必填", trigger: "blur" }],
@@ -405,19 +427,25 @@ const rules = {
     {
       required: true,
       validator: vaildators.validSocialCredit,
-      trigger: "blur"
-    }
+      trigger: "blur",
+    },
   ],
   corpType: [{ required: true, message: "必填", trigger: "blur" }],
   orgLevel: [{ required: true, message: "必填", trigger: "blur" }],
   authCode: [{ required: true, trigger: "blur" }],
   createUserName: [{ required: true, message: "必填", trigger: "blur" }],
-  mobile: [{ required: true, message: "必填", trigger: "blur" }, {
-    max: 11, min: 11, message: "请输入11位手机号", trigger: "blur"
-  }],
+  mobile: [
+    { required: true, message: "必填", trigger: "blur" },
+    {
+      max: 11,
+      min: 11,
+      message: "请输入11位手机号",
+      trigger: "blur",
+    },
+  ],
   agree: [
-    { required: true, trigger: "change", validator: vaildators.validAgree }
-  ]
+    { required: true, trigger: "change", validator: vaildators.validAgree },
+  ],
 };
 const agree = ref(false);
 //新增还是编辑
@@ -436,20 +464,27 @@ const save = () => {
     newCorp.value
       .validate()
       .then((res) => {
-        registCorp(form.value).then((res) => {
-          if (res.code == 200) {
-            modal.msgSuccess({
-              message: "新建企业成功"
+        modal
+          .confirm("确认当前录入的企业信息无误", "", "再看看")
+          .then((res) => {
+            registCorp(form.value).then((res) => {
+              if (res.code == 200) {
+                modal.msgSuccess({
+                  message: "新建企业成功",
+                });
+                getDeptList(queryParams.value);
+                addDialog.value = false;
+                form.value = {};
+                activeCorpId.value = `http://db.yb.shanhaiping.com/empower?corpId=${res.data.orgId}`;
+                showActive.value = true;
+              }
             });
-            getDeptList(queryParams.value);
-            addDialog.value = false;
-            form.value = {};
-          }
-        });
+          })
+          .catch((err) => {});
       })
       .catch((err) => {
         modal.msgError({
-          message: "请按红字提示排除错误"
+          message: "请按红字提示排除错误",
         });
       });
   } else {
@@ -465,7 +500,7 @@ const save = () => {
           .then((res) => {
             if (res.code == 200) {
               modal.msgSuccess({
-                message: "修改公司信息成功"
+                message: "修改公司信息成功",
               });
               addDialog.value = false;
               getDeptList(queryParams.value);
@@ -476,7 +511,7 @@ const save = () => {
       })
       .catch((err) =>
         modal.msgError({
-          message: "请按红字提示排除错误"
+          message: "请按红字提示排除错误",
         })
       );
   }
@@ -496,7 +531,7 @@ const editCorpInfo = (row) => {
           corpType: res.data.corpType,
           createUserName: res.data.legalPerson,
           mobile: res.data.phone,
-          orgLevel: res.data.orgLevel
+          orgLevel: res.data.orgLevel,
         };
         oldPhone.value = res.data.phone;
         addDialog.value = true;
@@ -510,14 +545,8 @@ const activeCorp = (row) => {
   let { orgId } = row;
   queryCorp(orgId).then((res) => {
     if (res.code == 200) {
-      if (res.data.state == "draft") {
-        showActive.value = true;
-        activeCorpId.value = `http://db.yb.shanhaiping.com/empower?corpId=${orgId}`;
-      } else {
-        modal.msgWarning({
-          message: "该企业不能激活"
-        });
-      }
+      showActive.value = true;
+      activeCorpId.value = `http://db.yb.shanhaiping.com/empower?corpId=${orgId}`;
     }
   });
 };
@@ -528,7 +557,7 @@ const importToHospital = (row) => {
   } else {
     let queryParams = { corpId: row.orgId };
     try {
-      importCorpToHospital(queryParams).then(res => {
+      importCorpToHospital(queryParams).then((res) => {
         if (res.code == 200) {
           ElMessage.success("导入成功");
         }
@@ -536,9 +565,7 @@ const importToHospital = (row) => {
     } catch (error) {
       ElMessage.error(error);
     }
-
   }
-
 };
 //快速切换时间
 const shortcuts = [
@@ -549,7 +576,7 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
       return [start, end];
-    }
+    },
   },
   {
     text: "前一月",
@@ -558,7 +585,7 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
       return [start, end];
-    }
+    },
   },
   {
     text: "前一季度",
@@ -567,18 +594,18 @@ const shortcuts = [
       const start = new Date();
       start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
       return [start, end];
-    }
-  }
+    },
+  },
 ];
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType: 2
+  userType: 2,
 });
 const defaultParams = ref({
   pageNum: 1,
   pageSize: 10,
-  userType: 2
+  userType: 2,
 });
 const showSearch = ref(true);
 const loading = ref(false);
@@ -605,8 +632,8 @@ const goSignRecord = (row) => {
     query: {
       saleUserName,
       orgId,
-      orgName
-    }
+      orgName,
+    },
   });
 };
 
@@ -645,7 +672,7 @@ const getDeptList = (params) => {
       modal.msgError({
         message: "获取客户失败",
         type: "error",
-        center: true
+        center: true,
       });
     }
   });
