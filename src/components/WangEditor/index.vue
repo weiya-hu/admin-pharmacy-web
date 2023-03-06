@@ -25,7 +25,7 @@
 
 <script setup>
 import "@wangeditor/editor/dist/css/style.css";
-import { onBeforeUnmount, ref, shallowRef, onMounted, watch } from "vue";
+import { onBeforeUnmount, ref, shallowRef, onMounted, watch, nextTick, getCurrentInstance } from "vue";
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 import { _ } from "lodash";
 import { getToken } from "@/utils/auth";
@@ -391,14 +391,14 @@ const handleCreated = editor => {
   }
 };
 const handleChange = editor => {
-  console.log(1);
+  console.log(editor.getHtml());
   emit("update:modelValue", editor.getHtml());
 };
 const handleDestroyed = editor => {
   console.log("destroyed", editor);
 };
 const handleFocus = editor => {
-  console.log("focus", editor);
+  // console.log("focus", editor);
 };
 const handleBlur = editor => {
   console.log("blur", editor);
@@ -422,6 +422,7 @@ const getHtml = () => {
 defineExpose({
   getHtml
 });
+
 </script>
 
 
