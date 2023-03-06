@@ -136,7 +136,20 @@ onMounted(() => {
   }
 }
 
+:deep(table) {
+  border: 1px solid #cccc;
+  border-collapse: collapse;
+}
 
+:deep(td),
+:deep(th) {
+  border: 1px solid #cccc;
+}
+
+:deep(th) {
+  border: 1px solid #cccc;
+  background-color: #f5f2f0;
+}
 </style>
 
 

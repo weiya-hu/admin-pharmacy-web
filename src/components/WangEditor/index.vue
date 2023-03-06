@@ -424,10 +424,8 @@ defineExpose({
 });
 
 </script>
-
-
 <style lang="scss" scoped>
-
+/* table 样式 */
 :deep(.w-e-scroll) {
   overflow-y: hidden !important;
 }

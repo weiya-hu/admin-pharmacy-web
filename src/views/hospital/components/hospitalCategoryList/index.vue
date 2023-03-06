@@ -274,6 +274,22 @@ watch(() => activeBar.value, () => {
 });
 </script>
 <style scoped lang="scss">
+
+.phone :deep(table) {
+  border: 1px solid #cccc;
+  border-collapse: collapse;
+}
+
+.phone:deep(td),
+.phone:deep(th) {
+  border: 1px solid #cccc;
+}
+
+.phone:deep(th) {
+  border: 1px solid #cccc;
+  background-color: #f5f2f0;
+}
+
 .categoryList_outBox {
   padding: 0 20px;
   width: calc(100% - 200px);
