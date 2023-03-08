@@ -4,6 +4,7 @@ import doctorManageConfig from "@/views/hospital/config/tableConfig/doctorManage
 import medicalInsuranceColumnConfig from "@/views/hospital/config/tableConfig/medicalInsuranceColumnConfig";
 import medicalGuideConfig from "@/views/hospital/config/tableConfig/medicalGuideConfig";
 import medicalNewsConfig from "@/views/hospital/config/tableConfig/medicalNewsConfig";
+import bannerConfig from "@/views/hospital/config/tableConfig/bannerConfig";
 //功能菜单表格展示配置项
 let configTableMap = new Map();
 //医院简介
@@ -18,4 +19,7 @@ configTableMap.set("MEDICAL_INSURANCE", medicalInsuranceColumnConfig);
 configTableMap.set("MEDICAL_GUIDE", medicalGuideConfig);
 //医疗动态
 configTableMap.set("MEDICAL_TRENDS", medicalNewsConfig);
+//banner图
+configTableMap.set("HOSPITAl_BANNER", bannerConfig);
+
 export default configTableMap;

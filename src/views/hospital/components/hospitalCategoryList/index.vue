@@ -10,7 +10,11 @@
                  class="serach_input" />
         </div>
         <div class="add">
-          <el-button @click="createArticle" size="large" type="primary">{{ defaultTableConfig.createTitle }}</el-button>
+          <el-button v-if="activeBar.categoryId!=='001'" @click="createArticle" size="large" type="primary">
+            {{ defaultTableConfig.createTitle }}
+          </el-button>
+          <el-button v-else @click="addBanner" size="large" type="primary">{{ defaultTableConfig.createTitle }}
+          </el-button>
         </div>
       </div>
     </header>
@@ -36,6 +40,25 @@
                        type="primary">撤回
             </el-button>
             <el-button @click="()=>handlePreview(scope.row)" link type="primary">预览</el-button>
+          </template>
+          <!--        banner图插槽  -->
+
+          <template #statusSlot="scope">
+            <span v-if="scope.row.status=='0'" style="color: red">下架</span>
+            <span v-if="scope.row.status=='1'" style="color: green">上架</span>
+          </template>
+
+          <template #handlerToBanner="scope">
+            <el-button link @click="()=>handleBanner(scope.row)" type="primary">编辑</el-button>
+            <el-button @click="()=>deleteBanner(scope.row.postId)" link type="primary">删除</el-button>
+            <el-button style="color:green;" v-if="scope.row.status=='0'" link
+                       @click="()=>handlePostedToBanner(scope.row)"
+                       type="primary">上架
+            </el-button>
+            <el-button style="color:red;" v-if="scope.row.status=='1'" link
+                       @click="()=>handleWithdrawnTobanner(scope.row)"
+                       type="primary">下架
+            </el-button>
           </template>
         </publicTable>
       </div>
@@ -102,12 +125,33 @@
       </div>
     </template>
   </el-dialog>
+  <el-dialog
+    :title="isAddOrPutToBanner?'新增banner':'修改banner'"
+    width="30%"
+    append-to-body
+    :close-on-click-modal="false"
+    draggable
+    center
+    v-model="isShowBannerDialog"
+  >
+    <createBannerDialog
+      ref="formInstanceToBanner"
+    ></createBannerDialog>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button v-if="!isAddOrPutToBanner" type="primary">修改</el-button>
+        <el-button @click="createBannerInfo" v-if="isAddOrPutToBanner" type="primary">确 定</el-button>
+        <el-button @click="handleBannerCancel">取 消</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 <script setup name="hospitalCategoryList">
 import publicTable from "@/views/hospital/components/publicComponent/publicTable.vue";
 import hospitalIntroductionConfig from "@/views/hospital/config/tableConfig/hospitalIntroductionConfig";
 import configMap from "@/views/hospital/config/tableConfig";
 import createContentDialog from "@/views/hospital/components/publicComponent/createContentDialog";
+import createBannerDialog from "@/views/hospital/components/publicComponent/createBannerDialog";
 import { computed, nextTick, ref } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
@@ -116,6 +160,7 @@ import { _ } from "lodash";
 import { watch } from "vue";
 import router from "@/router";
 import { useRoute } from "vue-router";
+import { addBannerInfo } from "@/api/hospital/bannerManagement";
 
 const route = useRoute();
 const params = ref({
@@ -124,13 +169,17 @@ const params = ref({
 });
 const keyword = ref("");
 const isAddOrPut = ref(true);
+const isAddOrPutToBanner = ref(true);
 const formInstance = ref(null);
+const formInstanceToBanner = ref(null);
 const hospitalConfigStore = useHospitalConfigStore();
 let publicLoading = computed(() => hospitalConfigStore.publicLoading);
 let dataInfo = computed(() => hospitalConfigStore.categoryDataList);
 let allTotal = computed(() => hospitalConfigStore.total);
 const activeBar = computed(() => hospitalConfigStore.activeBarInfo);
 let activeParentBarInfo = computed(() => hospitalConfigStore.activeParentBarInfo);
+const corpId = computed(() => hospitalConfigStore.corpId);
+const isShowBannerDialog = ref(false);
 const isShowArticeDialog = ref(false);
 const isShowPreview = ref(false);
 let previewPost = ref(null);
@@ -144,13 +193,13 @@ const getPagination = (value) => {
 //新建文章
 const createArticle = () => {
   router.push(`/hospital/articledetail?code=${activeParentBarInfo.value.code}&corpId=${route.query.corpId}`);
-  // isAddOrPut.value = true;
-  // isShowArticeDialog.value = true;
-  // nextTick(() => {
-  //   formInstance.value.clearForm();
-  //   hospitalConfigStore.innitShowConfig();
-  // });
 };
+//banner新增
+const addBanner = () => {
+  isAddOrPutToBanner.value = true;
+  isShowBannerDialog.value = true;
+};
+
 const defaultTableConfig = computed(() => hospitalConfigStore.publicTableConfig);
 //手机预览
 const handlePreview = ($event) => {
@@ -181,18 +230,52 @@ const addCategoryArticle = async () => {
     }
   })();
 };
+//新增banner内容
+const createBannerInfo = async () => {
+  await formInstanceToBanner.value.validateForm() && (function() {
+    try {
+      let result = formInstanceToBanner.value.sendQueryParams();
+      addBannerInfo({ ...result, corpId: corpId.value }).then(res => {
+        if (res.code == 200) {
+          ElMessage.success("新增banner成功");
+          filterPubliceTableDataList();
+        }
+      });
+      isShowBannerDialog.value = false;
+    } catch {
+      ElMessage.error("新增banner失败");
+      isShowBannerDialog.value = false;
+    } finally {
+      formInstanceToBanner.value.clearForm();
+    }
+  })();
+};
+//取消处理banner的操作
+const handleBannerCancel = () => {
+  isShowBannerDialog.value = false;
+  formInstanceToBanner.value.clearForm();
+};
 //过滤列表数据
 const filterPubliceTableDataList = () => {
   if (keyword.value == "") {
     let { categoryId, corpId, name } = hospitalConfigStore.activeBarInfo;
-    hospitalConfigStore.getCategoryDataList(params.value);
+    if (name == "banner图管理") {
+      hospitalConfigStore.changeActiveBarInfo(JSON.parse(sessionStorage.getItem("activeBar")));
+    } else {
+      hospitalConfigStore.getCategoryDataList(params.value);
+    }
   } else {
     hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value, ...params.value });
   }
 };
 //条件搜索
 const searchCategoryByKeyword = () => {
-  hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+  let { categoryId, corpId, name } = hospitalConfigStore.activeBarInfo;
+  if (name == "banner图管理") {
+    hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+  } else {
+    hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+  }
 };
 
 //修改内容

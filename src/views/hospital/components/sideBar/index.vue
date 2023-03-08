@@ -47,7 +47,13 @@ const handleActiveBar = () => {
   });
   !categoryIdArray.includes(activeCategoryId.value) && (function() {
     if (activeCategoryId.value == "01") {
+      //栏目管理
       hospitalConfigStore.changeComponentShow(true);
+    } else if (activeCategoryId.value == "001") {
+      //banner管理
+      hospitalConfigStore.changeComponentShow(false);
+      //  单独获取banner图列表
+      hospitalConfigStore.changeActiveBarInfo(JSON.parse(sessionStorage.getItem("activeBar")));
     } else {
       hospitalConfigStore.changeComponentShow(false);
       hospitalConfigStore.changeActiveBarInfo(JSON.parse(sessionStorage.getItem("activeBar")));
@@ -59,6 +65,9 @@ onMounted(() => {
     activeCategoryId.value = JSON.parse(sessionStorage.getItem("activeBar")).categoryId;
   } else {
     activeCategoryId.value = null;
+  }
+  if (route.query?.corpId) {
+    hospitalConfigStore.changeCopId(route.query.corpId);
   }
 });
 </script>

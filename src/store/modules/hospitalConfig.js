@@ -11,13 +11,18 @@ import configHtmlMap from "@/views/hospital/config/htmlDefulteConfig";
 import configTableMap from "@/views/hospital/config/tableConfig";
 import { useRouter } from "vue-router";
 import { _ } from "lodash";
+import { getBannerList } from "@/api/hospital/bannerManagement";
 
 const useHospitalConfigStore = defineStore("hospitalConfig", {
   state: () => ({
+    linkHost: "http:testShp.com",
     publicLoading: false,
     logo: "",
     hasCategory: [{
       name: "栏目管理", categoryId: "01"
+    }, {
+      name: "banner图管理",
+      categoryId: "001"
     }],
     category: [],
     navBar: [],
@@ -29,8 +34,12 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
     publicTableConfig: {},
     publicEditorDefault: "",
     allActiveNav: [],
+    corpId: null,
     total: 0
   }), actions: {
+    changeCopId(id) {
+      this.corpId = id;
+    },
     filterNavStatusBar(nav) {
       let cloneNav = _.cloneDeep(nav);
       let newNav = [];
@@ -72,11 +81,14 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
     changeActiveBarInfo(info) {
       this.activeBarInfo = info;
       //获取父元素的节点信息
-      if (info.name !== "栏目管理") {
+      if (info.name !== "栏目管理" && info.name !== "banner图管理") {
         this.getParentNodeInfo();
+        let { categoryId, corpId, name } = this.activeBarInfo;
+        this.getCategoryDataList({ categoryId, corpId, name });
+      } else if (info.name == "banner图管理") {
+        this.innitShowConfig("HOSPITAl_BANNER");
+        this.getCategoryDataListToBanner({ copId: this.copId });
       }
-      let { categoryId, corpId, name } = this.activeBarInfo;
-      this.getCategoryDataList({ categoryId, corpId, name });
     },
     //获取父元素的节点信息
     getParentNodeInfo() {
@@ -140,6 +152,9 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
             this.publicTableConfig = configTableMap.get("MEDICAL_TRENDS");
             this.publicEditorDefault = configHtmlMap.get("MEDICAL_TRENDS");
             break;
+          case "HOSPITAl_BANNER":
+            this.publicTableConfig = configTableMap.get("HOSPITAl_BANNER");
+            break;
         }
       }
     }
@@ -165,6 +180,22 @@ const useHospitalConfigStore = defineStore("hospitalConfig", {
         this.publicLoading = false;
       });
     },
+    //获取banner图列表数据
+    getCategoryDataListToBanner(data) {
+      this.publicLoading = true;
+      try {
+        getBannerList(data).then(res => {
+          if (res.code == 200) {
+            this.categoryDataList = res.data.list;
+            this.total = Number(res.data.total);
+            this.publicLoading = false;
+          }
+        });
+      } catch {
+        this.publicLoading = false;
+      }
+    },
+    //获取除了banner图和栏目管理外的其他菜单数据
     getCategoryDataList(data) {
       data = Object.assign(data, {
         categoryId: this.activeBarInfo.categoryId,

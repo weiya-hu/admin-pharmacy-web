@@ -30,8 +30,14 @@ const props = defineProps({
 //获取菜单项
 const changeCategory = ($event, nav) => {
   if (props.nav.name !== "栏目管理") {
-    hospitalConfigStore.changeComponentShow(false);
-    hospitalConfigStore.changeActiveBarInfo(props.nav);
+    if (props.nav.name !== "banner图管理") {
+      hospitalConfigStore.changeComponentShow(false);
+      hospitalConfigStore.changeActiveBarInfo(props.nav);
+    } else if (props.nav.name == "banner图管理") {
+      //  单独请求banner图列表的接口
+      hospitalConfigStore.changeComponentShow(false);
+      hospitalConfigStore.changeActiveBarInfo(props.nav);
+    }
   } else {
     hospitalConfigStore.changeComponentShow(true);
   }
