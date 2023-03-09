@@ -50,6 +50,8 @@
           </el-table-column>
           <el-table-column prop="address" label="操作">
             <template #default="scope">
+              <el-button v-if="scope.row.pid==null" @click="()=>showLink(scope.row)" link type="primary">链接
+              </el-button>
               <!--              <el-button v-if="scope.row.status=='0'" @click="()=>handleEnable(scope.row)" link type="primary">启用-->
               <!--              </el-button>-->
               <!--              <el-button v-if="scope.row.status=='1'" @click="()=>handleProhibition(scope.row)" link type="danger">禁用-->
@@ -114,6 +116,25 @@
         </div>
       </template>
     </el-dialog>
+    <el-dialog
+      title="链接查看"
+      append-to-body
+      :close-on-click-modal="false"
+      draggable
+      center
+      top="60vh"
+      v-model="linkShow"
+      width="30%"
+    >
+      <div style="display: flex;justify-content: center">
+        <span style="font-size: 28px;font-weight: bold;color: #337ab7">{{ link }}</span>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="linkShow=false">关闭</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 
 </template>
@@ -130,6 +151,7 @@ import {
   getCategoryDetail,
   getEditorList
 } from "@/api/hospital/hospitalConfig";
+import linkMap from "@/views/hospital/config/categoryLinkAndOptions/categoryLinkMap";
 
 let categoryFormInstance = ref(null);
 const categoryFormRuler = ref({
@@ -155,6 +177,7 @@ const categoryFormRuler = ref({
     }
   ]
 });
+const linkShow = ref(false);
 const disPid = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -171,6 +194,7 @@ const itemAdd = ref({
 let queryParmas = {
   corpId: route.query?.corpId
 };
+const link = ref(null);
 const addOrEditor = ref(true);
 const searchKey = ref("");
 const parentNode = ref(null);
@@ -205,7 +229,11 @@ const resetItemAdd = () => {
 const searchCategoryByName = () => {
   // hospitalConfigStore.filterCategory({ name: searchKey.value });
 };
-
+//展示链接
+const showLink = (row) => {
+  linkShow.value = true;
+  link.value = linkMap.get(row.code);
+};
 const handleCancel = async () => {
   categoryFormInstance.value.resetFields();
   createCategoryShow.value = false;

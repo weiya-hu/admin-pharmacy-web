@@ -47,16 +47,28 @@
             <span v-if="scope.row.status=='0'" style="color: red">下架</span>
             <span v-if="scope.row.status=='1'" style="color: green">上架</span>
           </template>
+          <template #picUrlSlot="scope">
+            <el-image
+              z-index="1000"
+              style="width: 80px; height: 80px"
+              :src="scope.row.picUrl"
+              :zoom-rate="1.2"
+              preview-teleported
+              :preview-src-list="[scope.row.picUrl]"
+              :initial-index="4"
+              fit="cover"
+            />
+          </template>
 
           <template #handlerToBanner="scope">
             <el-button link @click="()=>handleBanner(scope.row)" type="primary">编辑</el-button>
-            <el-button @click="()=>deleteBanner(scope.row.postId)" link type="primary">删除</el-button>
+            <el-button @click="()=>deleteBanner(scope.row)" link type="primary">删除</el-button>
             <el-button style="color:green;" v-if="scope.row.status=='0'" link
-                       @click="()=>handlePostedToBanner(scope.row)"
+                       @click="()=>handlePostedOrWithdrawnToBanner('up',scope.row)"
                        type="primary">上架
             </el-button>
             <el-button style="color:red;" v-if="scope.row.status=='1'" link
-                       @click="()=>handleWithdrawnTobanner(scope.row)"
+                       @click="()=>handlePostedOrWithdrawnToBanner('down',scope.row)"
                        type="primary">下架
             </el-button>
           </template>
@@ -139,7 +151,7 @@
     ></createBannerDialog>
     <template #footer>
       <div class="dialog-footer">
-        <el-button v-if="!isAddOrPutToBanner" type="primary">修改</el-button>
+        <el-button @click="confirmEditorBanner" v-if="!isAddOrPutToBanner" type="primary">修改</el-button>
         <el-button @click="createBannerInfo" v-if="isAddOrPutToBanner" type="primary">确 定</el-button>
         <el-button @click="handleBannerCancel">取 消</el-button>
       </div>
@@ -160,7 +172,7 @@ import { _ } from "lodash";
 import { watch } from "vue";
 import router from "@/router";
 import { useRoute } from "vue-router";
-import { addBannerInfo } from "@/api/hospital/bannerManagement";
+import { addBannerInfo, deleteBannerInfo, updateBannerInfo } from "@/api/hospital/bannerManagement";
 
 const route = useRoute();
 const params = ref({
@@ -275,6 +287,7 @@ const searchCategoryByKeyword = () => {
     hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
   } else {
     hospitalConfigStore.filterCategoryDataList({ keyword: keyword.value });
+
   }
 };
 
@@ -338,6 +351,76 @@ const handleWithdrawn = (row) => {
     ElMessage.error("撤回异常");
   }
 };
+
+//编辑banner
+const handleBanner = ($event) => {
+  isShowBannerDialog.value = true;
+  isAddOrPutToBanner.value = false;
+  nextTick(() => {
+    formInstanceToBanner.value.handleReveal({ ...$event });
+  });
+};
+//确认修改banner
+const confirmEditorBanner = async () => {
+  let editorParams = formInstanceToBanner.value.sendQueryParams();
+  try {
+    let editorResult = await updateBannerInfo(editorParams);
+    if (editorResult.code == 200) {
+      ElMessage.success("修改成功");
+      hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+    }
+  } catch {
+    ElMessage.error("修改失败");
+  } finally {
+    isShowBannerDialog.value = false;
+    formInstanceToBanner.value.clearForm();
+  }
+};
+//删除banner
+const deleteBanner = async ($event) => {
+  try {
+    let deleteResult = await deleteBannerInfo({ bannerId: $event.bannerId });
+    if (deleteResult.code == 200) {
+      ElMessage.success("删除成功");
+      hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+    }
+  } catch {
+    ElMessage.error("删除失败");
+  }
+};
+
+//下架和上架
+const handlePostedOrWithdrawnToBanner = async (status, row) => {
+  let params = { ...row };
+  switch (status) {
+    case "up":
+      params.status = 1;
+      try {
+        let editorResult = await updateBannerInfo(params);
+        if (editorResult.code == 200) {
+          ElMessage.success("上架成功");
+          hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+        }
+      } catch {
+        ElMessage.error("上架失败");
+      }
+      break;
+    case "down":
+      params.status = 0;
+      try {
+        let editorResult = await updateBannerInfo(params);
+        if (editorResult.code == 200) {
+          ElMessage.success("下架成功");
+          hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+        }
+      } catch {
+        ElMessage.error("下架失败");
+      }
+      break;
+  }
+};
+
+
 //点击编辑
 const handleEditor = (row) => {
   // isAddOrPut.value = false;

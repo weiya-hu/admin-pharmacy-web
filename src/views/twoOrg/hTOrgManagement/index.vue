@@ -1,5 +1,4 @@
 <template>
-  <!--  医院机构管理-->
   <div v-loading="isLoading" element-loading-text="加载中..." class="management_box">
     <header>
       <el-form :model="searchParams" style="display: flex">
@@ -12,11 +11,18 @@
         <el-form-item class="label" label="机构等级">
           <el-input v-model="searchParams.level" placeholder="请输入机构等级"></el-input>
         </el-form-item>
+        <el-form-item class="label" label="城市">
+          <el-input v-model="searchParams.city" placeholder="请输入机构等级"></el-input>
+        </el-form-item>
+        <!--        <el-form-item class="label" label="区县">-->
+        <!--          <el-input v-model="searchParams.county" placeholder="请输入机构等级"></el-input>-->
+        <!--        </el-form-item>-->
       </el-form>
       <div class="handleSearch">
         <el-button type="primary" @click="getPagination">搜索</el-button>
         <el-button @click="resetDate">重置</el-button>
         <el-button type="primary" @click="addOrg">新增机构</el-button>
+        <el-button type="primary" @click="exportExcel">文件导出</el-button>
       </div>
     </header>
     <main>
@@ -55,34 +61,40 @@
     </footer>
     <el-dialog width="30%" v-model="isShowChange" title="修改机构信息" center>
       <el-form ref="formChangeInstance" :rules="form_rulers" :model="orgDetail">
-        <el-form-item class="change" label="机构名称" prop="twoType">
+        <el-form-item label-width="100px" class="change" label="机构名称">
           <el-input v-model="orgDetail.name" placeholder="请输入机构名称"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构编码" prop="code">
+        <el-form-item label-width="100px" class="change" label="机构编码">
           <el-input v-model="orgDetail.code" placeholder="请输入机构编码"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构等级" prop="level">
+        <el-form-item label-width="100px" class="change" label="机构等级">
           <el-input v-model="orgDetail.level" placeholder="请输入机构等级"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构地址" prop="addr">
+        <el-form-item label-width="100px" class="change" label="机构地址">
           <el-input v-model="orgDetail.addr" placeholder="请输入机构地址"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="城市" prop="city">
+        <el-form-item label-width="100px" class="change" label="城市">
           <el-input v-model="orgDetail.city" placeholder="请输入城市"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="区县" prop="county">
+        <el-form-item label-width="100px" class="change" label="区县">
           <el-input v-model="orgDetail.county" placeholder="请输入区县"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="省份" prop="province">
+        <el-form-item label-width="100px" class="change" label="是否达标">
+          <el-input v-model="orgDetail.isSuccess" placeholder="是否达标"></el-input>
+        </el-form-item>
+        <el-form-item label-width="100px" class="change" label="机构等级">
+          <el-input v-model="orgDetail.level" placeholder="机构等级"></el-input>
+        </el-form-item>
+        <el-form-item label-width="100px" class="change" label="省份">
           <el-input v-model="orgDetail.province" placeholder="请输入省份"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="连锁名称" prop="twoType">
+        <el-form-item label-width="100px" class="change" label="连锁名称">
           <el-input v-model="orgDetail.twoType" placeholder="请输入连锁名称"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构类型" prop="type">
+        <el-form-item label-width="100px" class="change" label="机构类型">
           <el-input v-model="orgDetail.type" placeholder="请输入机构类型"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="运营人" prop="yyr">
+        <el-form-item label-width="100px" class="change" label="运营人">
           <el-input v-model="orgDetail.yyr" placeholder="请输入运营人"></el-input>
         </el-form-item>
       </el-form>
@@ -92,35 +104,46 @@
       </template>
     </el-dialog>
     <el-dialog width="30%" v-model="isShowAdd" title="新增机构信息" center>
+      <!-- prop="twoType"
+           prop="code"
+           prop="level"
+           prop="addr"
+           prop="city"
+           prop="county"
+           prop="province"
+           prop="twoType"
+           prop="type"
+           prop="yyr"
+           -->
       <el-form ref="formAddInstance" :rules="form_rulers" :model="orgDetail">
-        <el-form-item class="change" label="机构名称" prop="twoType">
+        <el-form-item label-width="100px" class="change" label="机构名称">
           <el-input v-model="orgDetail.name" placeholder="请输入机构名称"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构编码" prop="code">
+        <el-form-item label-width="100px" class="change" label="机构编码">
           <el-input v-model="orgDetail.code" placeholder="请输入机构编码"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构等级" prop="level">
+        <el-form-item label-width="100px" class="change" label="机构等级">
           <el-input v-model="orgDetail.level" placeholder="请输入机构等级"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构地址" prop="addr">
+        <el-form-item label-width="100px" class="change" label="机构地址">
           <el-input v-model="orgDetail.addr" placeholder="请输入机构地址"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="城市" prop="city">
+        <el-form-item label-width="100px" class="change" label="城市">
           <el-input v-model="orgDetail.city" placeholder="请输入城市"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="区县" prop="county">
+        <el-form-item label-width="100px" class="change" label="区县">
           <el-input v-model="orgDetail.county" placeholder="请输入区县"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="省份" prop="province">
+        <el-form-item label-width="100px" class="change" label="省份">
           <el-input v-model="orgDetail.province" placeholder="请输入省份"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="连锁名称" prop="twoType">
+        <el-form-item label-width="100px" class="change" label="连锁名称">
           <el-input v-model="orgDetail.twoType" placeholder="请输入连锁名称"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="机构类型" prop="type">
+        <el-form-item label-width="100px" class="change" label="机构类型">
           <el-input v-model="orgDetail.type" placeholder="请输入机构类型"></el-input>
         </el-form-item>
-        <el-form-item class="change" label="运营人" prop="yyr">
+        <el-form-item label-width="100px" class="change" label="运营人">
           <el-input v-model="orgDetail.yyr" placeholder="请输入运营人"></el-input>
         </el-form-item>
       </el-form>
@@ -137,7 +160,7 @@ import { nextTick, onMounted, ref } from "vue";
 import { getHospitalList } from "@/api/hospital/hospitalList";
 import {
   addOreManage,
-  deleteOreManage,
+  deleteOreManage, exportExcelFile,
   getOreManageList,
   updateOreManageDetail
 } from "@/api/hospitalOrgManagement/orgManagement";
@@ -171,6 +194,12 @@ const form_rulers = ref({
     message: "请输入序号",
     trigger: "blur"
   }],
+  isSuccess: [{
+    required: true,
+    message: "是否达标",
+    trigger: "blur"
+  }],
+
   code: [{
     required: true,
     message: "请输入编码",
@@ -191,14 +220,9 @@ const form_rulers = ref({
     message: "请输入区县",
     trigger: "blur"
   }],
-  isSuccess: [{
-    required: true,
-    message: "请输入标题名称",
-    trigger: "blur"
-  }],
   level: [{
     required: true,
-    message: "请输入机构等级",
+    message: "机构等级",
     trigger: "blur"
   }],
   name: [{
@@ -213,17 +237,17 @@ const form_rulers = ref({
   }],
   twoType: [{
     required: true,
-    message: "请输入标题名称",
+    message: "请输入连锁名称",
     trigger: "blur"
   }],
   type: [{
     required: true,
-    message: "请输入连锁名称",
+    message: "请输入机构类型",
     trigger: "blur"
   }],
   yyr: [{
     required: true,
-    message: "请输入机构类型",
+    message: "请输入运营人",
     trigger: "blur"
   }],
   yyrId: [{
@@ -235,13 +259,34 @@ const form_rulers = ref({
 
 //搜索参数
 let searchParams = ref({
-  name: "",
-  code: "",
-  level: "",
+  name: undefined,
+  code: undefined,
+  level: undefined,
+  county: undefined,
+  city: undefined,
   pageNum: 1,
   pageSize: 10
 });
 const tableData = ref([]);
+//导出excel文件
+const exportExcel = async () => {
+  if (searchParams.value.name == "" && searchParams.value.code == "" && searchParams.value.level == "" && searchParams.city == "") {
+    ElMessage.error("数据量过大请筛选之后再导出");
+    return;
+  }
+  let { name, code, level, city } = searchParams.value;
+  let result = await exportExcelFile({ name, code, level, city });
+  let blob = new Blob([result.data], { type: "application/vnd.ms-excel;charset=utf-8" });
+  let downloadElement = document.createElement("a");
+  let href = window.URL.createObjectURL(blob);
+  downloadElement.href = href;
+  downloadElement.download = "export_excel.xlsx";
+  document.body.appendChild(downloadElement);
+  downloadElement.click();
+  document.body.removeChild(downloadElement);
+  window.URL.revokeObjectURL(href);
+};
+
 const getPagination = async () => {
   try {
     isLoading.value = true;
@@ -276,7 +321,7 @@ const resetDate = async () => {
 //删除机构
 const deleteOrg = async ($event) => {
   try {
-    let res = await deleteOreManage($event.code);
+    let res = await deleteOreManage({ id: $event.id });
     if (res.code == 200) {
       ElMessage.success("删除成功");
       await getPagination();
@@ -287,19 +332,35 @@ const deleteOrg = async ($event) => {
 };
 //确认修改机构
 const changeConfirm = async () => {
+  let isValidate = await formChangeInstance.value.validate();
   try {
-    let isValidate = await formChangeInstance.value.validate();
     isValidate && await (async function() {
-      let result = updateOreManageDetail(orgDetail);
+      let result = await updateOreManageDetail(orgDetail.value);
       if (result.code == 200) {
         ElMessage.success("修改成功");
         await getPagination();
+        orgDetail.value = {
+          num: "",//序号
+          code: "",//编码
+          addr: "",//机构地址
+          city: "",//城市
+          county: "",//区县
+          isSuccess: "",//是否达标
+          level: "",//机构等级
+          name: "",//机构名称
+          province: "",//省份
+          twoType: "",//连锁名称
+          type: "",//机构类型
+          yyr: "",//运营人
+          yyrId: ""//运营人ID
+        };
       }
     })();
   } catch (error) {
     ElMessage.error(("修改失败"));
   } finally {
     isShowChange.value = false;
+
   }
 };
 //取消修改/新增机构
@@ -331,7 +392,7 @@ const confirmAdd = async () => {
   let isValidate = await formAddInstance.value.validate();
   try {
     isValidate && await (async function() {
-      let result = await addOreManage(orgDetail);
+      let result = await addOreManage(orgDetail.value);
       if (result.code == 200) {
         ElMessage.success("新增成功");
       }
@@ -362,7 +423,7 @@ const confirmAdd = async () => {
 const changeDetail = ($event) => {
   isShowChange.value = true;
   nextTick(() => {
-    orgDetail.value = $event;
+    orgDetail.value = { ...$event };
   });
 };
 //获取机构列表
@@ -391,6 +452,10 @@ onMounted(async () => {
   .el-input__inner {
     cursor: default !important;
   }
+}
+
+:deep(.el-form-item__label) {
+  justify-content: flex-start;
 }
 
 .management_box {

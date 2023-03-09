@@ -110,7 +110,8 @@ const clearForm = () => {
     title: "",//标题
     pageUrl: "",//跳转界面
     sort: null,//  序号
-    bannerId: null
+    bannerId: null,
+    status: 1
   };
 };
 const upChange = async (file, list) => {
@@ -165,25 +166,17 @@ const exceed = () => {
 //处理回显数据
 const handleReveal = (receiveData) => {
   let {
-    post,
     picUrl
   } = receiveData;
-  post = _.unescape(_.unescape(post));
   uploadFile.value = [];
   if (picUrl !== "") {
     uploadFile.value.push({ url: picUrl });
   }
   dialogImageUrl.value = picUrl;
   queryParames.value.picUrl = picUrl;
-  hospitalConfigStore.publicEditorDefault = post;
   queryParames.value = Object.assign(queryParames.value, receiveData);
 };
 const emit = defineEmits(["backToPhone"]);
-watch(() => queryParames.value.post, () => {
-  emit("backToPhone", _.unescape(queryParames.value.post));
-}, {
-  immediate: true
-});
 defineExpose({
   validateForm,
   sendQueryParams,
