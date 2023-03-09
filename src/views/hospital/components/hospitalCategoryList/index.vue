@@ -139,6 +139,7 @@
     </template>
   </el-dialog>
   <el-dialog
+    @close="closeBannerDialog"
     :title="isAddOrPutToBanner?'新增banner':'修改banner'"
     width="30%"
     append-to-body
@@ -168,7 +169,7 @@ import createBannerDialog from "@/views/hospital/components/publicComponent/crea
 import { computed, nextTick, ref } from "vue";
 import useHospitalConfigStore from "@/store/modules/hospitalConfig";
 import { addEditorItem, changeEditorItem, deleteEditorItem } from "@/api/hospital/hospitalConfig";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { _ } from "lodash";
 import { watch } from "vue";
 import router from "@/router";
@@ -262,6 +263,11 @@ const createBannerInfo = async () => {
       formInstanceToBanner.value.clearForm();
     }
   })();
+};
+//关闭banner弹框
+const closeBannerDialog = () => {
+  formInstanceToBanner.value.removeValidate();
+  formInstanceToBanner.value.clearForm();
 };
 //取消处理banner的操作
 const handleBannerCancel = () => {
@@ -378,19 +384,31 @@ const confirmEditorBanner = async () => {
       formInstanceToBanner.value.clearForm();
     }
   })();
-
 };
 //删除banner
 const deleteBanner = async ($event) => {
-  try {
-    let deleteResult = await deleteBannerInfo({ bannerId: $event.bannerId });
-    if (deleteResult.code == 200) {
-      ElMessage.success("删除成功");
-      hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+  ElMessageBox.confirm(
+    "是否删除这条banner信息?",
+    "提示",
+    {
+      confirmButtonText: "确认",
+      cancelButtonText: "取消",
+      type: "warning"
     }
-  } catch {
-    ElMessage.error("删除失败");
-  }
+  )
+    .then(async () => {
+      try {
+        let deleteResult = await deleteBannerInfo({ bannerId: $event.bannerId });
+        if (deleteResult.code == 200) {
+          ElMessage.success("删除成功");
+          hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+        }
+      } catch {
+        ElMessage.error("删除失败");
+      }
+    })
+    .catch(() => {
+    });
 };
 
 //下架和上架
@@ -398,28 +416,54 @@ const handlePostedOrWithdrawnToBanner = async (status, row) => {
   let params = { ...row };
   switch (status) {
     case "up":
-      params.status = 1;
-      try {
-        let editorResult = await updateBannerInfo(params);
-        if (editorResult.code == 200) {
-          ElMessage.success("上架成功");
-          hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+      ElMessageBox.confirm(
+        "是否上架?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
-      } catch {
-        ElMessage.error("上架失败");
-      }
+      )
+        .then(async () => {
+          params.status = 1;
+          try {
+            let editorResult = await updateBannerInfo(params);
+            if (editorResult.code == 200) {
+              ElMessage.success("上架成功");
+              hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+            }
+          } catch {
+            ElMessage.error("上架失败");
+          }
+        })
+        .catch(() => {
+        });
       break;
     case "down":
-      params.status = 0;
-      try {
-        let editorResult = await updateBannerInfo(params);
-        if (editorResult.code == 200) {
-          ElMessage.success("下架成功");
-          hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+      ElMessageBox.confirm(
+        "是否下架?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
-      } catch {
-        ElMessage.error("下架失败");
-      }
+      )
+        .then(async () => {
+          params.status = 0;
+          try {
+            let editorResult = await updateBannerInfo(params);
+            if (editorResult.code == 200) {
+              ElMessage.success("下架成功");
+              hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+            }
+          } catch {
+            ElMessage.error("下架失败");
+          }
+        })
+        .catch(() => {
+        });
       break;
   }
 };

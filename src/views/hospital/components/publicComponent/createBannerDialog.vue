@@ -48,10 +48,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label-width="110px" label="状态:" prop="status">
+      <el-form-item label-width="110px" label="已上架/未上架:" prop="status">
         <el-select v-model="queryParames.status">
-          <el-option :value="1" label="上架">上架</el-option>
-          <el-option :value="0" label="下架">下架</el-option>
+          <el-option :value="1" label="已上架">已上架</el-option>
+          <el-option :value="0" label="未上架">未上架</el-option>
         </el-select>
       </el-form-item>
     </el-form>
@@ -88,7 +88,7 @@ let queryParames = ref({
   title: "",//标题
   pageUrl: "",//跳转界面
   sort: null,//  序号,
-  status: 1
+  status: 0
 });
 const categoryArticleRuler = ref({
   title: [
@@ -111,7 +111,7 @@ const clearForm = () => {
     pageUrl: "",//跳转界面
     sort: null,//  序号
     bannerId: null,
-    status: 1
+    status: 0
   };
 };
 const upChange = async (file, list) => {
@@ -176,12 +176,18 @@ const handleReveal = (receiveData) => {
   queryParames.value.picUrl = picUrl;
   queryParames.value = Object.assign(queryParames.value, receiveData);
 };
+//移除校验
+const removeValidate = () => {
+  categoryArticleInstance.value.clearValidate();
+};
+
 const emit = defineEmits(["backToPhone"]);
 defineExpose({
   validateForm,
   sendQueryParams,
   clearForm,
-  handleReveal
+  handleReveal,
+  removeValidate
 });
 </script>
 
