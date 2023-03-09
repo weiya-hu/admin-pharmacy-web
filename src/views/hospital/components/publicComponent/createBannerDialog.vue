@@ -38,8 +38,11 @@
       <el-form-item class="label" label-width="110px" label="简述:" prop="des">
         <el-input v-model="queryParames.des"></el-input>
       </el-form-item>
-      <el-form-item class="label" label-width="110px" label="排序:" prop="sort">
-        <el-input v-model="queryParames.sort"></el-input>
+      <el-form-item label-width="110px" label="排序:" prop="sort">
+        <!--        <el-input v-model.number="queryParames.sort"></el-input>-->
+        <el-select v-model="queryParames.sort">
+          <el-option v-for="item in sortArray" :value="item" :label="item" :key="item">{{ item }}</el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label-width="110px" label="链接界面:" prop="pageUrl">
         <el-select v-model="queryParames.pageUrl">
@@ -99,6 +102,8 @@ const categoryArticleRuler = ref({
     }
   ]
 });
+//排序
+const sortArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const clearForm = () => {
   uploadFile.value = [];
   dialogImageUrl.value = null;

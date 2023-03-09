@@ -124,7 +124,7 @@
       center
       top="60vh"
       v-model="linkShow"
-      width="30%"
+      width="50%"
     >
       <div style="display: flex;justify-content: center">
         <span style="font-size: 28px;font-weight: bold;color: #337ab7">{{ link }}</span>
@@ -294,7 +294,7 @@ const createCategoryConfirm = async () => {
 };
 const innitParentOption = () => {
   parentOptions.value = (navs.value.filter(item => {
-    if (item.name !== "栏目管理") {
+    if (item.name !== "栏目管理" && item.name !== "banner图管理") {
       return true;
     } else {
       return false;

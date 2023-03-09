@@ -1,5 +1,5 @@
 const tableConfig = {
-  title: "部门管理",
+  title: "科室管理",
   createTitle: "新建部门简介",
   propList: [
     { prop: "title", label: "标题" },

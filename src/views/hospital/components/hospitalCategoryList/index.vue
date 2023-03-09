@@ -58,7 +58,13 @@
               :preview-src-list="[scope.row.picUrl]"
               :initial-index="4"
               fit="cover"
-            />
+            >
+              <template #error>
+                <div style="background-color: #f5f7fa;width: 80px;height:80px;display: flex;justify-content: center;align-items: center">
+                  <p>暂无图片</p>
+                </div>
+              </template>
+            </el-image>
           </template>
 
           <template #handlerToBanner="scope">
@@ -161,6 +167,7 @@
   </el-dialog>
 </template>
 <script setup name="hospitalCategoryList">
+import { Picture } from "@element-plus/icons-vue";
 import publicTable from "@/views/hospital/components/publicComponent/publicTable.vue";
 import hospitalIntroductionConfig from "@/views/hospital/config/tableConfig/hospitalIntroductionConfig";
 import configMap from "@/views/hospital/config/tableConfig";
@@ -410,7 +417,11 @@ const deleteBanner = async ($event) => {
     .catch(() => {
     });
 };
-
+// //判断当前状态下的banner是否只有一个
+// const validateOnlyRelease=()=>{
+//
+//
+// }
 //下架和上架
 const handlePostedOrWithdrawnToBanner = async (status, row) => {
   let params = { ...row };
