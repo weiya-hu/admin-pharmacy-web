@@ -15,7 +15,7 @@ import { getBannerList } from "@/api/hospital/bannerManagement";
 
 const useHospitalConfigStore = defineStore("hospitalConfig", {
   state: () => ({
-    linkHost: "http:testShp.com",
+    linkHost: "http://test.hospital.shanhaiping.com",
     publicLoading: false,
     logo: "",
     hasCategory: [{
