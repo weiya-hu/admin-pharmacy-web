@@ -19,7 +19,6 @@ const tableConfig = {
 
     { label: "操作", minWidth: "120", slotName: "handler" ,fixed: "right"}
   ],
-  showIndexColumn: true
-
+  showIndexColumn: false
 };
 export default tableConfig;

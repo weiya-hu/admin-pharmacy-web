@@ -23,6 +23,7 @@
         <publicTable
           :propList="defaultTableConfig.propList"
           :listData="dataInfo"
+          v-bind="defaultTableConfig"
         >
           <template #status="scope">
             <span v-if="scope.row.status=='1'" style="color: red">草稿</span>
@@ -362,19 +363,22 @@ const handleBanner = ($event) => {
 };
 //确认修改banner
 const confirmEditorBanner = async () => {
-  let editorParams = formInstanceToBanner.value.sendQueryParams();
-  try {
-    let editorResult = await updateBannerInfo(editorParams);
-    if (editorResult.code == 200) {
-      ElMessage.success("修改成功");
-      hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+  await formInstanceToBanner.value.validateForm() && await (async function() {
+    let editorParams = formInstanceToBanner.value.sendQueryParams();
+    try {
+      let editorResult = await updateBannerInfo(editorParams);
+      if (editorResult.code == 200) {
+        ElMessage.success("修改成功");
+        hospitalConfigStore.getCategoryDataListToBanner({ title: keyword.value });
+      }
+    } catch {
+      ElMessage.error("修改失败");
+    } finally {
+      isShowBannerDialog.value = false;
+      formInstanceToBanner.value.clearForm();
     }
-  } catch {
-    ElMessage.error("修改失败");
-  } finally {
-    isShowBannerDialog.value = false;
-    formInstanceToBanner.value.clearForm();
-  }
+  })();
+
 };
 //删除banner
 const deleteBanner = async ($event) => {
