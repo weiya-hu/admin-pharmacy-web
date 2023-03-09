@@ -51,12 +51,12 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label-width="110px" label="已上架/未上架:" prop="status">
-        <el-select v-model="queryParames.status">
-          <el-option :value="1" label="已上架">已上架</el-option>
-          <el-option :value="0" label="未上架">未上架</el-option>
-        </el-select>
-      </el-form-item>
+<!--      <el-form-item label-width="110px" label="已上架/未上架:" prop="status">-->
+<!--        <el-select v-model="queryParames.status">-->
+<!--          <el-option :value="1" label="已上架">已上架</el-option>-->
+<!--          <el-option :value="0" label="未上架">未上架</el-option>-->
+<!--        </el-select>-->
+<!--      </el-form-item>-->
     </el-form>
   </div>
 

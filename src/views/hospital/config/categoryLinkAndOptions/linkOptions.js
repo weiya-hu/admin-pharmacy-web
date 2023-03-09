@@ -8,7 +8,7 @@ const linkOptions = [
     value: `${host}/hospitalprofile?code=HOSPITAL_PROFILE`
   },
   {
-    label: "部门管理",
+    label: "科室管理",
     value: `${host}/departments?code=DEPARTMENT_MANAGEMENT`
   },
   {

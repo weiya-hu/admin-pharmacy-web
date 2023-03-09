@@ -45,8 +45,8 @@
           <!--        banner图插槽  -->
 
           <template #statusSlot="scope">
-            <span v-if="scope.row.status=='0'" style="color: red">下架</span>
-            <span v-if="scope.row.status=='1'" style="color: green">上架</span>
+            <span v-if="scope.row.status=='0'" style="color: red">已下架</span>
+            <span v-if="scope.row.status=='1'" style="color: green">已上架</span>
           </template>
           <template #picUrlSlot="scope">
             <el-image
@@ -60,7 +60,8 @@
               fit="cover"
             >
               <template #error>
-                <div style="background-color: #f5f7fa;width: 80px;height:80px;display: flex;justify-content: center;align-items: center">
+                <div
+                  style="background-color: #f5f7fa;width: 80px;height:80px;display: flex;justify-content: center;align-items: center">
                   <p>暂无图片</p>
                 </div>
               </template>
